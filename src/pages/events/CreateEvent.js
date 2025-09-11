@@ -68,7 +68,7 @@ const AddEventFlow = ({ onSuccess, onBack }) => {
     });
 
     try {
-      const response = await fetch("http://localhost:5001/api/events/", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/events/`, {
         method: "POST",
         body: data, // The body is now correctly populated
       });

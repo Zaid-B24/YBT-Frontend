@@ -525,11 +525,15 @@ const AdminDashboard = () => {
 
         const [vehicleResponse, eventResponse, userResponse] =
           await Promise.all([
-            fetch("http://localhost:5001/api/v1/vehicles/count", { headers }),
-            fetch("http://localhost:5001/api/v1/events/totaleventscount", {
+            fetch(`${process.env.REACT_APP_API_URL}/vehicles/count`, {
               headers,
             }),
-            fetch("http://localhost:5001/api/v1/users/totalusers", { headers }),
+            fetch(`${process.env.REACT_APP_API_URL}/events/totaleventscount`, {
+              headers,
+            }),
+            fetch(`${process.env.REACT_APP_API_URL}/users/totalusers`, {
+              headers,
+            }),
           ]);
 
         if (!vehicleResponse.ok || !eventResponse.ok) {

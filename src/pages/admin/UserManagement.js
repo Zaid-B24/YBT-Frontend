@@ -484,7 +484,7 @@ const UserManagement = () => {
           return;
         }
 
-        const response = await fetch(`http://localhost:5001/api/v1/users`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
