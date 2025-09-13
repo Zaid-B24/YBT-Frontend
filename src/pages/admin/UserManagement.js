@@ -624,9 +624,7 @@ const UserManagement = () => {
                   </UserDetail>
                   <UserDetail>
                     <Calendar size={16} />
-                    <span>
-                      Joined {new Date(user.joinDate).toLocaleDateString()}
-                    </span>
+                    <span>Joined {user.joinDate}</span>
                   </UserDetail>
                   <UserDetail>
                     <Users size={16} />
