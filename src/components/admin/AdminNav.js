@@ -1,19 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  BarChart3,
-  Car,
-  Users,
-  Calendar,
-  DollarSign,
-  ShoppingCart,
-  Settings,
-  LogOut,
-  Menu,
-  X,
-  Bike,
-} from "lucide-react";
+import { BarChart3, Car, Users, LogOut, Menu, X, Bike } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 
 const HeaderWrapper = styled.header`
@@ -71,47 +59,43 @@ const Logo = styled(Link)`
   grid-column: 2;
   justify-self: center;
   font-family: "Playfair Display", serif;
-  font-size: 1.5rem;
-  font-weight: 400;
-  letter-spacing: 2.5px;
+  font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 3px;
   color: #ffffff;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 10;
   white-space: nowrap;
-
-  &:hover {
-    opacity: 0.8;
-    transform: translateY(-1px);
-  }
+  position: relative;
 
   &::before {
-    content: "≡";
-    margin-right: 0.75rem;
-    font-size: 0.9rem;
-    font-weight: 300;
-    opacity: 0.7;
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 50%;
+    width: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ffffff, transparent);
+    transition: all 0.4s ease;
+    transform: translateX(-50%);
   }
 
-  &::after {
-    content: "≡";
-    margin-left: 0.75rem;
-    font-size: 0.9rem;
-    font-weight: 300;
-    opacity: 0.7;
+  &:hover {
+    transform: translateY(-2px);
+    text-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+
+    &::before {
+      width: 100%;
+    }
   }
 
   @media (max-width: 968px) {
     position: static;
     grid-column: unset;
     justify-self: unset;
-    font-size: 1.3rem;
-    letter-spacing: 2px;
-
-    &::before,
-    &::after {
-      display: none;
-    }
+    font-size: 1.4rem;
+    letter-spacing: 2.5px;
   }
 `;
 
@@ -363,6 +347,9 @@ const AdminNav = () => {
     { path: "/admin/dashboard", label: "Dashboard", icon: BarChart3 },
     { path: "/admin/cars", label: "Cars", icon: Car },
     { path: "/admin/bikes", label: "Bikes", icon: Bike },
+  ];
+
+  const rightNavItems = [
     { path: "/admin/users", label: "Users", icon: Users },
     { path: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   ];
@@ -404,18 +391,27 @@ const AdminNav = () => {
 
           <RightMenuContainer>
             <RightMenu>
-              <li>
-                <UserSection>
-                  <UserInfo>
-                    <UserName>{user?.name}</UserName>
-                    <UserRole>Administrator</UserRole>
-                  </UserInfo>
-                  <LogoutButton onClick={handleLogout}>
-                    <LogOut size={16} />
-                    Logout
-                  </LogoutButton>
-                </UserSection>
-              </li>
+              {rightNavItems.map((item) => (
+                <li key={item.path}>
+                  <NavLink
+                    to={item.path}
+                    active={location.pathname === item.path}
+                  >
+                    <item.icon size={16} />
+                    {item.label}
+                  </NavLink>
+                </li>
+              ))}
+              <UserSection>
+                <UserInfo>
+                  <UserName>{user?.name}</UserName>
+                  <UserRole>Administrator</UserRole>
+                </UserInfo>
+                <LogoutButton onClick={handleLogout}>
+                  <LogOut size={16} />
+                  Logout
+                </LogoutButton>
+              </UserSection>
             </RightMenu>
             <MobileMenuButton onClick={() => setMobileMenuOpen(true)}>
               <Menu size={24} />
