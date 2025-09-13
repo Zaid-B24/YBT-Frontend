@@ -194,7 +194,7 @@ const BikeManagement = () => {
                         {bike.brand} {bike.title}
                       </BikeTitle>
                       {/* You can show price if you update your backend 'select' */}
-                      <BikePrice>Selling Price {bike.sellingPrice}</BikePrice>
+                      <BikePrice>Selling Price: {bike.sellingPrice}</BikePrice>
                     </div>
                   </BikeHeader>
                   <BikeActions>
