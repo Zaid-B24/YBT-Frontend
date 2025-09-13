@@ -15,6 +15,7 @@ import {
   Sparkles,
   FileText,
   BadgeCheck,
+  RotateCw,
 } from "lucide-react";
 import { TbBikeFilled } from "react-icons/tb";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -23,7 +24,15 @@ import { toast } from "react-toastify";
 import { BikeValidationSchema } from "../../utils/zodValidation";
 
 const renderField = (field, register, errors) => {
-  const { key, label, placeholder, type = "text", component, options } = field;
+  const {
+    key,
+    label,
+    placeholder,
+    type = "text",
+    component,
+    options,
+    required,
+  } = field;
   const error = errors[key];
 
   const renderInput = () => {
@@ -65,6 +74,7 @@ const renderField = (field, register, errors) => {
       <Label htmlFor={key}>
         {field.icon && <field.icon size={16} />}
         {label}
+        {required && <RequiredStar>*</RequiredStar>}
       </Label>
       {renderInput()}
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
@@ -72,16 +82,16 @@ const renderField = (field, register, errors) => {
   );
 };
 
-const BikeDetailsFoem = ({ onSuccess, onBack }) => {
+const BikeDetailsForm = ({ onSuccess, onBack }) => {
   const {
     register,
     handleSubmit,
     control,
     watch,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isSubmitting },
   } = useForm({
     resolver: zodResolver(BikeValidationSchema),
-    mode: "onChange", // Validate on change for real-time feedback
+    mode: "onChange",
     defaultValues: {
       title: "",
       brand: "",
@@ -116,7 +126,6 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
     const formDataApi = new FormData();
     formDataApi.append("dealerId", 1);
 
-    // Build the FormData object from the validated 'data'
     Object.keys(data).forEach((key) => {
       if (key === "bikeImages") {
         Array.from(data.bikeImages).forEach((file) => {
@@ -143,12 +152,9 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
         body: formDataApi,
       });
 
-      console.log("THis is resposne", response);
-
       if (!response.ok) {
-        // Get the error details from the backend response body
         const errorData = await response.json();
-        throw errorData; // Throw the error to be caught by the catch block
+        throw errorData;
       }
 
       const responseData = await response.json();
@@ -157,20 +163,22 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
       if (onSuccess) onSuccess();
     } catch (error) {
       console.error("Error submitting form", error);
-      toast.error(error);
+      const errorMessage =
+        error.message || "Failed to add bike. Please try again.";
+      toast.error(errorMessage);
     }
   };
 
-  // --- Group input fields by section for better organization ---
   const sections = {
     "🚲 Basic Information": [
       {
         key: "title",
         label: "Model Name",
-        placeholder: "e.g., Honda Civic",
+        placeholder: "e.g., Hero Splendor",
         icon: TbBikeFilled,
+        required: true,
       },
-      { key: "brand", label: "Brand", placeholder: "e.g., Nissan", icon: Tags },
+      { key: "brand", label: "Brand", placeholder: "e.g., Hero", icon: Tags },
       {
         key: "manufactureYear",
         label: "Manufacture Year",
@@ -186,6 +194,7 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
         placeholder: "e.g., 45,000",
         type: "number",
         icon: GaugeCircle,
+        required: true,
       },
       {
         key: "ownerCount",
@@ -193,6 +202,7 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
         placeholder: "e.g., 1",
         type: "number",
         icon: Users,
+        required: true,
       },
       {
         key: "registrationYear",
@@ -200,12 +210,14 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
         placeholder: "e.g., 2021",
         type: "number",
         icon: CalendarDays,
+        required: true,
       },
       {
         key: "registrationNumber",
         label: "Registration Number",
         placeholder: "e.g., MH12AB1234",
         icon: Hash,
+        required: true,
       },
       {
         key: "insurance",
@@ -227,6 +239,7 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
           { value: "HYBRID", label: "Hybrid" },
           { value: "CNG", label: "CNG" },
         ],
+        required: true,
       },
     ],
     "💰 Listing & Price": [
@@ -236,6 +249,7 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
         placeholder: "e.g., 850000",
         type: "number",
         icon: IndianRupee,
+        required: true,
       },
       {
         key: "cutOffPrice",
@@ -243,6 +257,7 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
         placeholder: "Minimum acceptable price",
         type: "number",
         icon: IndianRupee,
+        required: true,
       },
       {
         key: "ybtPrice",
@@ -250,12 +265,14 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
         placeholder: "Your best offer price",
         type: "number",
         icon: IndianRupee,
+        required: true,
       },
       {
         key: "listedBy",
         label: "Listed By",
         placeholder: "e.g., Dealer/Owner name",
         icon: UserCircle,
+        required: true,
       },
       {
         key: "status",
@@ -267,19 +284,20 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
           { value: "SOLD", label: "Sold" },
           { value: "BOOKED", label: "Booked" },
         ],
+        required: true,
       },
     ],
     "✨ Additional Details": [
       {
         key: "bikeUSP",
         label: "Key Selling Points (USP)",
-        placeholder: "e.g., Sunroof, First Owner, New Tires",
+        placeholder: "e.g., Excellent mileage, New tires",
         icon: Sparkles,
       },
       {
         key: "description",
         label: "Full Description",
-        placeholder: "A detailed description of the bikes's condition...",
+        placeholder: "A detailed description of the bike's condition...",
         icon: FileText,
         component: "textarea",
       },
@@ -319,7 +337,7 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
           </Field>
 
           <Field style={{ gridColumn: "1 / -1" }}>
-            <Label>Badges (e.g., "Premium")</Label>
+            <Label>Badges</Label>
             {fields.map((field, index) => (
               <BadgeRow key={field.id}>
                 <Input
@@ -345,7 +363,10 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
 
       {/* --- File Input Section --- */}
       <Section>
-        <SectionTitle>📸 Bike Images</SectionTitle>
+        <SectionTitle>
+          📸 Bike Images
+          <RequiredStar>*</RequiredStar>
+        </SectionTitle>
         <FileInputContainer>
           <FileInputWrapper
             htmlFor="bikeImages"
@@ -377,18 +398,38 @@ const BikeDetailsFoem = ({ onSuccess, onBack }) => {
       </Section>
 
       {/* --- Form Actions --- */}
-      <FormActions>
-        <SubmitButton type="submit" disabled={!isValid}>
+      <SubmitButton type="submit" disabled={!isValid || isSubmitting}>
+        {isSubmitting ? (
+          <>
+            <Spinner size={16} />
+            <span>Adding Bike...</span>
+          </>
+        ) : (
           <span>Add Bike</span>
-        </SubmitButton>
-      </FormActions>
+        )}
+      </SubmitButton>
     </FormContainer>
   );
 };
 
-export default BikeDetailsFoem;
+export default BikeDetailsForm;
 
 /* --- Styled Components --- */
+
+const Spinner = styled(RotateCw)`
+  animation: spin 1s linear infinite;
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+const RequiredStar = styled.span`
+  color: red;
+  margin-left: 4px;
+`;
+
 const inputStyles = css`
   width: 100%;
   background: rgba(0, 0, 0, 0.2);

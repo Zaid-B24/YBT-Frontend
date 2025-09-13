@@ -99,7 +99,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
     handleSubmit,
     control,
     watch,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isSubmitting },
   } = useForm({
     resolver: zodResolver(carValidationSchema),
     mode: "onChange", // Validate on change for real-time feedback
@@ -511,11 +511,16 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
       </Section>
 
       {/* --- Form Actions --- */}
-      <FormActions>
-        <SubmitButton type="submit" disabled={!isValid}>
-          <span>Add Car</span>
-        </SubmitButton>
-      </FormActions>
+      <SubmitButton type="submit" disabled={!isValid || isSubmitting}>
+        {isSubmitting ? (
+          <>
+            <Spinner size={16} />
+            <span>Adding Bike...</span>
+          </>
+        ) : (
+          <span>Add Bike</span>
+        )}
+      </SubmitButton>
     </FormContainer>
   );
 };
@@ -526,6 +531,15 @@ export default CarDetailsForm;
 const RequiredStar = styled.span`
   color: red;
   margin-left: 4px;
+`;
+
+const Spinner = styled(RotateCw)`
+  animation: spin 1s linear infinite;
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 `;
 
 const inputStyles = css`

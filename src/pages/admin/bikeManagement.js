@@ -194,7 +194,7 @@ const BikeManagement = () => {
                         {bike.brand} {bike.title}
                       </BikeTitle>
                       {/* You can show price if you update your backend 'select' */}
-                      {/* <BikePrice>{bike.sellingPrice}</BikePrice> */}
+                      <BikePrice>Selling Price {bike.sellingPrice}</BikePrice>
                     </div>
                   </BikeHeader>
                   <BikeActions>
@@ -398,6 +398,8 @@ const PageHeader = styled.div`
     );
   }
 `;
+
+const BikePrice = styled.div``;
 const PageTitle = styled.h1`
   font-family: "Playfair Display", serif;
   font-size: 3rem;
