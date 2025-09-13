@@ -35,7 +35,15 @@ import carValidationSchema from "../../utils/zodValidation";
 import { toast } from "react-toastify";
 
 const renderField = (field, register, errors) => {
-  const { key, label, placeholder, type = "text", component, options } = field;
+  const {
+    key,
+    label,
+    placeholder,
+    type = "text",
+    component,
+    options,
+    required,
+  } = field;
   const error = errors[key];
 
   const renderInput = () => {
@@ -77,6 +85,7 @@ const renderField = (field, register, errors) => {
       <Label htmlFor={key}>
         {field.icon && <field.icon size={16} />}
         {label}
+        {required && <RequiredStar>*</RequiredStar>}
       </Label>
       {renderInput()}
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
@@ -105,7 +114,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
       registrationNumber: "",
       insurance: "",
       engine: "",
-      transmission: "",
+      transmission: "AUTOMATIC",
       fuelType: "PETROL",
       mileage: 0,
       peakPower: "",
@@ -198,6 +207,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         label: "Model Name",
         placeholder: "e.g., Honda Civic",
         icon: BsCarFront,
+        required: true,
       },
       { key: "brand", label: "Brand", placeholder: "e.g., Nissan", icon: Tags },
       {
@@ -221,6 +231,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         placeholder: "e.g., 45,000",
         type: "number",
         icon: GaugeCircle,
+        required: true,
       },
       {
         key: "ownerCount",
@@ -235,12 +246,14 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         placeholder: "e.g., 2021",
         type: "number",
         icon: CalendarDays,
+        required: true,
       },
       {
         key: "registrationNumber",
         label: "Registration Number",
         placeholder: "e.g., MH12AB1234",
         icon: Hash,
+        required: true,
       },
       {
         key: "insurance",
@@ -259,8 +272,12 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
       {
         key: "transmission",
         label: "Transmission",
-        placeholder: "e.g., Automatic",
+        component: "select",
         icon: LuGitCommitHorizontal,
+        options: [
+          { value: "AUTOMATIC", label: "Automatic" },
+          { value: "MANUAL", label: "Manual" },
+        ],
       },
       {
         key: "fuelType",
@@ -274,6 +291,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
           { value: "HYBRID", label: "Hybrid" },
           { value: "CNG", label: "CNG" },
         ],
+        required: true,
       },
       {
         key: "mileage",
@@ -333,6 +351,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         placeholder: "e.g., 850000",
         type: "number",
         icon: IndianRupee,
+        required: true,
       },
       {
         key: "cutOffPrice",
@@ -340,6 +359,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         placeholder: "Minimum acceptable price",
         type: "number",
         icon: IndianRupee,
+        required: true,
       },
       {
         key: "ybtPrice",
@@ -347,6 +367,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         placeholder: "Your best offer price",
         type: "number",
         icon: IndianRupee,
+        required: true,
       },
       {
         key: "listedBy",
@@ -428,7 +449,10 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
           </Field>
 
           <Field style={{ gridColumn: "1 / -1" }}>
-            <Label>Badges (e.g., "Premium")</Label>
+            <Label>
+              Badges
+              <RequiredStar>*</RequiredStar>
+            </Label>
             {fields.map((field, index) => (
               <BadgeRow key={field.id}>
                 <Input
@@ -455,6 +479,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
       {/* --- File Input Section --- */}
       <Section>
         <SectionTitle>📸 Car Images</SectionTitle>
+        <RequiredStar>*</RequiredStar>
         <FileInputContainer>
           <FileInputWrapper
             htmlFor="carImages"
@@ -498,6 +523,11 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
 export default CarDetailsForm;
 
 /* --- Styled Components --- */
+const RequiredStar = styled.span`
+  color: red;
+  margin-left: 4px;
+`;
+
 const inputStyles = css`
   width: 100%;
   background: rgba(0, 0, 0, 0.2);

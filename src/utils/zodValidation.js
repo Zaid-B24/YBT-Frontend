@@ -11,9 +11,10 @@ const carValidationSchema = z.object({
   title: z
     .string()
     .min(3, "Title must be at least 3 characters long.")
-    .max(100, "Title is too long."),
+    .max(100, "Title is too long.")
+    .nonempty("Title is required."),
   description: z.string().max(5000, "Description is too long.").optional(),
-  status: VehicleStatus.default("AVAILABLE").optional(),
+  status: VehicleStatus.optional(),
 
   // --- Pricing ---
   sellingPrice: z.coerce
@@ -26,12 +27,12 @@ const carValidationSchema = z.object({
   registrationYear: z.coerce
     .number()
     .int()
-    .min(1950, "Year seems too old.")
+    .min(1900, "Year seems too old.")
     .max(new Date().getFullYear(), "Year cannot be in the future."),
   manufactureYear: z.coerce
     .number()
     .int()
-    .min(1950)
+    .min(1900)
     .max(new Date().getFullYear())
     .optional(),
   registrationNumber: z
@@ -39,22 +40,27 @@ const carValidationSchema = z.object({
     .regex(
       /^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/i,
       "Invalid registration number format (e.g., MH12AB1234)."
-    ),
+    )
+    .nonempty(),
   kmsDriven: z.coerce.number().int().min(0, "Kilometers must be 0 or more."),
-  ownerCount: z.coerce.number().int().min(1, "Owner count must be at least 1."),
+  ownerCount: z.coerce
+    .number()
+    .int()
+    .min(1, "Owner count must be at least 1.")
+    .optional(),
   insurance: z.string().optional(),
 
   // --- Other Specs ---
-  listedBy: z.string().min(1, "Listed By is required."),
-  badges: z.array(z.string().min(1, "Badge cannot be empty.")).optional(), // An array of strings
+  listedBy: z.string().optional(),
+  badges: z.array(z.string()).optional(),
   vipNumber: z.boolean().default(false).optional(),
-  city: z.string().min(1, "City is required."),
-  state: z.string().min(1, "State is required."),
+  city: z.string().optional(),
+  state: z.string().optional(),
 
   // --- Car Details ---
-  brand: z.string().min(1, "Brand is required."),
-  fuelType: FuelType, // Required enum
-  transmission: z.string().min(1, "Transmission type is required."),
+  brand: z.string().optional(),
+  fuelType: FuelType,
+  transmission: z.string().optional(),
   carType: z.string().optional(),
   exteriorColour: z.string().optional(),
   seatingCapacity: z.coerce
@@ -64,12 +70,12 @@ const carValidationSchema = z.object({
     .optional(),
   engine: z.string().optional(),
   mileage: z.coerce.number().min(0).optional(),
-  driveType: DriveType.optional(),
+  driveType: z.union([DriveType.optional(), z.literal("")]),
 
   carImages: z
     .any()
     .refine(
-      (files) => files?.length >= 0,
+      (files) => files && files.length > 0,
       "At least one car image is required."
     ),
 });
