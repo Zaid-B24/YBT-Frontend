@@ -515,10 +515,10 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         {isSubmitting ? (
           <>
             <Spinner size={16} />
-            <span>Adding Bike...</span>
+            <span>Adding Car...</span>
           </>
         ) : (
-          <span>Add Bike</span>
+          <span>Add Car</span>
         )}
       </SubmitButton>
     </FormContainer>

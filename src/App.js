@@ -23,7 +23,7 @@ import BlogPage from "./pages/BlogPage";
 // Auth Pages
 // import LoginPage from "./pages/auth/LoginPage";
 // import SignupPage from "./pages/auth/SignupPage";
-import { AuthPage } from "./pages";
+import { AuthPage, CarDetailsPage } from "./pages";
 
 // Collections Pages
 import CollectionsPage from "./pages/collections/CollectionsPage";
@@ -193,6 +193,7 @@ function App() {
                 element={
                   <>
                     <Header />
+                    {/* <CarDetailsPage /> */}
                     <VehicleInfoPage />
                     <Footer />
                   </>

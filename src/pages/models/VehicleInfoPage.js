@@ -10,8 +10,10 @@ import {
   Cog,
   Fuel,
   Gauge,
+  Mail,
   MapPin,
   Palette,
+  Phone,
   RotateCw,
   Shield,
   Star,
@@ -169,27 +171,59 @@ const VehicleInfoPage = () => {
 
         <VehicleHeader>
           {/* =================== Image + Details Section =================== */}
-          <ImageSection>
-            <MainImage image={imageList[selectedImage] || "/placeholder.png"}>
-              <ImageBadges>
-                {vehicle.badges?.map((badge, index) => (
-                  <ImageBadge key={index}>{badge}</ImageBadge>
+          <MainContent>
+            <ImageSection>
+              <MainImage image={imageList[selectedImage] || "/placeholder.png"}>
+                <ImageBadges>
+                  {vehicle.badges?.map((badge, index) => (
+                    <ImageBadge key={index}>{badge}</ImageBadge>
+                  ))}
+                </ImageBadges>
+              </MainImage>
+
+              <ThumbnailGrid>
+                {imageList.map((image, index) => (
+                  <Thumbnail
+                    key={index}
+                    image={image}
+                    active={selectedImage === index}
+                    onClick={() => setSelectedImage(index)}
+                  />
                 ))}
-              </ImageBadges>
-            </MainImage>
+              </ThumbnailGrid>
+            </ImageSection>
 
-            <ThumbnailGrid>
-              {imageList.map((image, index) => (
-                <Thumbnail
-                  key={index}
-                  image={image}
-                  active={selectedImage === index}
-                  onClick={() => setSelectedImage(index)}
-                />
-              ))}
-            </ThumbnailGrid>
+            {/* Title, Rating, Location */}
+            <VehicleInfo>
+              <VehicleTitle>
+                {vehicle.brand} {vehicle.title}
+              </VehicleTitle>
 
-            <DetailsSection style={{ marginTop: "2rem" }}>
+              <VehicleRating>
+                <RatingStars>
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      size={14}
+                      fill={
+                        i < Math.floor(vehicle.rating) ? "currentColor" : "none"
+                      }
+                      color="#e1c841"
+                    />
+                  ))}
+                </RatingStars>
+                <RatingText>
+                  {vehicle.rating} ({vehicle.reviewCount} reviews)
+                </RatingText>
+              </VehicleRating>
+
+              <VehicleLocation>
+                <MapPin size={16} />
+                Available in {vehicle.state}
+              </VehicleLocation>
+            </VehicleInfo>
+
+            <DetailsSection>
               <SectionTitle>About This Vehicle</SectionTitle>
               <Description>{vehicle.description}</Description>
             </DetailsSection>
@@ -208,134 +242,63 @@ const VehicleInfoPage = () => {
                 ))}
               </SpecsGrid>
             </DetailsSection>
-          </ImageSection>
 
-          {/* =================== Booking Section =================== */}
-          <BookingSection>
-            <VehicleTitle>
-              {vehicle.brand} {vehicle.title}
-            </VehicleTitle>
-
-            <VehicleRating>
-              <RatingStars>
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    size={14}
-                    fill={
-                      i < Math.floor(vehicle.rating) ? "currentColor" : "none"
-                    }
-                    color="#fbbf24"
-                  />
-                ))}
-              </RatingStars>
-              <RatingText>
-                {vehicle.rating} ({vehicle.reviewCount} reviews)
-              </RatingText>
-            </VehicleRating>
-
-            <VehicleLocation>
-              <MapPin size={16} />
-              Available in {vehicle.state}
-            </VehicleLocation>
-
-            <VehicleBookingForm
-              category={category}
-              vehicleId={vehicle.id}
-              user={user}
-              token={token}
-            />
-          </BookingSection>
-        </VehicleHeader>
-
-        {/* =================== Features & Policies =================== */}
-        <VehicleDetails>
-          <DetailsContent>
             <DetailsSection>
               <SectionTitle>Features & Amenities</SectionTitle>
               <FeatureList>
                 {dummyVehicle.features?.map((feature, index) => (
                   <FeatureItem key={index}>
-                    <CheckCircle size={16} color="#22c55e" />
+                    <CheckCircle size={16} color="#00a878" />
                     {feature}
                   </FeatureItem>
                 ))}
               </FeatureList>
             </DetailsSection>
-          </DetailsContent>
+          </MainContent>
 
-          <PolicySection>
-            <PolicyTitle>
-              <Shield size={20} style={{ marginRight: "0.5rem" }} />
-              Reserving Policies
-            </PolicyTitle>
-            <PolicyList>
-              <PolicyItem>Valid driving license required</PolicyItem>
-              <PolicyItem>Minimum age: 25 years</PolicyItem>
-              <PolicyItem>Security deposit: ₹50,000</PolicyItem>
-              <PolicyItem>Fuel: Return with same level</PolicyItem>
-              <PolicyItem>Insurance included</PolicyItem>
-              <PolicyItem>24/7 roadside assistance</PolicyItem>
-              <PolicyItem>Free cancellation up to 24 hours</PolicyItem>
-              <PolicyItem>Additional driver: ₹500/day</PolicyItem>
-              <PolicyItem>Late return: ₹500/hour</PolicyItem>
-              <PolicyItem>Smoking prohibited</PolicyItem>
-            </PolicyList>
-          </PolicySection>
-        </VehicleDetails>
+          {/* =================== New Contact Section =================== */}
+        </VehicleHeader>
       </Container>
     </PageWrapper>
   );
 };
 
 export default VehicleInfoPage;
+
+// =================== Styled Components ===================
 const PageWrapper = styled.div`
   padding-top: 100px;
   min-height: 100vh;
-  background: #000;
-  color: #fff;
+  background-color: #0d0d0d;
+  color: #f2f2f2;
 `;
 
 const Container = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
-  display: grid;
-  grid-template-columns: ${(props) =>
-    props.filtersVisible ? "300px 1fr" : "1fr"};
-  gap: ${(props) => (props.filtersVisible ? "3rem" : "0")};
-  transition: all 0.3s ease;
 
   @media (max-width: 1200px) {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    padding: 1rem;
   }
 `;
 
-// ========== Headings & Titles ==========
-const SectionTitle = styled.h2`
-  font-family: "Playfair Display", serif;
-  font-size: 1.8rem;
-  font-weight: 400;
-  margin-bottom: 1.5rem;
-  color: #fff;
+const BackButton = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #b3b3b3;
+  text-decoration: none;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #f2f2f2;
+  }
 `;
 
-const VehicleTitle = styled.h1`
-  font-family: "Playfair Display", serif;
-  font-size: 2rem;
-  font-weight: 400;
-  margin-bottom: 1rem;
-  color: #fff;
-`;
-
-const PolicyTitle = styled.h3`
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  color: #fff;
-`;
-
-// ========== Vehicle Layout ==========
 const VehicleHeader = styled.div`
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -348,47 +311,77 @@ const VehicleHeader = styled.div`
   }
 `;
 
-const VehicleDetails = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 3rem;
-  margin-top: 2rem;
+const MainContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+`;
 
+const SidePanel = styled.div`
+  height: fit-content;
+  position: sticky;
+  top: 120px;
   @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    position: static;
   }
 `;
 
-const DetailsContent = styled.div``;
+// =================== Sections ===================
+const ImageSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
 
 const DetailsSection = styled.section`
-  margin-bottom: 2rem;
-
-  &:first-child {
-    margin-top: 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  &:first-of-type {
+    border-top: none;
   }
+`;
+
+const VehicleInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+`;
+
+// =================== Typography & Headings ===================
+const SectionTitle = styled.h2`
+  font-family: "Playfair Display", serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+  margin: 0;
+`;
+
+const VehicleTitle = styled.h1`
+  font-family: "Playfair Display", serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  margin: 0;
 `;
 
 const Description = styled.p`
-  color: #ccc;
+  color: #b3b3b3;
   line-height: 1.7;
-  margin-bottom: 2rem;
+  font-size: 1rem;
 `;
 
-// ========== Image Section ==========
-const ImageSection = styled.div``;
-
+// =================== Image Gallery ===================
 const MainImage = styled.div`
-  height: 400px;
+  height: 500px;
   background: ${(props) =>
       props.image
         ? `url(${props.image})`
         : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
     center center/cover no-repeat;
   border-radius: 10px;
-  margin-bottom: 1rem;
   position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 `;
 
 const ImageBadges = styled.div`
@@ -400,6 +393,17 @@ const ImageBadges = styled.div`
   gap: 0.5rem;
 `;
 
+const ImageBadge = styled.span`
+  background: rgba(0, 168, 120, 0.9);
+  color: #fff;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 20px;
+`;
+
 const ThumbnailGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -407,7 +411,7 @@ const ThumbnailGrid = styled.div`
 `;
 
 const Thumbnail = styled.div`
-  height: 80px;
+  height: 100px;
   background: ${(props) =>
       props.image
         ? `url(${props.image})`
@@ -415,81 +419,48 @@ const Thumbnail = styled.div`
     center center/cover no-repeat;
   border-radius: 5px;
   cursor: pointer;
-  border: 2px solid ${(props) => (props.active ? "#fff" : "transparent")};
+  border: 2px solid ${(props) => (props.active ? "#00a878" : "transparent")};
   transition: all 0.3s ease;
+  transform: ${(props) => (props.active ? "scale(1.05)" : "scale(1)")};
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.5);
+    border-color: #00a878;
+    transform: scale(1.05);
   }
 `;
 
-// ========== Feature Section ==========
-const FeatureList = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid #2a2a2a;
-`;
-
-const FeatureItem = styled.div`
-  background-color: #1a1a1a;
-  border: 1px solid #2a2a2a;
-  border-radius: 8px;
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-
-  & > svg {
-    color: #00bfff;
-    flex-shrink: 0;
-  }
-
-  & > div {
-    display: flex;
-    flex-direction: column;
-  }
-
-  & span {
-    font-size: 0.8rem;
-    color: #888;
-    text-transform: uppercase;
-  }
-
-  & strong {
-    font-size: 1rem;
-    color: #e0e0e0;
-  }
-`;
-
-// ========== Specs Section ==========
+// =================== Specs & Features ===================
 const SpecsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
 `;
 
 const SpecItem = styled.div`
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
-  padding: 1rem;
+  background: #1a1a1a;
+  border: 1px solid #292929;
+  border-radius: 8px;
+  padding: 1.5rem;
   text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
 `;
 
 const SpecIcon = styled.div`
-  color: #22c55e;
-  margin-bottom: 0.5rem;
+  color: #e1c841;
+  margin-bottom: 0.8rem;
   display: flex;
   justify-content: center;
 `;
 
 const SpecLabel = styled.div`
   font-size: 0.8rem;
-  color: #ccc;
+  color: #a3a3a3;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 0.3rem;
@@ -497,43 +468,26 @@ const SpecLabel = styled.div`
 
 const SpecValue = styled.div`
   font-weight: 600;
-  color: #fff;
+  color: #f2f2f2;
 `;
 
-// ========== Booking Section ==========
-const BookingSection = styled.div`
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 2rem;
-  height: fit-content;
-  position: sticky;
-  top: 120px;
+const FeatureList = styled.ul`
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
 `;
 
-// ========== Buttons & Links ==========
-
-const BackButton = styled(Link)`
-  display: inline-flex;
+const FeatureItem = styled.li`
+  background-color: #1a1a1a;
+  border: 1px solid #292929;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: #ccc;
-  text-decoration: none;
-  margin-bottom: 2rem;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-
-  &:hover {
-    color: #fff;
-  }
-`;
-
-// ========== Policy Section ==========
-const PolicySection = styled.div`
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 2rem;
+  gap: 1rem;
+  color: #d9d9d9;
 `;
 
 const PolicyList = styled.ul`
@@ -542,25 +496,24 @@ const PolicyList = styled.ul`
 `;
 
 const PolicyItem = styled.li`
-  color: #ccc;
+  color: #b3b3b3;
   margin-bottom: 0.5rem;
   padding-left: 1.5rem;
   position: relative;
 
   &:before {
     content: "•";
-    color: #22c55e;
+    color: #00a878;
     position: absolute;
     left: 0;
   }
 `;
 
-// ========== Rating & Location ==========
+// =================== Rating & Location ===================
 const VehicleRating = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1rem;
 `;
 
 const RatingStars = styled.div`
@@ -570,7 +523,7 @@ const RatingStars = styled.div`
 `;
 
 const RatingText = styled.span`
-  color: #ccc;
+  color: #b3b3b3;
   font-size: 0.9rem;
 `;
 
@@ -578,17 +531,75 @@ const VehicleLocation = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #ccc;
-  margin-bottom: 2rem;
+  color: #b3b3b3;
 `;
 
-const ImageBadge = styled.span`
-  background: rgba(34, 197, 94, 0.9);
-  color: #fff;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.7rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 20px;
+// =================== New Contact Card ===================
+const ContactDealerCard = styled.div`
+  background: #1a1a1a;
+  border: 1px solid #292929;
+  border-radius: 10px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+`;
+
+const DealerInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #292929;
+  padding-bottom: 1.5rem;
+`;
+
+const DealerIcon = styled.div`
+  color: #d9d9d9;
+`;
+
+const DealerName = styled.h3`
+  font-size: 1.5rem;
+  margin: 0;
+  color: #f2f2f2;
+`;
+
+const DealerBio = styled.p`
+  font-size: 0.9rem;
+  color: #b3b3b3;
+  line-height: 1.5;
+`;
+
+const ContactButton = styled.a`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+
+  &:first-of-type {
+    background-color: #00a878;
+    color: #fff;
+    &:hover {
+      background-color: #008761;
+    }
+  }
+
+  &:last-of-type {
+    background-color: transparent;
+    border: 1px solid #00a878;
+    color: #00a878;
+    &:hover {
+      background-color: rgba(0, 168, 120, 0.1);
+    }
+  }
 `;

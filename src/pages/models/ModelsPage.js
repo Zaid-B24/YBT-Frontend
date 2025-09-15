@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { Search, ChevronDown, ChevronUp } from "lucide-react";
 import { useDebounce } from "../../hooks/useDebounceHook";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -361,11 +362,7 @@ const ModelsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [filtersVisible, setFiltersVisible] = useState(true);
-  const [nextCursor, setNextCursor] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [items, setItems] = useState([]);
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const [brandSectionOpen, setBrandSectionOpen] = useState(true);
 
   // CHANGED: Single state for the active category instead of a filter object
   const [searchParams, setSearchParams] = useSearchParams();
@@ -384,74 +381,72 @@ const ModelsPage = () => {
     Porsche: false,
     Tesla: false,
   });
-  const [brandSectionOpen, setBrandSectionOpen] = useState(true);
 
-  const fetchData = useCallback(
-    async (cursor = null, reset = false) => {
-      const getActiveBrands = () =>
-        Object.keys(brandFilters).filter((brand) => brandFilters[brand]);
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-      if (!activeCategory) return;
-      try {
-        setIsLoading(true);
-        // CHANGED: The API endpoint is now built dynamically from the activeCategory state
-        const url = new URL(
-          `${process.env.REACT_APP_API_URL}/${activeCategory}`
-        );
-        url.searchParams.append("limit", 10);
-        url.searchParams.append("sortBy", sortBy);
+  const queryKey = useMemo(() => {
+    const activeBrands = Object.keys(brandFilters).filter(
+      (brand) => brandFilters[brand]
+    );
+    return [
+      "models",
+      activeCategory,
+      sortBy,
+      debouncedSearchTerm,
+      activeBrands,
+    ];
+  }, [activeCategory, sortBy, debouncedSearchTerm, brandFilters]);
 
-        if (debouncedSearchTerm)
-          url.searchParams.append("searchTerm", debouncedSearchTerm);
-
-        const activeBrands = getActiveBrands();
-        if (activeBrands.length > 0)
-          url.searchParams.append("brands", activeBrands.join(","));
-
-        if (cursor) url.searchParams.append("cursor", cursor);
-        const response = await fetch(url, {
-          cache: "no-store",
-        });
-
-        if (!response.ok) throw new Error(`HTTP error! ${response.status}`);
-        const data = await response.json();
-        console.log("data from backend after parsing it to json: ", data);
-        setItems((prev) => (reset ? data.data : [...prev, ...data.data]));
-        setNextCursor(data.nextCursor);
-        setHasMore(!!data.nextCursor);
-      } catch (error) {
-        console.error(`❌ Failed to fetch ${activeCategory}:`, error);
-        if (reset) setItems([]);
-      } finally {
-        setIsLoading(false);
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+  } = useInfiniteQuery({
+    queryKey,
+    queryFn: async ({ pageParam = null }) => {
+      const url = new URL(`${process.env.REACT_APP_API_URL}/${activeCategory}`);
+      url.searchParams.append("limit", 10);
+      url.searchParams.append("sortBy", sortBy);
+      if (debouncedSearchTerm) {
+        url.searchParams.append("searchTerm", debouncedSearchTerm);
       }
+      const activeBrands = Object.keys(brandFilters).filter(
+        (brand) => brandFilters[brand]
+      );
+      if (activeBrands.length > 0) {
+        url.searchParams.append("brands", activeBrands.join(","));
+      }
+      if (pageParam) {
+        url.searchParams.append("cursor", pageParam);
+      }
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) throw new Error(`HTTP error! ${response.status}`);
+      return response.json();
     },
-    [activeCategory, sortBy, debouncedSearchTerm, brandFilters]
-  );
+    getNextPageParam: (lastPage) => lastPage.nextCursor || undefined,
+  });
 
-  useEffect(() => {
-    setItems([]);
-    setNextCursor(null);
-    setHasMore(true);
-    fetchData(null, true);
-  }, [fetchData]);
+  const items = data?.pages.flatMap((page) => page.data) ?? [];
 
-  // Infinite scroll handler (no changes needed here)
   useEffect(() => {
     const handleScroll = () => {
       if (
         (sortBy === "newest" || sortBy === "oldest") &&
         window.innerHeight + window.scrollY >=
           document.body.offsetHeight - 500 &&
-        !isLoading &&
-        hasMore
+        !isFetchingNextPage &&
+        hasNextPage
       ) {
-        fetchData(nextCursor);
+        fetchNextPage();
       }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isLoading, hasMore, sortBy, nextCursor, fetchData]);
+  }, [isFetchingNextPage, hasNextPage, fetchNextPage, sortBy]);
 
   const handleBrandFilterChange = (brand) => {
     setBrandFilters((prev) => ({ ...prev, [brand]: !prev[brand] }));
@@ -465,9 +460,9 @@ const ModelsPage = () => {
       )
     );
     setSearchTerm("");
-    // CHANGED: Reset active category to default, which will trigger a re-fetch
     setSearchParams({ category: "cars" });
   };
+
   const handleTabClick = (category) => {
     setSearchParams({ category });
   };
@@ -581,6 +576,8 @@ const ModelsPage = () => {
             </SortContainer>
           </ContentHeader>
 
+          {isLoading && <p>Loading...</p>}
+          {isError && <p>Error: {error.message}</p>}
           {!isLoading && items.length === 0 ? (
             <div style={{ textAlign: "center", padding: "4rem 0" }}>
               <p style={{ fontSize: "1.5rem", color: "#666" }}>
@@ -619,8 +616,8 @@ const ModelsPage = () => {
               ))}
             </CarsGrid>
           )}
-          {isLoading && <p>Loading...</p>}
-          {!hasMore && items.length > 0 && (
+          {isFetchingNextPage && <p>Loading more...</p>}
+          {!hasNextPage && items.length > 0 && (
             <p>No more {activeCategory} to show!</p>
           )}
         </MainContent>
