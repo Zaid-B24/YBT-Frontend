@@ -1,6 +1,6 @@
 // =================== Imports ===================
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 
 // Icons
@@ -10,12 +10,8 @@ import {
   Cog,
   Fuel,
   Gauge,
-  Mail,
-  MapPin,
   Palette,
-  Phone,
   RotateCw,
-  Shield,
   Star,
   UserCircle,
   Users,
@@ -23,13 +19,25 @@ import {
 } from "lucide-react";
 import { FaDoorOpen } from "react-icons/fa";
 import { LuGitCommitHorizontal, LuGitCommitVertical } from "react-icons/lu";
+import { useQuery } from "@tanstack/react-query";
 
 // Components
-import VehicleBookingForm from "../../components/forms/BookingForm";
-import { useAuth } from "../../contexts/AuthContext";
 
 const getNestedValue = (obj, path) => {
   return path.split(".").reduce((current, key) => current?.[key], obj);
+};
+
+const getImageProp = (category) => {
+  switch (category) {
+    case "cars":
+      return "carImages";
+    case "bikes":
+      return "bikeImages";
+    case "motorhomes":
+      return "motorhomeImages";
+    default:
+      return "";
+  }
 };
 
 // =================== Config ===================
@@ -47,108 +55,75 @@ const ALL_SPECS_CONFIG = [
   { key: "dealer.name", label: "Listed By", Icon: UserCircle },
 ];
 
+const dummyVehicle = {
+  features: [
+    "Adaptive M Suspension",
+    "M Performance Exhaust",
+    "Carbon Fiber Interior",
+    "Premium Sound System",
+    "Advanced Driver Assistance",
+    "Sport Seats with Memory",
+    "Wireless Charging",
+    "Premium Leather Interior",
+    "Adaptive LED Headlights",
+    "M Sport Brakes",
+    "Launch Control",
+    "Multiple Driving Modes",
+  ],
+};
+
 // =================== Component ===================
 const VehicleInfoPage = () => {
   const { category, idAndSlug } = useParams();
   const navigate = useNavigate();
-  const { user, token } = useAuth();
-
-  const [vehicle, setVehicle] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
 
-  // Resolve correct image field based on category
-  const getImageProp = (category) => {
-    switch (category) {
-      case "cars":
-        return "carImages";
-      case "bikes":
-        return "bikeImages";
-      case "motorhomes":
-        return "motorhomeImages";
-      default:
-        return "";
-    }
-  };
+  const vehicleId = idAndSlug ? idAndSlug.split("-")[0] : null;
 
-  // Fetch vehicle details
-  useEffect(() => {
-    if (!idAndSlug) {
-      return;
-    }
-
-    const vehicleId = idAndSlug.split("-")[0];
-
-    const fetchVehicle = async () => {
-      setLoading(true);
-      setSelectedImage(0);
-
-      try {
-        const res = await fetch(
-          `${process.env.REACT_APP_API_URL}/${category}/${vehicleId}`
-        );
-        console.log("THis is the resposne for finidng vehicle with id", res);
-        if (!res.ok) throw new Error("Failed to fetch vehicle");
-
-        const data = await res.json();
-        console.log("this is the data received in info page", data);
-
-        setVehicle(data);
-      } catch (err) {
-        console.error(err);
-        setVehicle(null);
-      } finally {
-        setLoading(false);
+  const {
+    data: vehicle,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["vehicle", category, vehicleId],
+    queryFn: async () => {
+      if (!vehicleId) return null;
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/${category}/${vehicleId}`
+      );
+      if (!res.ok) {
+        throw new Error("Failed to fetch vehicle");
       }
-    };
-
-    fetchVehicle();
-  }, [category, idAndSlug]);
-
-  const dummyVehicle = {
-    id: 1,
-    title: "BMW M3 Competition",
-    description:
-      "Experience the thrill of German engineering with this high-performance sedan featuring twin-turbo power and precision handling. The BMW M3 Competition represents the pinnacle of sports sedan excellence, combining everyday usability with track-ready performance. Its aggressive styling, advanced aerodynamics, and meticulously tuned chassis deliver an uncompromising driving experience.",
-    category: "Cars",
-    brand: "BMW",
-    location: "Mumbai",
-    images: [
-      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
-      "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
-      "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
-      "https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80",
-    ],
-    badges: ["LUXURY", "PERFORMANCE"],
-    rating: 4.8,
-    reviewCount: 127,
-    dailyPrice: "₹15,000",
-    monthlyPrice: "₹3,50,000",
-    specs: {
-      engine: "3.0L Twin-Turbo I6",
-      power: "503 HP",
-      transmission: "8-Speed Auto",
-      drivetrain: "RWD",
-      fuelType: "Petrol",
-      seating: "4 Passengers",
+      return res.json();
     },
-    features: [
-      "Adaptive M Suspension",
-      "M Performance Exhaust",
-      "Carbon Fiber Interior",
-      "Premium Sound System",
-      "Advanced Driver Assistance",
-      "Sport Seats with Memory",
-      "Wireless Charging",
-      "Premium Leather Interior",
-      "Adaptive LED Headlights",
-      "M Sport Brakes",
-      "Launch Control",
-      "Multiple Driving Modes",
-    ],
+    enabled: !!vehicleId,
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
+
+  const resizeCloudinaryImage = (
+    url,
+    { width, height, crop = "scale", quality = "auto:best" }
+  ) => {
+    if (!url || !url.includes("res.cloudinary.com")) {
+      return url;
+    }
+    const parts = url.split("/upload/");
+    if (parts.length !== 2) {
+      return url;
+    }
+
+    const transformations = [];
+    if (width) transformations.push(`w_${width}`);
+    if (height) transformations.push(`h_${height}`);
+    if (crop) transformations.push(`c_${crop}`);
+    if (quality) transformations.push(`q_${quality}`);
+
+    return `${parts[0]}/upload/${transformations.join(",")}/${parts[1]}`;
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error: {error.message}</div>;
   if (!vehicle) return <div>Vehicle not found</div>;
 
   // Derived data
@@ -162,7 +137,7 @@ const VehicleInfoPage = () => {
 
   return (
     <PageWrapper>
-      <Container>
+      <FullWidthContainer>
         {/* Back Button */}
         <BackButton onClick={() => navigate(-1)}>
           <ArrowLeft size={16} />
@@ -173,7 +148,14 @@ const VehicleInfoPage = () => {
           {/* =================== Image + Details Section =================== */}
           <MainContent>
             <ImageSection>
-              <MainImage image={imageList[selectedImage] || "/placeholder.png"}>
+              <MainImage
+                image={
+                  resizeCloudinaryImage(imageList[selectedImage], {
+                    width: 800,
+                    crop: "fit",
+                  }) || "/placeholder.png"
+                }
+              >
                 <ImageBadges>
                   {vehicle.badges?.map((badge, index) => (
                     <ImageBadge key={index}>{badge}</ImageBadge>
@@ -185,7 +167,13 @@ const VehicleInfoPage = () => {
                 {imageList.map((image, index) => (
                   <Thumbnail
                     key={index}
-                    image={image}
+                    image={
+                      resizeCloudinaryImage(image, {
+                        width: 150,
+                        height: 100,
+                        crop: "fill",
+                      }) || "/placeholder.png"
+                    }
                     active={selectedImage === index}
                     onClick={() => setSelectedImage(index)}
                   />
@@ -199,28 +187,30 @@ const VehicleInfoPage = () => {
                 {vehicle.brand} {vehicle.title}
               </VehicleTitle>
 
-              <VehicleRating>
-                <RatingStars>
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={14}
-                      fill={
-                        i < Math.floor(vehicle.rating) ? "currentColor" : "none"
-                      }
-                      color="#e1c841"
-                    />
-                  ))}
-                </RatingStars>
-                <RatingText>
-                  {vehicle.rating} ({vehicle.reviewCount} reviews)
-                </RatingText>
-              </VehicleRating>
-
-              <VehicleLocation>
-                <MapPin size={16} />
-                Available in {vehicle.state}
-              </VehicleLocation>
+              <VehicleDetails>
+                <VehicleRating>
+                  <RatingStars>
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={14}
+                        fill={
+                          i < Math.floor(vehicle.rating)
+                            ? "currentColor"
+                            : "none"
+                        }
+                        color="#e1c841"
+                      />
+                    ))}
+                  </RatingStars>
+                  <RatingText>
+                    {vehicle.rating} ({vehicle.reviewCount} reviews)
+                  </RatingText>
+                </VehicleRating>
+                <ReserveCar onClick={() => navigate(`/reserve/${vehicleId}`)}>
+                  Book This car now
+                </ReserveCar>
+              </VehicleDetails>
             </VehicleInfo>
 
             <DetailsSection>
@@ -258,7 +248,7 @@ const VehicleInfoPage = () => {
 
           {/* =================== New Contact Section =================== */}
         </VehicleHeader>
-      </Container>
+      </FullWidthContainer>
     </PageWrapper>
   );
 };
@@ -273,14 +263,14 @@ const PageWrapper = styled.div`
   color: #f2f2f2;
 `;
 
-const Container = styled.div`
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
+const FullWidthContainer = styled.div`
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
 
-  @media (max-width: 1200px) {
-    padding: 1rem;
-  }
+  @media (max-width: 1200px) {
+    padding: 0 1rem;
+  }
 `;
 
 const BackButton = styled.div`
@@ -300,30 +290,23 @@ const BackButton = styled.div`
 `;
 
 const VehicleHeader = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 3rem;
-  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin-bottom: 3rem;
+`;
 
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
+const VehicleDetails = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 `;
 
 const MainContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
-`;
-
-const SidePanel = styled.div`
-  height: fit-content;
-  position: sticky;
-  top: 120px;
-  @media (max-width: 1024px) {
-    position: static;
-  }
 `;
 
 // =================== Sections ===================
@@ -377,7 +360,7 @@ const MainImage = styled.div`
       props.image
         ? `url(${props.image})`
         : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
-    center center/cover no-repeat;
+    center center/contain no-repeat;
   border-radius: 10px;
   position: relative;
   overflow: hidden;
@@ -416,7 +399,7 @@ const Thumbnail = styled.div`
       props.image
         ? `url(${props.image})`
         : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
-    center center/cover no-repeat;
+    center center/contain no-repeat;
   border-radius: 5px;
   cursor: pointer;
   border: 2px solid ${(props) => (props.active ? "#00a878" : "transparent")};
@@ -473,7 +456,7 @@ const SpecValue = styled.div`
 
 const FeatureList = styled.ul`
   list-style: none;
-  padding: 0;
+  padding: 1rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
@@ -488,25 +471,6 @@ const FeatureItem = styled.li`
   align-items: center;
   gap: 1rem;
   color: #d9d9d9;
-`;
-
-const PolicyList = styled.ul`
-  list-style: none;
-  padding: 0;
-`;
-
-const PolicyItem = styled.li`
-  color: #b3b3b3;
-  margin-bottom: 0.5rem;
-  padding-left: 1.5rem;
-  position: relative;
-
-  &:before {
-    content: "•";
-    color: #00a878;
-    position: absolute;
-    left: 0;
-  }
 `;
 
 // =================== Rating & Location ===================
@@ -527,79 +491,25 @@ const RatingText = styled.span`
   font-size: 0.9rem;
 `;
 
-const VehicleLocation = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #b3b3b3;
-`;
-
-// =================== New Contact Card ===================
-const ContactDealerCard = styled.div`
-  background: #1a1a1a;
-  border: 1px solid #292929;
-  border-radius: 10px;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-`;
-
-const DealerInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #292929;
-  padding-bottom: 1.5rem;
-`;
-
-const DealerIcon = styled.div`
-  color: #d9d9d9;
-`;
-
-const DealerName = styled.h3`
-  font-size: 1.5rem;
-  margin: 0;
-  color: #f2f2f2;
-`;
-
-const DealerBio = styled.p`
-  font-size: 0.9rem;
-  color: #b3b3b3;
-  line-height: 1.5;
-`;
-
-const ContactButton = styled.a`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.8rem;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
+const ReserveCar = styled.button`
+  background-color: #00a878;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 0.75rem 1.5rem;
   font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
   transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 
-  &:first-of-type {
-    background-color: #00a878;
-    color: #fff;
-    &:hover {
-      background-color: #008761;
-    }
+  &:hover {
+    background-color: #008f6a;
+    transform: scale(1.05);
   }
 
-  &:last-of-type {
-    background-color: transparent;
-    border: 1px solid #00a878;
-    color: #00a878;
-    &:hover {
-      background-color: rgba(0, 168, 120, 0.1);
-    }
+  &:active {
+    transform: scale(0.98);
   }
 `;

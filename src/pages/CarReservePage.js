@@ -29,7 +29,7 @@ const MainContainer = styled.div`
   margin: 0 auto;
   display: grid;
   grid-template-columns: 450px 1fr;
-  gap: 5rem;
+  gap: 3rem;
   align-items: flex-start;
 
   @media (max-width: 1200px) {
@@ -45,13 +45,13 @@ const LeftColumn = styled.div`
 `;
 
 const CarPrice = styled.h2`
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   font-weight: 600;
   margin: 0;
 `;
 
 const CarTitle = styled.h1`
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 500;
   line-height: 1.4;
   margin: 0.5rem 0 0 0;
@@ -61,37 +61,38 @@ const CarTitle = styled.h1`
 const Divider = styled.hr`
   border: 0;
   border-top: 1px solid #333;
-  margin: 2rem 0;
+  margin: 1rem 0;
 `;
 
 const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 1rem; /* Reduced from 1.5rem */
 `;
 
 const StatItem = styled.div`
   display: flex;
   flex-direction: column;
+  padding: 1rem; /* Reduced from 1.5rem */
 `;
 
 const StatLabel = styled.span`
   color: #a0a0a0;
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
+  font-size: 0.5rem; /* Reduced from 0.9rem */
+  margin-bottom: 0.1rem; /* Reduced from 0.25rem */
   text-transform: uppercase;
 `;
 
 const StatValue = styled.span`
-  font-size: 1rem;
+  font-size: 0.9rem; /* Reduced from 1rem */
   font-weight: 600;
 `;
 
 const CarImage = styled.img`
   width: 100%;
-  border-radius: 8px;
-  margin-top: 2rem;
+  height: 100%; /* Make the image fill its new container */
   object-fit: cover;
+  object-position: center; /* Ensures the most important part of the image is visible */
 `;
 
 // Right Column for Reservation Options
@@ -101,7 +102,7 @@ const RightColumn = styled.div`
 `;
 
 const MainHeading = styled.h1`
-  font-size: 2.8rem;
+  font-size: 2.2rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -109,7 +110,7 @@ const MainHeading = styled.h1`
 `;
 
 const SubHeading = styled.p`
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   color: #b0b0b0;
   margin: 0.5rem 0 0 0;
 `;
@@ -118,7 +119,7 @@ const FeaturesContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 3rem;
+  margin-top: 2rem;
   padding-bottom: 3rem;
   border-bottom: 1px solid #333;
   flex-wrap: wrap;
@@ -138,7 +139,7 @@ const FeatureItem = styled.div`
 `;
 
 const PromptText = styled.p`
-  margin-top: 3rem;
+  margin-top: 1.5rem;
   margin-bottom: 1.5rem;
   color: #d0d0d0;
 `;
@@ -193,13 +194,24 @@ const ReserveButton = styled.button`
   letter-spacing: 1.5px;
   border-radius: 8px;
   cursor: pointer;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   width: 100%;
   transition: opacity 0.2s ease;
 
   &:hover {
     opacity: 0.9;
   }
+`;
+
+const ImageContainer = styled.div`
+  width: 100%;
+  height: 400px; /* Or a different fixed height */
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  overflow: hidden;
+  display: flex; /* To center the image inside */
+  justify-content: center;
+  align-items: center;
 `;
 
 const CarReservePage = () => {
@@ -260,8 +272,8 @@ const CarReservePage = () => {
       <MainContainer>
         {/* LEFT COLUMN */}
         <LeftColumn>
-          <CarPrice>₹{carDetails.ybtPrice.toLocaleString("en-IN")}</CarPrice>
           <CarTitle>{carDetails.title}</CarTitle>
+          <CarPrice>₹{carDetails.ybtPrice.toLocaleString("en-IN")}</CarPrice>
           <Divider />
           <StatsGrid>
             <StatItem>
@@ -270,9 +282,7 @@ const CarReservePage = () => {
             </StatItem>
             <StatItem>
               <StatLabel>Kms Driven</StatLabel>
-              <StatValue>
-                {carDetails.kmsDriven.toLocaleString("en-IN")}
-              </StatValue>
+              <StatValue>{carDetails.kmsDriven}</StatValue>
             </StatItem>
             <StatItem>
               <StatLabel>Fuel Type</StatLabel>
@@ -280,10 +290,12 @@ const CarReservePage = () => {
             </StatItem>
             <StatItem>
               <StatLabel>Vehicle Type</StatLabel>
-              <StatValue>Coupe SUV</StatValue>
+              <StatValue>{carDetails.carType || "N/A"}</StatValue>
             </StatItem>
           </StatsGrid>
-          <CarImage src={carDetails.carImages[0]} alt={carDetails.title} />
+          <ImageContainer>
+            <CarImage src={carDetails.thumbnail} alt={carDetails.title} />
+          </ImageContainer>
         </LeftColumn>
 
         {/* RIGHT COLUMN */}
