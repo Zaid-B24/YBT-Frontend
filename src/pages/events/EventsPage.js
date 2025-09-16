@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Clock, Users, ArrowRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -186,112 +187,109 @@ const LearnMoreButton = styled(Link)`
 
 const EventsPage = () => {
   const [activeFilter, setActiveFilter] = useState("all");
-  const [event, setEvents] = useState([]);
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/events`);
-        console.log(response, "THis is events response");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log(data, "THis is Parsed JSOn data");
-        setEvents(data);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-    fetchEvents();
-  }, []);
+  const fetchEvents = async () => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/events`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  };
+  const {
+    data: events,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["events"],
+    queryFn: fetchEvents,
+    staleTime: 5 * 60 * 1000, // Data is considered "fresh" for 5 minutes
+  });
 
-  const events = [
-    {
-      id: 1,
-      slug: "luxury-car-show-2024",
-      title: "Los Angeles Auto Show 2024",
-      description:
-        "Join us at the prestigious LA Auto Show where we'll unveil our latest collection of luxury automotive masterpieces.",
-      image:
-        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
-      date: "MAR 15",
-      status: "upcoming",
-      location: "Los Angeles Convention Center",
-      time: "10:00 AM - 6:00 PM",
-      attendees: "5000+",
-      type: "show",
-    },
-    {
-      id: 2,
-      title: "VIP Client Experience Day",
-      description:
-        "Exclusive event for our valued clients featuring test drives, personalized consultations, and luxury amenities.",
-      image:
-        "https://www.mansory.com/sites/default/files/styles/teaser_large/public/2024-02/vip-event.jpg",
-      date: "FEB 28",
-      status: "upcoming",
-      location: "YOUNG BOY TOYZ Headquarters",
-      time: "2:00 PM - 8:00 PM",
-      attendees: "50",
-      type: "exclusive",
-    },
-    {
-      id: 3,
-      title: "Supercar Rally 2024",
-      description:
-        "Annual supercar rally through scenic California routes, featuring our most exotic modified vehicles.",
-      image:
-        "https://www.mansory.com/sites/default/files/styles/teaser_large/public/2024-01/rally.jpg",
-      date: "APR 20",
-      status: "upcoming",
-      location: "Malibu to Big Sur",
-      time: "8:00 AM - 6:00 PM",
-      attendees: "200+",
-      type: "rally",
-    },
-    {
-      id: 4,
-      title: "Track Day Experience",
-      description:
-        "Professional track day at Laguna Seca featuring our performance-tuned vehicles and expert driving instruction.",
-      image:
-        "https://www.mansory.com/sites/default/files/styles/teaser_large/public/2024-01/track-day.jpg",
-      date: "MAY 10",
-      status: "upcoming",
-      location: "Laguna Seca Raceway",
-      time: "9:00 AM - 5:00 PM",
-      attendees: "100",
-      type: "track",
-    },
-    {
-      id: 5,
-      title: "Miami Beach Concours",
-      description:
-        "Showcase of our finest luxury vehicles at the prestigious Miami Beach Concours d'Elegance.",
-      image:
-        "https://www.mansory.com/sites/default/files/styles/teaser_large/public/2024-02/concours.jpg",
-      date: "JAN 15",
-      status: "past",
-      location: "Miami Beach",
-      time: "10:00 AM - 4:00 PM",
-      attendees: "3000+",
-      type: "show",
-    },
-    {
-      id: 6,
-      title: "Holiday Charity Gala",
-      description:
-        "Annual charity gala featuring auction of exclusive automotive experiences and luxury items.",
-      image:
-        "https://www.mansory.com/sites/default/files/styles/teaser_large/public/2024-01/gala.jpg",
-      date: "DEC 20",
-      status: "past",
-      location: "Beverly Hills Hotel",
-      time: "7:00 PM - 11:00 PM",
-      attendees: "300",
-      type: "gala",
-    },
-  ];
+  const getEventStatus = (startDateStr, endDateStr) => {
+    const now = new Date();
+    const startDate = new Date(startDateStr);
+    const endDate = new Date(endDateStr);
+
+    if (now > startDate && now < endDate) {
+      return "live";
+    } else if (now < startDate) {
+      return "upcoming";
+    } else {
+      return "past";
+    }
+  };
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+    })
+      .format(date)
+      .toUpperCase();
+  };
+
+  const formatTimeRange = (startDateStr, endDateStr) => {
+    const startTime = new Date(startDateStr);
+    const endTime = new Date(endDateStr);
+
+    const formatOptionsDate = {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    };
+
+    const formatOptionsTime = {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    };
+
+    const formattedStartDate = new Intl.DateTimeFormat(
+      "en-US",
+      formatOptionsDate
+    ).format(startTime);
+    const formattedStartTime = new Intl.DateTimeFormat(
+      "en-US",
+      formatOptionsTime
+    ).format(startTime);
+    const formattedEndDate = new Intl.DateTimeFormat(
+      "en-US",
+      formatOptionsDate
+    ).format(endTime);
+    const formattedEndTime = new Intl.DateTimeFormat(
+      "en-US",
+      formatOptionsTime
+    ).format(endTime);
+
+    // Check if the event is a single day
+    const isSameDay =
+      startTime.getDate() === endTime.getDate() &&
+      startTime.getMonth() === endTime.getMonth() &&
+      startTime.getFullYear() === endTime.getFullYear();
+
+    if (isSameDay) {
+      return `${formattedStartDate}, ${formattedStartTime} - ${formattedEndTime}`;
+    } else {
+      return `${formattedStartDate}, ${formattedStartTime} - ${formattedEndDate}, ${formattedEndTime}`;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <PageWrapper>
+        <p>Loading events...</p>
+      </PageWrapper>
+    );
+  }
+
+  if (isError) {
+    return (
+      <PageWrapper>
+        <p>Error: {error.message}</p>
+      </PageWrapper>
+    );
+  }
 
   const filters = [
     { key: "all", label: "All Events" },
@@ -302,7 +300,7 @@ const EventsPage = () => {
     { key: "track", label: "Track Days" },
   ];
 
-  const filteredEvents = event.filter((event) => {
+  const filteredEvents = events.filter((event) => {
     if (activeFilter === "all") return true;
     if (activeFilter === "upcoming") return event.status === "upcoming";
     return event.type === activeFilter;
@@ -331,47 +329,169 @@ const EventsPage = () => {
       </HeroSection>
 
       <EventsGrid>
-        <GridContainer>
-          {filteredEvents.map((event, index) => (
-            <EventCard
-              key={event.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
+        {filteredEvents.length === 0 ? (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "40px",
+              minHeight: "30vh",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                color: "#6c757d",
+                marginBottom: "16px",
+              }}
             >
-              <EventImage image={event.primaryImage}>
-                <EventDate>{event.date}</EventDate>
-                <EventStatus status={event.status}>{event.status}</EventStatus>
-              </EventImage>
-              <EventContent>
-                <EventTitle>{event.title}</EventTitle>
-                <EventDescription>{event.description}</EventDescription>
-                <EventDetails>
-                  <EventDetail>
-                    <MapPin size={16} />
-                    <span>{event.location}</span>
-                  </EventDetail>
-                  <EventDetail>
-                    <Clock size={16} />
-                    <span>{event.startDate}</span>
-                  </EventDetail>
-                  <EventDetail>
-                    <Users size={16} />
-                    <span>{event.maxAttendees} attendees</span>
-                  </EventDetail>
-                </EventDetails>
-                <LearnMoreButton to={`/events/${event.slug || event.id}`}>
-                  Learn More
-                  <ArrowRight size={16} />
-                </LearnMoreButton>
-              </EventContent>
-            </EventCard>
-          ))}
-        </GridContainer>
+              We're cooking up something special! 🍳
+            </p>
+            <p style={{ fontSize: "1rem", color: "#6c757d" }}>
+              Check back soon for new events.
+            </p>
+          </div>
+        ) : (
+          <GridContainer>
+            {filteredEvents.map((event, index) => (
+              <EventCard
+                key={event.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <EventImage image={event.primaryImage}>
+                  <EventDate>{formatDate(event.startDate)}</EventDate>
+                  <EventStatus
+                    status={getEventStatus(event.startDate, event.endDate)}
+                  >
+                    {getEventStatus(event.startDate, event.endDate)}
+                  </EventStatus>
+                </EventImage>
+                <EventContent>
+                  <EventTitle>{event.title}</EventTitle>
+                  <EventDescription>{event.description}</EventDescription>
+                  <EventDetails>
+                    <EventDetail>
+                      <MapPin size={16} />
+                      <span>{event.location}</span>
+                    </EventDetail>
+                    <EventDetail>
+                      <Clock size={16} />
+                      <span>
+                        {formatTimeRange(event.startDate, event.endDate)}
+                      </span>
+                    </EventDetail>
+                    <EventDetail>
+                      <Users size={16} />
+                      <span>{event.maxAttendees} attendees</span>
+                    </EventDetail>
+                  </EventDetails>
+                  <LearnMoreButton to={`/events/${event.id}`}>
+                    Learn More
+                    <ArrowRight size={16} />
+                  </LearnMoreButton>
+                </EventContent>
+              </EventCard>
+            ))}
+          </GridContainer>
+        )}
       </EventsGrid>
     </PageWrapper>
   );
 };
 
 export default EventsPage;
+
+// const events = [
+//     {
+//       id: 1,
+//       slug: "luxury-car-show-2024",
+//       title: "Los Angeles Auto Show 2024",
+//       description:
+//         "Join us at the prestigious LA Auto Show where we'll unveil our latest collection of luxury automotive masterpieces.",
+//       image:
+//         "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
+//       date: "MAR 15",
+//       status: "upcoming",
+//       location: "Los Angeles Convention Center",
+//       time: "10:00 AM - 6:00 PM",
+//       attendees: "5000+",
+//       type: "show",
+//     },
+//     {
+//       id: 2,
+//       title: "VIP Client Experience Day",
+//       description:
+//         "Exclusive event for our valued clients featuring test drives, personalized consultations, and luxury amenities.",
+//       image:
+//         "https://www.mansory.com/sites/default/files/styles/teaser_large/public/2024-02/vip-event.jpg",
+//       date: "FEB 28",
+//       status: "upcoming",
+//       location: "YOUNG BOY TOYZ Headquarters",
+//       time: "2:00 PM - 8:00 PM",
+//       attendees: "50",
+//       type: "exclusive",
+//     },
+//     {
+//       id: 3,
+//       title: "Supercar Rally 2024",
+//       description:
+//         "Annual supercar rally through scenic California routes, featuring our most exotic modified vehicles.",
+//       image:
+//         "https://www.mansory.com/sites/default/files/styles/teaser_large/public/2024-01/rally.jpg",
+//       date: "APR 20",
+//       status: "upcoming",
+//       location: "Malibu to Big Sur",
+//       time: "8:00 AM - 6:00 PM",
+//       attendees: "200+",
+//       type: "rally",
+//     },
+//     {
+//       id: 4,
+//       title: "Track Day Experience",
+//       description:
+//         "Professional track day at Laguna Seca featuring our performance-tuned vehicles and expert driving instruction.",
+//       image:
+//         "https://www.mansory.com/sites/default/files/styles/teaser_large/public/2024-01/track-day.jpg",
+//       date: "MAY 10",
+//       status: "upcoming",
+//       location: "Laguna Seca Raceway",
+//       time: "9:00 AM - 5:00 PM",
+//       attendees: "100",
+//       type: "track",
+//     },
+//     {
+//       id: 5,
+//       title: "Miami Beach Concours",
+//       description:
+//         "Showcase of our finest luxury vehicles at the prestigious Miami Beach Concours d'Elegance.",
+//       image:
+//         "https://www.mansory.com/sites/default/files/styles/teaser_large/public/2024-02/concours.jpg",
+//       date: "JAN 15",
+//       status: "past",
+//       location: "Miami Beach",
+//       time: "10:00 AM - 4:00 PM",
+//       attendees: "3000+",
+//       type: "show",
+//     },
+//     {
+//       id: 6,
+//       title: "Holiday Charity Gala",
+//       description:
+//         "Annual charity gala featuring auction of exclusive automotive experiences and luxury items.",
+//       image:
+//         "https://www.mansory.com/sites/default/files/styles/teaser_large/public/2024-01/gala.jpg",
+//       date: "DEC 20",
+//       status: "past",
+//       location: "Beverly Hills Hotel",
+//       time: "7:00 PM - 11:00 PM",
+//       attendees: "300",
+//       type: "gala",
+//     },
+//   ];

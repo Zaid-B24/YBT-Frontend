@@ -8,67 +8,70 @@ import {
   MapPin,
   Tag,
   FileText,
+  List,
+  Clock,
 } from "lucide-react";
-import { useState } from "react";
+
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import styled from "styled-components";
 
-// NOTE: You'll need to provide your own styled-components definitions
-// for these components (FormContainer, Title, Grid, Field, etc.)
+const FormField = ({ label, icon: Icon, children, error }) => (
+  <Field>
+    <Label>
+      <Icon size={16} /> {/* The Icon variable is correctly used here */}
+      <span>{label}</span>
+    </Label>
+    {children}
+    {error && <ErrorMessage>{error.message}</ErrorMessage>}
+  </Field>
+);
 
-const AddEventFlow = ({ onSuccess, onBack }) => {
-  const [formData, setFormData] = useState({
-    title: "",
-    slug: "",
-    description: "",
-    maxAttendees: "",
-    currentAttendees: "0",
-    location: "",
-    startDate: "",
-    endDate: "",
-    imageUrls: [],
-    primaryImage: "",
+const CreateEventForm = ({ onSuccess, onBack }) => {
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      title: "",
+      slug: "",
+      description: "",
+      maxAttendees: "",
+      location: "",
+      startDate: "",
+      endDate: "",
+      imageUrls: [],
+      agenda: [{ time: "", description: "" }],
+    },
   });
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setFormData((prev) => ({
-      ...prev,
-      // ✨ FIX: Update the correct state property: imageUrls
-      imageUrls: [...prev.imageUrls, ...files],
-    }));
-  };
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "agenda",
+  });
 
-  const removeImage = (indexToRemove) => {
-    setFormData((prev) => ({
-      ...prev,
-      // ✨ FIX: Filter the correct state property: imageUrls
-      imageUrls: prev.imageUrls.filter((_, index) => index !== indexToRemove),
-    }));
-  };
-
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (formData) => {
     const data = new FormData();
 
-    // Append all key-value pairs from the state
     Object.keys(formData).forEach((key) => {
-      if (key !== "imageUrls") {
+      if (key === "imageUrls") {
+        formData.imageUrls.forEach((file) => {
+          data.append("images", file);
+        });
+      } else if (key === "agenda") {
+        // Serialize the agenda array into a JSON string
+        data.append("agenda", JSON.stringify(formData.agenda));
+      } else {
         data.append(key, formData[key]);
       }
-    });
-
-    formData.imageUrls.forEach((file) => {
-      data.append("images", file);
     });
 
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/events/`, {
         method: "POST",
-        body: data, // The body is now correctly populated
+        body: data,
       });
 
       if (!response.ok) {
@@ -82,7 +85,8 @@ const AddEventFlow = ({ onSuccess, onBack }) => {
     }
   };
 
-  // ✨ FIX: Improved input fields with better types and icons
+  const imageUrls = watch("imageUrls");
+
   const inputFields = [
     {
       key: "title",
@@ -130,82 +134,129 @@ const AddEventFlow = ({ onSuccess, onBack }) => {
   ];
 
   return (
-    <FormContainer onSubmit={handleSubmit}>
-      {/* ✨ FIX: Changed title for clarity */}
+    <FormContainer onSubmit={handleSubmit(onSubmit)}>
       <Title>Enter Event Details</Title>
       <Grid>
         {inputFields.map(
           ({ key, label, placeholder, type = "text", icon: Icon }) => (
-            <Field key={key}>
-              <Label>
-                <Icon size={16} />
-                <span>{label}</span>
-              </Label>
+            <FormField key={key} label={label} icon={Icon} error={errors[key]}>
               <Input
                 type={type}
                 placeholder={placeholder}
-                value={formData[key]}
-                onChange={(e) => handleInputChange(key, e.target.value)}
-                required // Added for better form validation
+                {...register(key, { required: true })}
               />
-            </Field>
+            </FormField>
           )
         )}
 
         <FileInputContainer>
           <InputLabel>Event Images</InputLabel>
-          <FileInputWrapper
-            className={formData.imageUrls.length > 0 ? "has-file" : ""}
-          >
-            <HiddenFileInput
-              type="file"
-              accept="image/*"
-              multiple
-              // ✨ FIX: Removed the second argument, it's not needed here
-              onChange={handleFileChange}
-            />
-            <FileInputContent>
-              <FileInputIcon>
-                {formData.imageUrls.length > 0 ? (
-                  <Image size={24} />
-                ) : (
-                  <Upload size={24} />
+          <Controller
+            control={control}
+            name="imageUrls"
+            render={({ field: { onChange, value } }) => (
+              <>
+                <FileInputWrapper
+                  className={value?.length > 0 ? "has-file" : ""}
+                >
+                  <HiddenFileInput
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files);
+                      onChange([...(value || []), ...files]);
+                    }}
+                  />
+                  <FileInputContent>
+                    <FileInputIcon>
+                      {value?.length > 0 ? (
+                        <Image size={24} />
+                      ) : (
+                        <Upload size={24} />
+                      )}
+                    </FileInputIcon>
+                    <FileInputText>
+                      {value?.length > 0
+                        ? `${value.length} Images Selected`
+                        : "Click to upload images"}
+                    </FileInputText>
+                    <FileInputSubtext>
+                      {value?.length > 0
+                        ? "Click to add more images"
+                        : "PNG, JPG up to 10MB each"}
+                    </FileInputSubtext>
+                  </FileInputContent>
+                </FileInputWrapper>
+                {value?.length > 0 && (
+                  <ImagePreviewContainer>
+                    {value.map((image, index) => (
+                      <SelectedFile key={index}>
+                        <FileInfo>
+                          <Image size={16} />
+                          <span>{image.name}</span>
+                        </FileInfo>
+                        <RemoveButton
+                          type="button"
+                          onClick={() =>
+                            onChange(value.filter((_, i) => i !== index))
+                          }
+                        >
+                          <X size={16} />
+                        </RemoveButton>
+                      </SelectedFile>
+                    ))}
+                  </ImagePreviewContainer>
                 )}
-              </FileInputIcon>
-              <FileInputText>
-                {/* ✨ FIX: Read length from the correct state property */}
-                {formData.imageUrls.length > 0
-                  ? `${formData.imageUrls.length} Images Selected`
-                  : "Click to upload images"}
-              </FileInputText>
-              <FileInputSubtext>
-                {formData.imageUrls.length > 0
-                  ? "Click to add more images"
-                  : "PNG, JPG up to 10MB each"}
-              </FileInputSubtext>
-            </FileInputContent>
-          </FileInputWrapper>
-          {formData.imageUrls.length > 0 && (
-            <ImagePreviewContainer>
-              {formData.imageUrls.map((image, index) => (
-                <SelectedFile key={index}>
-                  <FileInfo>
-                    <Image size={16} />
-                    <span>{image.name}</span>
-                  </FileInfo>
-                  <RemoveButton
-                    type="button"
-                    onClick={() => removeImage(index)}
-                  >
-                    <X size={16} />
-                  </RemoveButton>
-                </SelectedFile>
-              ))}
-            </ImagePreviewContainer>
-          )}
+              </>
+            )}
+          />
         </FileInputContainer>
-      </Grid>
 
+        <AgendaContainer>
+          <InputLabel>
+            <List size={16} /> Event Agenda
+          </InputLabel>
+          {fields.map((item, index) => (
+            <AgendaItem key={item.id}>
+              <FormField
+                label="Time"
+                icon={Clock}
+                error={errors.agenda?.[index]?.time}
+              >
+                <Input
+                  type="time"
+                  {...register(`agenda.${index}.time`, { required: true })}
+                />
+              </FormField>
+              <FormField
+                label="Description"
+                icon={FileText}
+                error={errors.agenda?.[index]?.description}
+              >
+                <Input
+                  type="text"
+                  placeholder="e.g., Opening Ceremony"
+                  {...register(`agenda.${index}.description`, {
+                    required: true,
+                  })}
+                />
+              </FormField>
+              {fields.length > 1 && (
+                <RemoveButton type="button" onClick={() => remove(index)}>
+                  <X size={16} />
+                </RemoveButton>
+              )}
+            </AgendaItem>
+          ))}
+          <AddAgendaButton
+            type="button"
+            onClick={() => append({ time: "", description: "" })}
+          >
+            + Add Agenda Item
+          </AddAgendaButton>
+        </AgendaContainer>
+      </Grid>
       <FormActions>
         <BackButton type="button" onClick={onBack}>
           &larr; Back
@@ -215,11 +266,45 @@ const AddEventFlow = ({ onSuccess, onBack }) => {
           <span>Add Event</span>
         </SubmitButton>
       </FormActions>
+      {/* RHF requires the form to have an onSubmit */}
     </FormContainer>
   );
 };
 
-export default AddEventFlow;
+export default CreateEventForm;
+
+const AgendaContainer = styled.div`
+  grid-column: 1 / -1;
+  border: 1px dashed #7f1d1d;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+`;
+
+const AddAgendaButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: #ff0000;
+  border: 1px dashed #ff0000;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+
+  &:hover {
+    background-color: #ff0000;
+    color: white;
+  }
+`;
+
+const ErrorMessage = styled.p`
+  color: #ff5252;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+`;
 
 const FormContainer = styled.form`
   padding: 1.5rem;
@@ -461,5 +546,17 @@ const Title = styled.h2`
     height: 2px;
     background: linear-gradient(90deg, #3b82f6, #1d4ed8);
     border-radius: 1px;
+  }
+`;
+
+const AgendaItem = styled.div`
+  display: grid;
+  grid-template-columns: 0.3fr 1fr auto;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+
+  ${Field} {
+    margin: 0;
   }
 `;

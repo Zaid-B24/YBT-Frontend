@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import {
-  TrendingUp,
   Users,
   Car,
   DollarSign,
@@ -14,22 +13,16 @@ import {
   Edit,
   Trash2,
   Plus,
-  Search,
-  Filter,
-  MoreVertical,
   ArrowUpRight,
   X,
   ArrowDownRight,
-  Star,
-  Clock,
-  MapPin,
-  Tag,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import AdminNav from "../../components/admin/AdminNav";
 import CarDetailsForm from "../../components/forms/CarDetailsForm";
 import AddVehicleFlow from "../../components/admin/AddVehicleFlow";
 import AddEventFlow from "../events/CreateEvent";
+import CreateEventForm from "../../components/forms/CreateEventForm";
 
 const DashboardWrapper = styled.div`
   min-height: 100vh;
@@ -692,7 +685,7 @@ const AdminDashboard = () => {
                 <AddVehicleFlow onSuccess={() => setActiveOverlay(null)} />
               )}
               {activeOverlay === "createEvent" && (
-                <AddEventFlow onSuccess={() => setActiveOverlay(null)} />
+                <CreateEventForm onSuccess={() => setActiveOverlay(null)} />
               )}
             </Card>
           </ModalWrapper>
