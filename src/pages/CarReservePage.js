@@ -17,7 +17,7 @@ const CarReservePage = () => {
   const [overlayContent, setOverlayContent] = useState({});
   const [showForm, setShowForm] = useState(false);
 
-  const { vehicleId } = useParams();
+  const { vehicleId, category } = useParams();
 
   const API_BASE_URL = process.env.REACT_APP_API_URL;
 
@@ -27,9 +27,9 @@ const CarReservePage = () => {
     isError,
     error,
   } = useQuery({
-    queryKey: ["carDetails", vehicleId],
+    queryKey: ["carDetails", vehicleId, category],
     queryFn: async () => {
-      const response = await fetch(`${API_BASE_URL}/cars/${vehicleId}`);
+      const response = await fetch(`${API_BASE_URL}/${category}/${vehicleId}`);
       console.log("this is response in reserve page ", response);
       if (!response.ok) {
         throw new Error("Network response was not ok");

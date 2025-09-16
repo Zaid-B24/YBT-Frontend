@@ -205,7 +205,9 @@ const VehicleInfoPage = () => {
                   </RatingStars>
                   <RatingText>4.5 ({vehicle.reviewCount} reviews)</RatingText>
                 </VehicleRating>
-                <ReserveCar onClick={() => navigate(`/reserve/${vehicleId}`)}>
+                <ReserveCar
+                  onClick={() => navigate(`/reserve/${category}/${vehicleId}`)}
+                >
                   Book This car now
                 </ReserveCar>
               </VehicleDetails>
