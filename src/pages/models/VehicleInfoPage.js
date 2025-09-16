@@ -203,9 +203,7 @@ const VehicleInfoPage = () => {
                       />
                     ))}
                   </RatingStars>
-                  <RatingText>
-                    {vehicle.rating} ({vehicle.reviewCount} reviews)
-                  </RatingText>
+                  <RatingText>4.5 ({vehicle.reviewCount} reviews)</RatingText>
                 </VehicleRating>
                 <ReserveCar onClick={() => navigate(`/reserve/${vehicleId}`)}>
                   Book This car now

@@ -608,8 +608,10 @@ const ModelsPage = () => {
                       </CarBadges>
                     </CarImage>
                     <CarContent>
-                      <CarTitle>{model.title}</CarTitle>
-                      <CarDescription>{model.description}</CarDescription>
+                      <CarTitle>
+                        {model.brand} {model.title}
+                      </CarTitle>
+                      {/* <CarDescription>{model.description}</CarDescription> */}
                     </CarContent>
                   </CarCard>
                 </CarCardLink>
