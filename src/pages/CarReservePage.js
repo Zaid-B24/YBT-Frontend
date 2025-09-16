@@ -8,12 +8,8 @@ import {
   IoCheckmarkCircle,
 } from "react-icons/io5";
 import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
-// URL for the car image - replace with your actual image
-const CAR_IMAGE_URL =
-  "https://images.carandbike.com/car-images/large/bmw/m5/bmw-m5.jpg?v=13"; // Using a placeholder that looks like the one in your screenshot
-
-// Main Page Wrapper (similar to your starting code)
 const PageWrapper = styled.div`
   padding: 100px 2rem;
   min-height: 100vh;
@@ -23,7 +19,6 @@ const PageWrapper = styled.div`
     Arial, sans-serif;
 `;
 
-// Grid container for the two main columns
 const MainContainer = styled.div`
   max-width: 1400px;
   margin: 0 auto;
@@ -38,10 +33,13 @@ const MainContainer = styled.div`
   }
 `;
 
-// Left Column for Car Details & Image
-const LeftColumn = styled.div`
+const CarCard = styled.div`
   display: flex;
   flex-direction: column;
+  background: #1c1c1c; /* Dark background for the card */
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Adds a subtle shadow */
+  padding: 1.5rem;
 `;
 
 const CarPrice = styled.h2`
@@ -67,24 +65,24 @@ const Divider = styled.hr`
 const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem; /* Reduced from 1.5rem */
+  gap: 0.25rem; /* Reduced from 1.5rem */
 `;
 
 const StatItem = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 1rem; /* Reduced from 1.5rem */
+  padding: 0.25rem; /* Reduced from 1rem */
 `;
 
 const StatLabel = styled.span`
   color: #a0a0a0;
-  font-size: 0.5rem; /* Reduced from 0.9rem */
+  font-size: 0.9rem; /* Reduced from 0.9rem */
   margin-bottom: 0.1rem; /* Reduced from 0.25rem */
   text-transform: uppercase;
 `;
 
 const StatValue = styled.span`
-  font-size: 0.9rem; /* Reduced from 1rem */
+  font-size: 1rem; /* Reduced from 1rem */
   font-weight: 600;
 `;
 
@@ -205,44 +203,38 @@ const ReserveButton = styled.button`
 
 const ImageContainer = styled.div`
   width: 100%;
-  height: 400px; /* Or a different fixed height */
+  height: 350px; /* Or a different fixed height */
   border-radius: 8px;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   overflow: hidden;
   display: flex; /* To center the image inside */
   justify-content: center;
   align-items: center;
 `;
 
+const fetchCarDetails = async (id) => {
+  const response = await fetch(`${process.env.REACT_APP_API_URL}/cars/${id}`);
+  if (!response.ok) {
+    throw new Error("Car not found");
+  }
+  return response.json();
+};
+
 const CarReservePage = () => {
   const [selectedOption, setSelectedOption] = useState(1);
-  const [carDetails, setCarDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const { id } = useParams();
 
-  useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/cars/${id}`
-        );
-        if (!response.ok) {
-          throw new Error("Car not found");
-        }
-        const data = await response.json();
-        setCarDetails(data);
-      } catch (error) {
-        console.log(error, "Some Error Occured");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDetails();
-  }, [id]);
+  const {
+    data: carDetails,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["carDetails", id],
+    queryFn: () => fetchCarDetails(id),
+  });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <PageWrapper>
         <h2>Loading...</h2>
@@ -250,15 +242,14 @@ const CarReservePage = () => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <PageWrapper>
-        <h2>Error: {error}</h2>
+        <h2>Error: {error.message}</h2>
       </PageWrapper>
     );
   }
 
-  // Render this if data fetching is done but no car was found
   if (!carDetails) {
     return (
       <PageWrapper>
@@ -271,8 +262,11 @@ const CarReservePage = () => {
     <PageWrapper>
       <MainContainer>
         {/* LEFT COLUMN */}
-        <LeftColumn>
-          <CarTitle>{carDetails.title}</CarTitle>
+
+        <CarCard>
+          <CarTitle>
+            {carDetails.brand} {carDetails.title}
+          </CarTitle>
           <CarPrice>₹{carDetails.ybtPrice.toLocaleString("en-IN")}</CarPrice>
           <Divider />
           <StatsGrid>
@@ -296,7 +290,7 @@ const CarReservePage = () => {
           <ImageContainer>
             <CarImage src={carDetails.thumbnail} alt={carDetails.title} />
           </ImageContainer>
-        </LeftColumn>
+        </CarCard>
 
         {/* RIGHT COLUMN */}
         <RightColumn>
