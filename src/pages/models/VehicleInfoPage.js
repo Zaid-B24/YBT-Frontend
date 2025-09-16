@@ -353,7 +353,8 @@ const Description = styled.p`
 
 // =================== Image Gallery ===================
 const MainImage = styled.div`
-  height: 500px;
+  height: 80vh; /* Changed from 500px to 60vh */
+  /* Keep the rest of your styles the same */
   background: ${(props) =>
       props.image
         ? `url(${props.image})`
@@ -388,7 +389,7 @@ const ImageBadge = styled.span`
 const ThumbnailGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.5rem;
+  gap: 1.5rem;
 `;
 
 const Thumbnail = styled.div`

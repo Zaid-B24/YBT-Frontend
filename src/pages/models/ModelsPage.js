@@ -284,9 +284,9 @@ const CarsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 2rem;
-
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 `;
 
@@ -294,12 +294,17 @@ const CarCard = styled(motion.div)`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
-  transition: all 0.3s ease;
   cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
   }
 `;
 
@@ -310,13 +315,15 @@ const CarCardLink = styled(Link)`
 `;
 
 const CarImage = styled.div`
-  height: 250px;
+  /* Removed fixed height */
   background: ${(props) =>
       props.image
         ? `url(${props.image})`
         : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
     center center/cover no-repeat;
   position: relative;
+  aspect-ratio: 16 / 9; /* Use aspect ratio for consistent image size */
+  object-fit: cover;
 `;
 
 const CarBadges = styled.div`
@@ -324,14 +331,14 @@ const CarBadges = styled.div`
   top: 1rem;
   left: 1rem;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.5rem; /* Better spacing for multiple badges */
 `;
 
 const CarBadge = styled.span`
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
   padding: 0.3rem 0.8rem;
+  border-radius: 20px;
   font-size: 0.7rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -340,23 +347,101 @@ const CarBadge = styled.span`
 `;
 
 const CarContent = styled.div`
-  padding: 1.5rem;
+  padding: 1.25rem; /* Reduced padding */
+  flex-grow: 1; /* Ensures content pushes down to fill space */
+  display: flex;
+  flex-direction: column;
 `;
 
 const CarTitle = styled.h3`
   font-family: "Playfair Display", serif;
   font-size: 1.3rem;
   font-weight: 400;
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.25rem; /* Reduced bottom margin */
   color: #fff;
 `;
-
-const CarDescription = styled.p`
-  color: #ccc;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin-bottom: 1rem;
+const ProductPrice = styled.div`
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  margin-top: auto; /* Pushes the price to the bottom of the card */
 `;
+const ProductSpecs = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0 1rem; /* Adjusting margin to better fit within the card layout */
+  font-size: 0.8rem;
+  font-weight: 500;
+`;
+
+const SpecItem = styled.span`
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+`;
+
+const product = [
+  {
+    id: 1,
+    title: "GS Custom Lamborghini Aventador",
+    price: "₹6,50,00,000",
+    image:
+      "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    specs: ["V12 Engine", "750 HP", "AWD"],
+    badge: "GS Signature",
+  },
+  {
+    id: 2,
+    title: "GS Ferrari 488 Spider",
+    price: "₹5,80,00,000",
+    image:
+      "https://images.unsplash.com/photo-1583121274602-3e2820c69888?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    specs: ["V8 Twin-Turbo", "670 HP", "RWD"],
+    badge: "GS Custom",
+  },
+  {
+    id: 3,
+    title: "GS Porsche 911 GT3 RS",
+    price: "₹4,20,00,000",
+    image:
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    specs: ["H6 Naturally Aspirated", "520 HP", "RWD"],
+    badge: "GS Track",
+  },
+  {
+    id: 4,
+    title: "GS McLaren 720S",
+    price: "₹5,50,00,000",
+    image:
+      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
+    specs: ["V8 Twin-Turbo", "720 HP", "RWD"],
+    badge: "GS Performance",
+  },
+  {
+    id: 5,
+    title: "GS Aston Martin Vantage",
+    price: "₹3,80,00,000",
+    image:
+      "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    specs: ["V8 Twin-Turbo", "510 HP", "RWD"],
+    badge: "GS Luxury",
+  },
+  {
+    id: 6,
+    title: "GS Bentley Continental GT",
+    price: "₹4,50,00,000",
+    image:
+      "https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    specs: ["W12 Twin-Turbo", "635 HP", "AWD"],
+    badge: "GS Grand Tourer",
+  },
+];
 
 const ModelsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -597,7 +682,14 @@ const ModelsPage = () => {
                   <CarCard
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    whileHover={{ y: -8, scale: 1.02 }}
+                    transition={{
+                      duration: 0.6,
+                      delay: index * 0.1,
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 25,
+                    }}
                     viewport={{ once: true }}
                   >
                     <CarImage image={model.thumbnail}>
@@ -611,7 +703,14 @@ const ModelsPage = () => {
                       <CarTitle>
                         {model.brand} {model.title}
                       </CarTitle>
-                      {/* <CarDescription>{model.description}</CarDescription> */}
+                      <ProductSpecs>
+                        {product[2].specs.map((spec, idx) => (
+                          <SpecItem key={idx}>{spec}</SpecItem>
+                        ))}
+                      </ProductSpecs>
+                      <ProductPrice>
+                        ₹ {model.ybtPrice.toLocaleString("en-IN")}
+                      </ProductPrice>
                     </CarContent>
                   </CarCard>
                 </CarCardLink>
