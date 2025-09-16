@@ -200,7 +200,7 @@ function App() {
                 }
               />
               <Route
-                path="/reserve/:id"
+                path="/reserve/:vehicleId"
                 element={
                   <>
                     <Header />

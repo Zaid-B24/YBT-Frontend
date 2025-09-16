@@ -8,64 +8,14 @@ import {
   IoCheckmarkCircle,
 } from "react-icons/io5";
 import VehicleBookingForm from "../components/forms/BookingForm";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 
-// Dummy data to simulate API response
-const carDetails = {
-  brand: "Rolls-Royce",
-  title: "Phantom",
-  ybtPrice: 95000000,
-  registrationYear: 2022,
-  kmsDriven: "2,500",
-  fuelType: "Petrol",
-  carType: "Sedan",
-  thumbnail: "https://images.unsplash.com/photo-1631295868223-63265b40d9e4",
+// 🎯 Define API endpoints here or import them from a separate file
+const API_ENDPOINTS = {
+  getCarDetails: "/api/car/123", // Replace with your actual endpoint
+  submitBooking: "/api/booking", // Replace with your actual endpoint
 };
-
-const price10Percent = (carDetails.ybtPrice * 0.1).toLocaleString("en-IN");
-const price100Percent = carDetails.ybtPrice.toLocaleString("en-IN");
-
-const reservationOptions = [
-  {
-    id: 1,
-    text: "Pay 2 Lacs & Reserve Car for 24 hrs",
-    info: {
-      title: "Reserve for 24 hours",
-      description:
-        "Pay ₹2,00,000 to reserve your dream car for the next 24 hours. You can come back and purchase the car anytime within this period. If you don't, we'll refund the payment.",
-    },
-    // Added new content for the form overlay
-    formIntro: {
-      title: `Pay ₹2,00,000 & Reserve Car for 24 hrs`,
-      description: `We will reserve your dream car for the next 24 hours.\nAll you need to do is pay 2 lacs now & you can come back and purchase the car anytime within the period. In case you fail to purchase the car, we will refund the payment.`,
-    },
-  },
-  {
-    id: 2,
-    text: "Pay 10% & Get Confirmed Booking",
-    info: {
-      title: "Confirmed Booking",
-      description: `Pay ₹${price10Percent} of the car's price to get a confirmed booking. This secures your purchase and is a non-refundable deposit. The remaining amount will be due upon delivery.`,
-    },
-    // Added new content for the form overlay
-    formIntro: {
-      title: `Pay ₹${price10Percent} & Get Confirmed Booking`,
-      description: `We will confirm your booking.\nAll you need to do is pay 10% of the total amount and you can make the rest of the payment at a later stage and the car will be yours!`,
-    },
-  },
-  {
-    id: 3,
-    text: "Pay 100% & Get Car Delivered Home",
-    info: {
-      title: "100% Payment & Home Delivery",
-      description: `Pay the full price of ₹${price100Percent} now and we'll deliver your new car right to your home. This is the fastest way to get your car, and your payment is fully secured.`,
-    },
-    // Added new content for the form overlay
-    formIntro: {
-      title: `Pay ₹${price100Percent} & Get Car Delivered Home`,
-      description: `Get ready to unbox your dream car at your doorsteps.\nAll you need to do is pay 100% amount and you will get a call from our sales representative for information on TCS, Insurance, RC Transfer and Logistic charge!`,
-    },
-  },
-];
 
 const CarReservePage = () => {
   const [selectedOptionId, setSelectedOptionId] = useState(1);
@@ -73,75 +23,134 @@ const CarReservePage = () => {
   const [overlayContent, setOverlayContent] = useState({});
   const [showForm, setShowForm] = useState(false);
 
-  const handleFormSubmit = async (formData) => {
-    // Get the selected reservation option's ID to determine the payment type
-    const selectedOption = reservationOptions.find(
-      (opt) => opt.id === selectedOptionId
-    );
+  const { vehicleId } = useParams();
 
-    // Here's where you would make the API call.
-    // The data includes formData (name, email, etc.)
-    // and the selectedOption (which tells you the payment type).
+  const API_BASE_URL = process.env.REACT_APP_API_URL;
 
-    console.log("Submitting form data:", formData);
-    console.log("Selected option for booking:", selectedOption.text);
+  const {
+    data: carDetails,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["carDetails", vehicleId],
+    queryFn: async () => {
+      const response = await fetch(`${API_BASE_URL}/cars/${vehicleId}`);
+      console.log("this is response in reserve page ", response);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    },
+    // The `enabled` property is essential here.
+    enabled: !!vehicleId,
+    placeholderData: {
+      brand: "Loading...",
+      title: "Loading...",
+      ybtPrice: 0,
+      registrationYear: "....",
+      kmsDriven: "...",
+      fuelType: "...",
+      carType: "...",
+      thumbnail: "https://via.placeholder.com/300",
+    },
+  });
 
-    // In a real app, you would fetch to your API here
-    try {
-      const response = await fetch("YOUR_API_ENDPOINT", {
+  const bookingMutation = useMutation({
+    mutationFn: async (formData) => {
+      const response = await fetch(`${API_BASE_URL}/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          reservationType: selectedOption.id,
-        }),
+        body: JSON.stringify(formData),
       });
-
       if (!response.ok) {
         throw new Error("Failed to submit booking.");
       }
-
-      const data = await response.json();
-      alert("Booking submitted successfully!");
-      setIsOverlayVisible(false); // Close the overlay on success
+      return response.json();
+    },
+    onSuccess: () => {
+      alert("Booking submitted successfully! 🎉");
+      setIsOverlayVisible(false);
       setShowForm(false);
-    } catch (error) {
+    },
+    onError: (error) => {
       alert(error.message);
-    }
-  };
-  const generateIntroText = () => {
+    },
+  });
+
+  const handleFormSubmit = (formData) => {
     const selectedOption = reservationOptions.find(
       (opt) => opt.id === selectedOptionId
     );
-    if (!selectedOption) return "";
-
-    let price = "";
-    if (selectedOption.id === 1) {
-      price = "₹2,00,000";
-    } else if (selectedOption.id === 2) {
-      // Calculate 10% of the car price
-      price = `₹${(carDetails.ybtPrice * 0.1).toLocaleString("en-IN")}`;
-    } else if (selectedOption.id === 3) {
-      // Full price
-      price = `₹${carDetails.ybtPrice.toLocaleString("en-IN")}`;
-    }
-
-    const title = selectedOption.text.replace("Pay", `Pay ${price} &`);
-    return {
-      title: title,
-      description:
-        "Just a few steps away from making your dream car a reality! Fill in a few details and we can begin the reservation.",
-    };
+    bookingMutation.mutate({
+      ...formData,
+      reservationType: selectedOption.id,
+      vehicleId: vehicleId,
+    });
   };
+
+  if (!vehicleId) {
+    return (
+      <PageWrapper>Invalid URL. Please provide a vehicle ID. 🤔</PageWrapper>
+    );
+  }
+
+  if (isLoading) {
+    return <PageWrapper>Loading car details... ⏳</PageWrapper>;
+  }
+
+  if (isError) {
+    return <PageWrapper>Error: {error.message} 😞</PageWrapper>;
+  }
+
+  const price10Percent = (carDetails.ybtPrice * 0.1).toLocaleString("en-IN");
+  const price100Percent = carDetails.ybtPrice.toLocaleString("en-IN");
+
+  const reservationOptions = [
+    {
+      id: 1,
+      text: "Pay 2 Lacs & Reserve Car for 24 hrs",
+      info: {
+        title: "Reserve for 24 hours",
+        description: "Pay ₹2,00,000 to reserve your dream car...",
+      },
+      formIntro: {
+        title: `Pay ₹2,00,000 & Reserve Car for 24 hrs`,
+        description: `We will reserve your dream car for the next 24 hours...`,
+      },
+    },
+    {
+      id: 2,
+      text: "Pay 10% & Get Confirmed Booking",
+      info: {
+        title: "Confirmed Booking",
+        description: `Pay ₹${price10Percent} of the car's price...`,
+      },
+      formIntro: {
+        title: `Pay ₹${price10Percent} & Get Confirmed Booking`,
+        description: `We will confirm your booking...`,
+      },
+    },
+    {
+      id: 3,
+      text: "Pay 100% & Get Car Delivered Home",
+      info: {
+        title: "100% Payment & Home Delivery",
+        description: `Pay the full price of ₹${price100Percent} now...`,
+      },
+      formIntro: {
+        title: `Pay ₹${price100Percent} & Get Car Delivered Home`,
+        description: `Get ready to unbox your dream car...`,
+      },
+    },
+  ];
 
   const handleInfoClick = (option) => {
     setOverlayContent(option.info);
     setIsOverlayVisible(true);
   };
 
-  // This function does nothing for now
   const handleOkClick = () => {
-    // Find the selected option and set the form content
     const selectedOption = reservationOptions.find(
       (opt) => opt.id === selectedOptionId
     );
@@ -150,7 +159,6 @@ const CarReservePage = () => {
   };
 
   const handleReserveClick = () => {
-    // This now shows the info overlay first
     const selectedOption = reservationOptions.find(
       (opt) => opt.id === selectedOptionId
     );
@@ -192,7 +200,6 @@ const CarReservePage = () => {
         <RightColumn>
           <MainHeading>Reserve Your Own Luxury</MainHeading>
           <SubHeading>Brand Trusted by the Elites</SubHeading>
-
           <FeaturesContainer>
             <FeatureItem>
               <FaUserCheck /> 10000+ Satisfied Customers
@@ -207,11 +214,9 @@ const CarReservePage = () => {
               <IoCarSportOutline /> 50 Luxury Car Brands
             </FeatureItem>
           </FeaturesContainer>
-
           <PromptText>
             Please select how you'd like to reserve your car.
           </PromptText>
-
           <OptionsContainer>
             {reservationOptions.map((option) => (
               <OptionButton
@@ -235,9 +240,11 @@ const CarReservePage = () => {
               </OptionButton>
             ))}
           </OptionsContainer>
-
-          <ReserveButton onClick={handleReserveClick}>
-            Reserve This Car
+          <ReserveButton
+            onClick={handleReserveClick}
+            disabled={bookingMutation.isPending}
+          >
+            {bookingMutation.isPending ? "Reserving..." : "Reserve This Car"}
           </ReserveButton>
         </RightColumn>
       </MainContainer>
@@ -282,7 +289,6 @@ const CarReservePage = () => {
 };
 
 export default CarReservePage;
-
 // Styled components remain unchanged from your original code.
 
 const PageWrapper = styled.div`
