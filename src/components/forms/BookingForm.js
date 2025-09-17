@@ -166,7 +166,8 @@ const FormLabel = styled.label`
     left: 0;
     width: 0;
     height: 1px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    /* Red Gradient */
+    background: linear-gradient(90deg, #e53935, #ff0000);
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 `;
@@ -192,10 +193,11 @@ const FormInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: rgba(102, 126, 234, 0.6);
+    /* Red focus border and shadow */
+    border-color: rgba(229, 57, 53, 0.6);
     background: rgba(255, 255, 255, 0.12);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15),
-      0 0 0 3px rgba(102, 126, 234, 0.15), 0 4px 12px rgba(0, 0, 0, 0.15);
+      0 0 0 3px rgba(229, 57, 53, 0.15), 0 4px 12px rgba(0, 0, 0, 0.15);
     transform: translateY(-1px);
   }
 
@@ -255,11 +257,12 @@ const FormContainer = styled.div`
     transform: translateX(-50%);
     width: 100px;
     height: 2px;
+    /* Red Gradient */
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(102, 126, 234, 0.6),
-      rgba(118, 75, 162, 0.6),
+      rgba(229, 57, 53, 0.6),
+      rgba(255, 0, 0, 0.6),
       transparent
     );
     border-radius: 1px;
@@ -302,11 +305,11 @@ const PaymentOption = styled.div`
   width: 95px;
   background: ${({ active }) =>
     active
-      ? "linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2))"
+      ? "linear-gradient(135deg, rgba(229, 57, 53, 0.2), rgba(255, 0, 0, 0.2))"
       : "rgba(255, 255, 255, 0.05)"};
   border: 2px solid
     ${({ active }) =>
-      active ? "rgba(102, 126, 234, 0.8)" : "rgba(255, 255, 255, 0.12)"};
+      active ? "rgba(229, 57, 53, 0.8)" : "rgba(255, 255, 255, 0.12)"};
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -328,10 +331,12 @@ const PaymentOption = styled.div`
   }
 
   &:hover {
-    border-color: rgba(102, 126, 234, 0.6);
+    /* Red hover border */
+    border-color: rgba(229, 57, 53, 0.6);
     background: rgba(255, 255, 255, 0.08);
     transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+    /* Red box shadow */
+    box-shadow: 0 8px 16px rgba(229, 57, 53, 0.2);
   }
 `;
 
@@ -340,6 +345,7 @@ const PaymentIcon = styled.div`
   margin-bottom: 0.25rem;
   opacity: ${({ active }) => (active ? 1 : 0.6)};
   transition: all 0.3s ease;
+  /* Keep icons full color when hovered or active */
   filter: ${({ active }) => (active ? "none" : "grayscale(100%)")};
 
   ${PaymentOption}:hover & {
@@ -382,7 +388,8 @@ const PaymentAndButtonContainer = styled.div`
 `;
 
 const SubmitButton = styled.button`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Red gradient */
+  background: linear-gradient(135deg, #e53935 0%, #ff0000 100%);
   color: #fff;
   border: none;
   border-radius: 16px;
@@ -396,7 +403,8 @@ const SubmitButton = styled.button`
   position: relative;
   overflow: hidden;
   min-width: 160px;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* Red shadow */
+  box-shadow: 0 8px 20px rgba(229, 57, 53, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2);
 
   &::before {
     content: "";
@@ -418,7 +426,8 @@ const SubmitButton = styled.button`
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    /* Darker red hover gradient */
+    background: linear-gradient(135deg, #ff0000 0%, #e53935 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
     border-radius: inherit;
@@ -431,7 +440,8 @@ const SubmitButton = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4),
+    /* Darker red shadow on hover */
+    box-shadow: 0 12px 30px rgba(229, 57, 53, 0.4),
       0 6px 12px rgba(0, 0, 0, 0.3);
 
     &::before {
