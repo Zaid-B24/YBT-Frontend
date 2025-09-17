@@ -335,7 +335,7 @@ const CarBadges = styled.div`
 `;
 
 const CarBadge = styled.span`
-  background: rgba(0, 0, 0, 0.8);
+  background: #dc2626;
   color: #fff;
   padding: 0.3rem 0.8rem;
   border-radius: 20px;

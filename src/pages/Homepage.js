@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { ChevronRight, ChevronLeft, ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { ChevronRight, ChevronLeft, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const HomepageWrapper = styled.div`
   background: #000;
@@ -28,7 +28,8 @@ const HeroBackground = styled.div`
   right: 0;
   bottom: 0;
   z-index: 1;
-  background: ${props => props.image ? `url(${props.image})` : '#000'} center center/cover no-repeat;
+  background: ${(props) => (props.image ? `url(${props.image})` : "#000")}
+    center center/cover no-repeat;
   transition: all 0.5s ease;
 `;
 
@@ -38,7 +39,12 @@ const HeroOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.1) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.3) 60%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
   z-index: 2;
 `;
 
@@ -51,14 +57,14 @@ const HeroContent = styled.div`
 `;
 
 const HeroTitle = styled.h1`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 4rem;
   font-weight: 400;
   line-height: 1.1;
   letter-spacing: 0.02em;
   margin-bottom: 1.5rem;
   color: #fff;
-  
+
   @media (max-width: 768px) {
     font-size: 2.5rem;
   }
@@ -74,9 +80,9 @@ const HeroSubtitle = styled.p`
 `;
 
 const HeroButton = styled(Link)`
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   padding: 0.8rem 2rem;
   font-size: 0.9rem;
@@ -89,8 +95,8 @@ const HeroButton = styled(Link)`
   display: inline-block;
 
   &:hover {
-    background: rgba(255,255,255,0.25);
-    border-color: rgba(255,255,255,0.4);
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
   }
 `;
 
@@ -107,7 +113,7 @@ const CarouselDots = styled.div`
 const Dot = styled.button`
   width: 40px;
   height: 3px;
-  background: ${props => props.active ? '#fff' : 'rgba(255,255,255,0.3)'};
+  background: ${(props) => (props.active ? "#fff" : "rgba(255,255,255,0.3)")};
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -116,12 +122,12 @@ const Dot = styled.button`
 // Find Your Dream Model Section
 const FindModelSection = styled.section`
   padding: 4rem 2rem;
-  background: rgba(20,20,20,0.8);
+  background: rgba(20, 20, 20, 0.8);
   text-align: center;
 `;
 
 const FindModelTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 2.5rem;
   font-weight: 400;
   margin-bottom: 1rem;
@@ -139,7 +145,7 @@ const SearchForm = styled.div`
   gap: 1rem;
   max-width: 800px;
   margin: 0 auto;
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
   }
@@ -148,11 +154,11 @@ const SearchForm = styled.div`
 const SearchSelect = styled.select`
   flex: 1;
   padding: 1rem;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   font-size: 1rem;
-  
+
   option {
     background: #333;
     color: #fff;
@@ -160,8 +166,8 @@ const SearchSelect = styled.select`
 `;
 
 const SearchButton = styled(Link)`
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: #fff;
   padding: 1rem 2rem;
   font-size: 0.9rem;
@@ -174,7 +180,7 @@ const SearchButton = styled(Link)`
   display: inline-block;
 
   &:hover {
-    background: rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.3);
   }
 `;
 
@@ -186,7 +192,7 @@ const LatestSection = styled.section`
 `;
 
 const SectionTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 2rem;
   font-weight: 400;
   margin-bottom: 3rem;
@@ -205,8 +211,8 @@ const CardsGrid = styled.div`
 
 const CarCard = styled(Link)`
   position: relative;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -216,14 +222,15 @@ const CarCard = styled(Link)`
 
   &:hover {
     transform: translateY(-5px);
-    border-color: rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
   }
 `;
 
 const CardImage = styled.div`
   height: 250px;
-  background: ${props => props.image ? `url(${props.image})` : '#ddd'} center center/cover no-repeat;
+  background: ${(props) => (props.image ? `url(${props.image})` : "#ddd")}
+    center center/cover no-repeat;
   position: relative;
 `;
 
@@ -237,7 +244,7 @@ const CardBadges = styled.div`
 `;
 
 const Badge = styled.span`
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   color: #fff;
   padding: 0.3rem 0.8rem;
   font-size: 0.7rem;
@@ -251,7 +258,7 @@ const CardContent = styled.div`
 `;
 
 const CardTitle = styled.h3`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.3rem;
   font-weight: 400;
   margin-bottom: 0.5rem;
@@ -275,8 +282,8 @@ const CarsGrid = styled.div`
 `;
 
 const CarForSaleCard = styled(Link)`
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
   transition: all 0.3s ease;
   text-decoration: none;
@@ -285,14 +292,15 @@ const CarForSaleCard = styled(Link)`
 
   &:hover {
     transform: translateY(-3px);
-    border-color: rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
   }
 `;
 
 const CarSaleImage = styled.div`
   height: 250px;
-  background: ${props => props.image ? `url(${props.image})` : '#ddd'} center center/cover no-repeat;
+  background: ${(props) => (props.image ? `url(${props.image})` : "#ddd")}
+    center center/cover no-repeat;
   position: relative;
 `;
 
@@ -300,7 +308,7 @@ const AvailableBadge = styled.div`
   position: absolute;
   top: 1rem;
   left: 1rem;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   color: #fff;
   padding: 0.5rem 1rem;
   font-size: 0.8rem;
@@ -314,7 +322,7 @@ const CarSaleContent = styled.div`
 `;
 
 const CarSaleTitle = styled.h3`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.4rem;
   font-weight: 400;
   margin-bottom: 1rem;
@@ -354,7 +362,7 @@ const SplitSection = styled.section`
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: 60vh;
-  
+
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     height: auto;
@@ -363,7 +371,8 @@ const SplitSection = styled.section`
 
 const SplitPanel = styled.div`
   position: relative;
-  background: ${props => props.image ? `url(${props.image})` : '#333'} center center/cover no-repeat;
+  background: ${(props) => (props.image ? `url(${props.image})` : "#333")}
+    center center/cover no-repeat;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -378,13 +387,13 @@ const SplitPanel = styled.div`
   }
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
   }
 `;
 
@@ -394,7 +403,7 @@ const SplitContent = styled.div`
 `;
 
 const SplitTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 3rem;
   font-weight: 400;
   margin-bottom: 1rem;
@@ -433,13 +442,13 @@ const MissionSection = styled.section`
 `;
 
 const MissionTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 3.5rem;
   font-weight: 400;
   line-height: 1.2;
   margin-bottom: 3rem;
   letter-spacing: 0.02em;
-  
+
   span {
     color: #666;
   }
@@ -453,8 +462,9 @@ const MissionButtons = styled.div`
 `;
 
 const MissionButton = styled(Link)`
-  background: ${props => props.primary ? 'rgba(255,255,255,0.2)' : 'transparent'};
-  border: 1px solid rgba(255,255,255,0.3);
+  background: ${(props) =>
+    props.$primary ? "rgba(255,255,255,0.2)" : "transparent"};
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: #fff;
   padding: 1rem 2rem;
   font-size: 0.9rem;
@@ -467,7 +477,7 @@ const MissionButton = styled(Link)`
   display: inline-block;
 
   &:hover {
-    background: rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.3);
   }
 `;
 
@@ -479,7 +489,7 @@ const JoinSection = styled.section`
 `;
 
 const JoinTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 2.5rem;
   font-weight: 400;
   margin-bottom: 1rem;
@@ -493,8 +503,8 @@ const JoinSubtitle = styled.p`
 `;
 
 const ContactButton = styled(Link)`
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: #fff;
   padding: 1rem 2rem;
   font-size: 0.9rem;
@@ -507,87 +517,103 @@ const ContactButton = styled(Link)`
   display: inline-block;
 
   &:hover {
-    background: rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.3);
   }
 `;
 
 const Homepage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-     const heroSlides = [
-     {
-       title: "YOUNG BOY TOYZ SPERANZA",
-       subtitle: "Completely Mercedes G-Class (W465) converted into a 4-door convertible",
-       image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-     },
-     {
-       title: "Rolls-Royce Cullinan MY 2025 By YOUNG BOY TOYZ", 
-       subtitle: "The ultimate luxury SUV redefined",
-       image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-     },
-     {
-       title: "Bugatti Chiron YOUNG BOY TOYZ",
-       subtitle: "The ultimate expression of automotive excellence and luxury",
-       image: "https://images.unsplash.com/photo-1614200187524-dc4b892acf16?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-     }
-   ];
+  const heroSlides = [
+    {
+      title: "YOUNG BOY TOYZ SPERANZA",
+      subtitle:
+        "Completely Mercedes G-Class (W465) converted into a 4-door convertible",
+      image:
+        "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    },
+    {
+      title: "Rolls-Royce Cullinan MY 2025 By YOUNG BOY TOYZ",
+      subtitle: "The ultimate luxury SUV redefined",
+      image:
+        "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    },
+    {
+      title: "Bugatti Chiron YOUNG BOY TOYZ",
+      subtitle: "The ultimate expression of automotive excellence and luxury",
+      image:
+        "https://images.unsplash.com/photo-1614200187524-dc4b892acf16?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    },
+  ];
 
-     const latestAdditions = [
-     {
-       id: "alec-monopoly-collaboration",
-       title: "YOUNG BOY TOYZ goes art – Collaboration with pop artist Alec Monopoly",
-       image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
-       badges: ["WIDE BODY KIT", "LIMITED EDITION", "LATEST ADDITIONS", "ATELIER"]
-     },
+  const latestAdditions = [
+    {
+      id: "alec-monopoly-collaboration",
+      title:
+        "YOUNG BOY TOYZ goes art – Collaboration with pop artist Alec Monopoly",
+      image:
+        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
+      badges: [
+        "WIDE BODY KIT",
+        "LIMITED EDITION",
+        "LATEST ADDITIONS",
+        "ATELIER",
+      ],
+    },
     {
       id: "bmw-m5-ybt-edition",
       title: "BMW M5 YOUNG BOY TOYZ Edition",
-      image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      badges: ["LATEST ADDITIONS", "PERFORMANCE"]
+      image:
+        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+      badges: ["LATEST ADDITIONS", "PERFORMANCE"],
     },
     {
       id: "pugnator-tricolore",
       title: "Lamborghini Pugnator Tricolore",
-      image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      badges: ["ATELIER", "LATEST ADDITIONS", "ONE OF ONE", "WIDE BODY KIT"]
-    }
+      image:
+        "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+      badges: ["ATELIER", "LATEST ADDITIONS", "ONE OF ONE", "WIDE BODY KIT"],
+    },
   ];
 
-     const carsForSale = [
-     {
-       id: "tesla-cybertruck-elongation-evo",
-       title: "Tesla Cybertruck - Elongation EVO by YOUNG BOY TOYZ",
-       type: "SUV",
-       year: "2024",
-       transmission: "AUTOMATIC", 
-       power: "630 HP",
-       mileage: "100 KM",
-       number: "NR.1113",
-       image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-     },
-     {
-       id: "lamborghini-urus-coupe",
-       title: "Lamborghini Urus Coupé by YOUNG BOY TOYZ",
-       type: "COUPE",
-       year: "2021",
-       transmission: "AUTOMATIC",
-       power: "900 HP", 
-       mileage: "219 KM",
-       number: "NR.714",
-       image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-     },
-     {
-       id: "lamborghini-aventador-ultima",
-       title: "Lamborghini Aventador Ultima 1/350 by YOUNG BOY TOYZ",
-       type: "COUPE",
-       year: "2022", 
-       transmission: "AUTOMATIC",
-       power: "770 HP",
-       mileage: "200 KM",
-       number: "NR.840",
-       image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-     }
-   ];
+  const carsForSale = [
+    {
+      id: "tesla-cybertruck-elongation-evo",
+      title: "Tesla Cybertruck - Elongation EVO by YOUNG BOY TOYZ",
+      type: "SUV",
+      year: "2024",
+      transmission: "AUTOMATIC",
+      power: "630 HP",
+      mileage: "100 KM",
+      number: "NR.1113",
+      image:
+        "https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    },
+    {
+      id: "lamborghini-urus-coupe",
+      title: "Lamborghini Urus Coupé by YOUNG BOY TOYZ",
+      type: "COUPE",
+      year: "2021",
+      transmission: "AUTOMATIC",
+      power: "900 HP",
+      mileage: "219 KM",
+      number: "NR.714",
+      image:
+        "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    },
+    {
+      id: "lamborghini-aventador-ultima",
+      title: "Lamborghini Aventador Ultima 1/350 by YOUNG BOY TOYZ",
+      type: "COUPE",
+      year: "2022",
+      transmission: "AUTOMATIC",
+      power: "770 HP",
+      mileage: "200 KM",
+      number: "NR.840",
+      image:
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    },
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -609,7 +635,7 @@ const Homepage = () => {
         </HeroContent>
         <CarouselDots>
           {heroSlides.map((_, index) => (
-            <Dot 
+            <Dot
               key={index}
               active={index === currentSlide}
               onClick={() => setCurrentSlide(index)}
@@ -621,7 +647,9 @@ const Homepage = () => {
       {/* Find Your Dream Model */}
       <FindModelSection>
         <FindModelTitle>FIND YOUR DREAM MODEL</FindModelTitle>
-        <FindModelSubtitle>Choose options from below and find your customization</FindModelSubtitle>
+        <FindModelSubtitle>
+          Choose options from below and find your customization
+        </FindModelSubtitle>
         <SearchForm>
           <SearchSelect>
             <option>Brand</option>
@@ -646,7 +674,7 @@ const Homepage = () => {
         <SectionTitle>LATEST ADDITIONS</SectionTitle>
         <CardsGrid>
           {latestAdditions.map((car, index) => (
-                          <CarCard key={index} to={`/cars/${car.id}`}>
+            <CarCard key={index} to={`/cars/${car.id}`}>
               <CardImage image={car.image}>
                 <CardBadges>
                   {car.badges.map((badge, i) => (
@@ -691,7 +719,9 @@ const Homepage = () => {
         <SplitPanel image="https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80">
           <SplitContent>
             <SplitTitle>ALL CARS</SplitTitle>
-            <SplitSubtitle>We create unique masterpieces that defy convention.</SplitSubtitle>
+            <SplitSubtitle>
+              We create unique masterpieces that defy convention.
+            </SplitSubtitle>
             <SplitButton>
               <ArrowRight size={20} />
             </SplitButton>
@@ -700,7 +730,9 @@ const Homepage = () => {
         <SplitPanel image="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80">
           <SplitContent>
             <SplitTitle>RIMS</SplitTitle>
-            <SplitSubtitle>Each rim has its own story. Match it with your unique style.</SplitSubtitle>
+            <SplitSubtitle>
+              Each rim has its own story. Match it with your unique style.
+            </SplitSubtitle>
             <SplitButton>
               <ArrowRight size={20} />
             </SplitButton>
@@ -711,24 +743,28 @@ const Homepage = () => {
       {/* Mission Statement */}
       <MissionSection>
         <MissionTitle>
-          OUR MISSION GOES BEYOND TUNING.<br/>
-          WE CREATE UNIQUE MASTERPIECES<br/>
+          OUR MISSION GOES BEYOND TUNING.
+          <br />
+          WE CREATE UNIQUE MASTERPIECES
+          <br />
           <span>THAT DEFY CONVENTION</span>
         </MissionTitle>
         <MissionButtons>
           <MissionButton to="/about">ABOUT US</MissionButton>
-          <MissionButton to="/models" primary>ALL MODELS</MissionButton>
+          <MissionButton to="/models" $primary>
+            ALL MODELS
+          </MissionButton>
         </MissionButtons>
       </MissionSection>
 
-             {/* Join YOUNG BOY TOYZ */}
-       <JoinSection>
-         <JoinTitle>JOIN YOUNG BOY TOYZ</JoinTitle>
-         <JoinSubtitle>Get in touch to make your dream car true.</JoinSubtitle>
-         <ContactButton to="/contact">CONTACT US</ContactButton>
-       </JoinSection>
+      {/* Join YOUNG BOY TOYZ */}
+      <JoinSection>
+        <JoinTitle>JOIN YOUNG BOY TOYZ</JoinTitle>
+        <JoinSubtitle>Get in touch to make your dream car true.</JoinSubtitle>
+        <ContactButton to="/contact">CONTACT US</ContactButton>
+      </JoinSection>
     </HomepageWrapper>
   );
 };
 
-export default Homepage; 
+export default Homepage;

@@ -401,7 +401,7 @@ const BackgroundBlob = styled.div`
   height: 384px;
   border-radius: 50%;
   mix-blend-mode: multiply;
-  filter: blur(3rem);
+  filter: blur(1rem);
   animation: ${pulse} 4s ease-in-out infinite;
   animation-delay: ${(props) => props.delay};
 

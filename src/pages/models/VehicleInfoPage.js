@@ -208,7 +208,11 @@ const VehicleInfoPage = () => {
                 <ReserveCar
                   onClick={() => navigate(`/reserve/${category}/${vehicleId}`)}
                 >
-                  Book This car now
+                  Book This{" "}
+                  {category === "bikes" || category === "cars"
+                    ? category.slice(0, -1)
+                    : category}{" "}
+                  now
                 </ReserveCar>
               </VehicleDetails>
             </VehicleInfo>
@@ -238,7 +242,7 @@ const VehicleInfoPage = () => {
               <FeatureList>
                 {dummyVehicle.features?.map((feature, index) => (
                   <FeatureItem key={index}>
-                    <CheckCircle size={16} color="#00a878" />
+                    <CheckCircle size={16} color="#dc2626" />
                     {feature}
                   </FeatureItem>
                 ))}
@@ -378,7 +382,7 @@ const ImageBadges = styled.div`
 `;
 
 const ImageBadge = styled.span`
-  background: rgba(0, 168, 120, 0.9);
+  background: inear-gradient(to right, #ffffff, #ff6b6b, #e53935);
   color: #fff;
   padding: 0.3rem 0.8rem;
   font-size: 0.7rem;
@@ -403,12 +407,12 @@ const Thumbnail = styled.div`
     center center/contain no-repeat;
   border-radius: 5px;
   cursor: pointer;
-  border: 2px solid ${(props) => (props.active ? "#00a878" : "transparent")};
+  border: 2px solid ${(props) => (props.active ? "#dc2626" : "transparent")};
   transition: all 0.3s ease;
   transform: ${(props) => (props.active ? "scale(1.05)" : "scale(1)")};
 
   &:hover {
-    border-color: #00a878;
+    border-color: #dc2626;
     transform: scale(1.05);
   }
 `;
@@ -493,7 +497,7 @@ const RatingText = styled.span`
 `;
 
 const ReserveCar = styled.button`
-  background-color: #00a878;
+  background: linear-gradient(to right, #dc2626, #b91c1c);
   color: #fff;
   border: none;
   border-radius: 50px;
@@ -506,7 +510,7 @@ const ReserveCar = styled.button`
   letter-spacing: 1px;
 
   &:hover {
-    background-color: #008f6a;
+    background: linear-gradient(to right, #991b1b, #c51c1c);
     transform: scale(1.05);
   }
 
