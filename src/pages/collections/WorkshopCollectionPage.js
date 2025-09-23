@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { WorkshopCardSkeleton } from "../../components/cards/WorkshopCardSkeleton";
 
 const fetchWorkshops = async () => {
   const apiUrl = `${process.env.REACT_APP_API_URL}/workshop`;
@@ -37,7 +38,15 @@ const WorkshopCollectionPage = () => {
 
       {isError && <p>Error: {error.message}</p>}
 
-      {isLoading && <p>Loading workshops...</p>}
+      {isLoading && (
+        <WorkshopsGrid>
+          <GridContainer>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <WorkshopCardSkeleton key={index} />
+            ))}
+          </GridContainer>
+        </WorkshopsGrid>
+      )}
 
       {!isLoading && !isError && (
         <WorkshopsGrid>

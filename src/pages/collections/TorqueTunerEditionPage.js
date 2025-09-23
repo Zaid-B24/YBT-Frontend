@@ -2,16 +2,9 @@ import React, { useState, useMemo } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import {
-  Search,
-  ChevronDown,
-  ChevronUp,
-  ArrowRight,
-  Heart,
-  ShoppingCart,
-  Zap,
-} from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Zap } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { CarCardSkeleton } from "../../components/cards/CarCardSkeleton";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -612,8 +605,15 @@ const TorqueTunerEditionPage = () => {
             </SortContainer>
           </ContentHeader>
 
-          {isLoading && <p>Loading Performance Vehicles...</p>}
           {isError && <p>Error: {error.message}</p>}
+          {isLoading && (
+            <CarsGrid>
+              {/* Render 6 skeletons for a full grid layout */}
+              {Array.from({ length: 6 }).map((_, index) => (
+                <CarCardSkeleton key={index} />
+              ))}
+            </CarsGrid>
+          )}
 
           {!isLoading && !isError && (
             <CarsGrid>

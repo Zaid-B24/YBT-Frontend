@@ -3,6 +3,10 @@ import { ArrowRight, Award, Calendar, MapPin } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import {
+  DesignerPageSkeleton,
+  ProductCardSkeleton,
+} from "../../components/cards/DetailPageSkeletons";
 
 const fetchDesignerBySlug = async (slug) => {
   const response = await fetch(
@@ -40,7 +44,7 @@ const DesignerDetailPage = () => {
   });
 
   if (isLoadingDesigner) {
-    return <p>Loading Designer...</p>;
+    return <DesignerPageSkeleton />;
   }
 
   if (!designer) {
@@ -76,7 +80,11 @@ const DesignerDetailPage = () => {
         <SectionTitle>Creations by {designer.name}</SectionTitle>
         <ProductsGrid>
           {isLoadingCars ? (
-            <p>Loading cars...</p>
+            <>
+              {Array.from({ length: 3 }).map((_, index) => (
+                <ProductCardSkeleton key={index} />
+              ))}
+            </>
           ) : (
             cars.map((car, index) => (
               <ProductCard key={car.id} /* ...animation props... */>

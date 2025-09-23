@@ -3,6 +3,10 @@ import { motion } from "framer-motion";
 import { Link, useParams } from "react-router-dom";
 import { ArrowRight, Calendar, MapPin, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import {
+  DesignerPageSkeleton,
+  ProductCardSkeleton,
+} from "../../components/cards/DetailPageSkeletons";
 
 const fetchWorkshopBySlug = async (slug) => {
   const response = await fetch(
@@ -37,7 +41,7 @@ const WorkshopDetailPage = () => {
     enabled: !!workshop, // Only run if 'workshop' exists
   });
 
-  if (isLoadingWorkshop) return <p>Loading Workshop...</p>;
+  if (isLoadingWorkshop) return <DesignerPageSkeleton />;
   if (!workshop) return <p>Workshop not found.</p>;
 
   return (
@@ -92,7 +96,11 @@ const WorkshopDetailPage = () => {
         <SectionTitle>Featured Projects</SectionTitle>
         <ProjectsGrid>
           {isLoadingCars ? (
-            <p>Loading projects...</p>
+            <>
+              {Array.from({ length: 3 }).map((_, index) => (
+                <ProductCardSkeleton key={index} />
+              ))}
+            </>
           ) : (
             // Change 'projects.map' to 'cars.map' and use 'car' as the item
             cars.map((car, index) => (
