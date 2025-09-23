@@ -8,30 +8,100 @@ import {
   Clock,
   Users,
   ArrowLeft,
-  ExternalLink,
   Share2,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
+
 const PageWrapper = styled.div`
-  padding-top: 100px;
+  padding-top: 0px;
   min-height: 100vh;
   background: #000;
   color: #fff;
 `;
 
+const TitleSection = styled.section`
+  // Change the background to a semi-transparent color
+  background: rgba(
+    10,
+    10,
+    10,
+    0.2
+  ); // 0.7 is the transparency. Adjust between 0.1 and 1.
+
+  // Add this line to create the frosted glass effect
+  backdrop-filter: blur(12px);
+
+  // Keep the other styles
+  padding: 1.5rem 2rem;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  margin-top: -20px;
+
+  // A subtle border helps define the glass edge
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+  border-right: 2px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+`;
+
+const EventTitle = styled.h1`
+  font-family: "Playfair Display", serif;
+  font-size: 3rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #ffffff 70%, #b8b8b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+`;
+
+const TitleContent = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+`;
+
+// -- MODIFIED STYLED COMPONENT --
 const HeroSection = styled.section`
   position: relative;
-  height: 60vh;
-  background: ${(props) =>
-      props.image
-        ? `url(${props.image})`
-        : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
-    center center/cover no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 50vh;
   overflow: hidden;
+  background-color: #000;
+
+  // Keep the back button positioned relative to the banner
+  & > a {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    z-index: 3;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 150px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    z-index: 1;
+  }
 `;
 
 const HeroOverlay = styled.div`
@@ -45,6 +115,7 @@ const HeroOverlay = styled.div`
     rgba(0, 0, 0, 0.7) 0%,
     rgba(0, 0, 0, 0.5) 100%
   );
+  z-index: 2; // Make sure this is higher than the video's z-index
 `;
 
 const HeroContent = styled.div`
@@ -76,35 +147,6 @@ const BackButton = styled(Link)`
   }
 `;
 
-const EventCategory = styled.span`
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-`;
-
-const EventTitle = styled.h1`
-  font-family: "Playfair Display", serif;
-  font-size: 3rem;
-  font-weight: 400;
-  margin-bottom: 1rem;
-
-  @media (max-width: 768px) {
-    font-size: 2rem;
-  }
-`;
-
-const EventSubtitle = styled.p`
-  font-size: 1.2rem;
-  color: #ccc;
-  margin-bottom: 2rem;
-`;
-
 const EventMeta = styled.div`
   display: flex;
   gap: 2rem;
@@ -119,10 +161,25 @@ const MetaItem = styled.div`
   gap: 0.5rem;
   color: #ccc;
   font-size: 0.9rem;
+  position: relative; // Needed for the separator
+
+  // NEW: Adds a dot separator between items
+  &:not(:last-child)::after {
+    content: "•";
+    color: #555;
+    margin-left: 2rem;
+  }
+
+  // Hides the separator when items wrap on mobile
+  @media (max-width: 768px) {
+    &:not(:last-child)::after {
+      display: none;
+    }
+  }
 `;
 
 const RegisterButton = styled(motion.button)`
-  background: linear-gradient(45deg, #fff, #f0f0f0);
+  background: linear-gradient(45deg, #fff, #dcdcdc);
   color: #000;
   border: none;
   padding: 1rem 2rem;
@@ -130,10 +187,15 @@ const RegisterButton = styled(motion.button)`
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+
+  // Setup for shimmer effect
+  background-size: 200% auto;
+  transition: all 0.4s ease-in-out;
 
   &:hover {
-    background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+    background-position: right center; // Shifts the gradient on hover
+    transform: translateY(-2px);
   }
 `;
 
@@ -218,8 +280,13 @@ const SidebarCard = styled.div`
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
-`;
+  transition: all 0.3s ease;
 
+  &:hover {
+    transform: scale(1.02);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+`;
 const SidebarTitle = styled.h3`
   font-family: "Playfair Display", serif;
   font-size: 1.3rem;
@@ -263,6 +330,17 @@ const ShareButton = styled.button`
   &:hover {
     background: rgba(255, 255, 255, 0.2);
   }
+`;
+
+const VideoBackground = styled.video`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; // Ensures the video covers the area without distortion
+  transform: translate(-50%, -50%);
+  z-index: 1; // Places it below the overlay
 `;
 
 const EventDetailsPage = () => {
@@ -326,13 +404,22 @@ const EventDetailsPage = () => {
 
   return (
     <PageWrapper>
-      <HeroSection image={event.primaryImage}>
-        <HeroOverlay />
+      <HeroSection>
+        <VideoBackground
+          autoPlay // Makes the video play automatically
+          loop // Loops the video
+          muted // Mutes the video (required for autoplay in most browsers)
+          playsInline // Important for iOS to prevent fullscreen // Use the image as a loading thumbnail!
+          src="/videos/trial.mp4"
+        />
         <BackButton to="/events">
           <ArrowLeft size={20} />
         </BackButton>
-        <HeroContent>
-          {/* <EventCategory>{event.category}</EventCategory> */}
+      </HeroSection>
+      {/* <HeroOverlay /> */}
+
+      <TitleSection>
+        <TitleContent>
           <EventTitle>{event.title}</EventTitle>
           {/* <EventSubtitle>{event.subtitle}</EventSubtitle> */}
           <EventMeta>
@@ -374,98 +461,126 @@ const EventDetailsPage = () => {
           >
             {isRegistered ? "Registered ✓" : "Register Now"}
           </RegisterButton>
-        </HeroContent>
-      </HeroSection>
+        </TitleContent>
+      </TitleSection>
 
       <ContentSection>
         <MainContent>
-          <ContentBlock>
-            <SectionTitle>About This Event</SectionTitle>
-            <Description
-              dangerouslySetInnerHTML={{ __html: event.description }}
-            />
-          </ContentBlock>
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            <ContentBlock>
+              <SectionTitle>About This Event</SectionTitle>
+              <Description
+                dangerouslySetInnerHTML={{ __html: event.description }}
+              />
+            </ContentBlock>
+          </motion.div>
 
-          <ContentBlock>
-            <SectionTitle>Event Agenda</SectionTitle>
-            <AgendaList>
-              {event.agenda?.map((item, index) => (
-                <AgendaItem key={index}>
-                  <AgendaTime>
-                    {new Date(item.time).toLocaleTimeString("en-US", {
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            <ContentBlock>
+              <SectionTitle>Event Agenda</SectionTitle>
+              <AgendaList>
+                {event.agenda?.map((item, index) => (
+                  <AgendaItem key={index}>
+                    <AgendaTime>
+                      {new Date(item.time).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </AgendaTime>
+                    <AgendaContent>
+                      <h3>{item.title}</h3>
+                      <p>{item.description}</p>
+                    </AgendaContent>
+                  </AgendaItem>
+                ))}
+              </AgendaList>
+            </ContentBlock>
+          </motion.div>
+        </MainContent>
+
+        <Sidebar>
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            <SidebarCard>
+              <SidebarTitle>Event Details</SidebarTitle>
+              <InfoList>
+                <InfoItem>
+                  <Calendar size={16} />
+                  <div>
+                    <strong>Date</strong>
+                    <br />
+                    {new Date(event.startDate).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </div>
+                </InfoItem>
+                <InfoItem>
+                  <Clock size={16} />
+                  <div>
+                    <strong>Time</strong>
+                    <br />
+                    {new Date(event.startDate).toLocaleTimeString("en-US", {
                       hour: "2-digit",
                       minute: "2-digit",
                       hour12: true,
                     })}
-                  </AgendaTime>
-                  <AgendaContent>
-                    <h3>{item.title}</h3>
-                    <p>{item.description}</p>
-                  </AgendaContent>
-                </AgendaItem>
-              ))}
-            </AgendaList>
-          </ContentBlock>
-        </MainContent>
+                  </div>
+                </InfoItem>
+                <InfoItem>
+                  <MapPin size={16} />
+                  <div>
+                    <strong>Location</strong>
+                    <br />
+                    {event.location}
+                    <br />
+                    <small>{event.address}</small>
+                  </div>
+                </InfoItem>
+                <InfoItem>
+                  <Users size={16} />
+                  <div>
+                    <strong>Expected Attendance</strong>
+                    <br />
+                    {/* Use currentAttendees and maxAttendees */}
+                    {event.currentAttendees} / {event.maxAttendees}
+                  </div>
+                </InfoItem>
+              </InfoList>
+            </SidebarCard>
+          </motion.div>
 
-        <Sidebar>
-          <SidebarCard>
-            <SidebarTitle>Event Details</SidebarTitle>
-            <InfoList>
-              <InfoItem>
-                <Calendar size={16} />
-                <div>
-                  <strong>Date</strong>
-                  <br />
-                  {new Date(event.startDate).toLocaleDateString("en-US", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </div>
-              </InfoItem>
-              <InfoItem>
-                <Clock size={16} />
-                <div>
-                  <strong>Time</strong>
-                  <br />
-                  {new Date(event.startDate).toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </div>
-              </InfoItem>
-              <InfoItem>
-                <MapPin size={16} />
-                <div>
-                  <strong>Location</strong>
-                  <br />
-                  {event.location}
-                  <br />
-                  <small>{event.address}</small>
-                </div>
-              </InfoItem>
-              <InfoItem>
-                <Users size={16} />
-                <div>
-                  <strong>Expected Attendance</strong>
-                  <br />
-                  {/* Use currentAttendees and maxAttendees */}
-                  {event.currentAttendees} / {event.maxAttendees}
-                </div>
-              </InfoItem>
-            </InfoList>
-          </SidebarCard>
-
-          <SidebarCard>
-            <SidebarTitle>Share Event</SidebarTitle>
-            <ShareButton onClick={handleShare}>
-              <Share2 size={16} />
-              Share Event
-            </ShareButton>
-          </SidebarCard>
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            <SidebarCard>
+              <SidebarTitle>Share Event</SidebarTitle>
+              <ShareButton onClick={handleShare}>
+                <Share2 size={16} />
+                Share Event
+              </ShareButton>
+            </SidebarCard>
+          </motion.div>
         </Sidebar>
       </ContentSection>
     </PageWrapper>

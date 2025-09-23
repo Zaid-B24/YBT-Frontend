@@ -1,8 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ArrowRight, Award, User, Star } from 'lucide-react';
+import React from "react";
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { ArrowRight, Award, User, Star } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -18,11 +19,11 @@ const HeroSection = styled.section`
 `;
 
 const HeroTitle = styled.h1`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 4rem;
   font-weight: 400;
   margin-bottom: 1rem;
-  
+
   @media (max-width: 768px) {
     font-size: 2.5rem;
   }
@@ -52,8 +53,8 @@ const GridContainer = styled.div`
 `;
 
 const DesignerCard = styled(motion.div)`
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -61,21 +62,29 @@ const DesignerCard = styled(motion.div)`
 
   &:hover {
     transform: translateY(-5px);
-    border-color: rgba(255,255,255,0.2);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   }
 `;
 
 const DesignerImage = styled.div`
   height: 300px;
-  background: ${props => props.image ? `url(${props.image})` : 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)'} center center/cover no-repeat;
+  background: ${(props) =>
+      props.image
+        ? `url(${props.image})`
+        : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
+    center center/cover no-repeat;
   position: relative;
 `;
 
 const DesignerOverlay = styled.div`
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.8) 100%);
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
   display: flex;
   align-items: flex-end;
   padding: 2rem;
@@ -85,7 +94,7 @@ const DesignerIcon = styled.div`
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   color: #fff;
   padding: 0.8rem;
   border-radius: 50%;
@@ -97,7 +106,7 @@ const DesignerContent = styled.div`
 `;
 
 const DesignerTitle = styled.h3`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.8rem;
   font-weight: 400;
   margin-bottom: 0.5rem;
@@ -129,7 +138,7 @@ const Stat = styled.div`
 `;
 
 const StatNumber = styled.div`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.5rem;
   font-weight: 400;
   color: #fff;
@@ -161,8 +170,8 @@ const ViewButton = styled(Link)`
 
 const FeaturedSection = styled.section`
   padding: 4rem 2rem;
-  background: rgba(255,255,255,0.02);
-  border-top: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 const FeaturedContainer = styled.div`
@@ -172,7 +181,7 @@ const FeaturedContainer = styled.div`
 `;
 
 const FeaturedTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 2.5rem;
   font-weight: 400;
   margin-bottom: 2rem;
@@ -186,139 +195,100 @@ const FeaturedText = styled.p`
   margin: 0 auto;
 `;
 
+const fetchDesigners = async () => {
+  const apiUrl = `${process.env.REACT_APP_API_URL}/designer`;
+  const response = await fetch(apiUrl);
+  if (!response.ok) {
+    throw new Error("Failed to fetch designers");
+  }
+  return response.json();
+};
+
 const DesignerCollectionPage = () => {
-  const designers = [
-    {
-      id: 1,
-      name: "GS Designs",
-      title: "Automotive Design Studio",
-      description: "Pioneers in luxury automotive design, GS Designs has been creating stunning custom vehicles that blend traditional craftsmanship with modern innovation.",
-      image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      icon: <Award size={24} />,
-      stats: {
-        projects: "50+",
-        years: "15+",
-        awards: "12"
-      }
-    },
-    {
-      id: 2,
-      name: "DC Designs",
-      title: "Custom Automotive Solutions",
-      description: "Renowned for their bold and innovative approach to automotive design, DC Designs transforms ordinary vehicles into extraordinary masterpieces.",
-      image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      icon: <Star size={24} />,
-      stats: {
-        projects: "75+",
-        years: "20+",
-        awards: "18"
-      }
-    },
-    {
-      id: 3,
-      name: "Motormind Designs",
-      title: "Performance & Aesthetics",
-      description: "Specialists in high-performance vehicle modifications, Motormind Designs combines cutting-edge technology with artistic vision.",
-      image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
-      icon: <User size={24} />,
-      stats: {
-        projects: "40+",
-        years: "10+",
-        awards: "8"
-      }
-    },
-    {
-      id: 4,
-      name: "Velocity Customs",
-      title: "Bespoke Automotive Art",
-      description: "Creating one-of-a-kind automotive experiences, Velocity Customs is known for their attention to detail and innovative design solutions.",
-      image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      icon: <Award size={24} />,
-      stats: {
-        projects: "60+",
-        years: "12+",
-        awards: "15"
-      }
-    },
-    {
-      id: 5,
-      name: "Apex Automotive Studios",
-      title: "Luxury Vehicle Specialists",
-      description: "Focused on ultra-luxury automotive modifications, Apex Automotive Studios creates vehicles that redefine automotive excellence.",
-      image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      icon: <Star size={24} />,
-      stats: {
-        projects: "35+",
-        years: "8+",
-        awards: "10"
-      }
-    }
-  ];
+  const {
+    data: designers = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["designers"],
+    queryFn: fetchDesigners,
+  });
 
   return (
     <PageWrapper>
       <HeroSection>
         <HeroTitle>Designer Collection</HeroTitle>
         <HeroSubtitle>
-          Discover India's finest automotive designers and their exceptional creations. 
-          Each designer brings their unique vision and expertise to create automotive masterpieces.
+          Discover India's finest automotive designers and their exceptional
+          creations. Each designer brings their unique vision and expertise to
+          create automotive masterpieces.
         </HeroSubtitle>
       </HeroSection>
 
-      <DesignersGrid>
-        <GridContainer>
-          {designers.map((designer, index) => (
-            <DesignerCard
-              key={designer.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <DesignerImage image={designer.image}>
-                <DesignerIcon>{designer.icon}</DesignerIcon>
-                <DesignerOverlay>
-                  <div>
-                    <DesignerTitle>{designer.name}</DesignerTitle>
-                    <DesignerSubtitle>{designer.title}</DesignerSubtitle>
-                  </div>
-                </DesignerOverlay>
-              </DesignerImage>
-              <DesignerContent>
-                <DesignerDescription>{designer.description}</DesignerDescription>
-                <DesignerStats>
-                  <Stat>
-                    <StatNumber>{designer.stats.projects}</StatNumber>
-                    <StatLabel>Projects</StatLabel>
-                  </Stat>
-                  <Stat>
-                    <StatNumber>{designer.stats.years}</StatNumber>
-                    <StatLabel>Experience</StatLabel>
-                  </Stat>
-                  <Stat>
-                    <StatNumber>{designer.stats.awards}</StatNumber>
-                    <StatLabel>Awards</StatLabel>
-                  </Stat>
-                </DesignerStats>
-                <ViewButton to={`/collections/${designer.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                  View Designer
-                  <ArrowRight size={16} />
-                </ViewButton>
-              </DesignerContent>
-            </DesignerCard>
-          ))}
-        </GridContainer>
-      </DesignersGrid>
+      {isLoading && <p>Loading designers...</p>}
+      {isError && <p>Error: {error.message}</p>}
+
+      {!isLoading && !isError && (
+        <DesignersGrid>
+          <GridContainer>
+            {designers.map((designer, index) => (
+              <DesignerCard
+                key={designer.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <DesignerImage image={designer.image}>
+                  {/* <DesignerIcon>{designer.icon}</DesignerIcon> */}
+                  <DesignerOverlay>
+                    <div>
+                      <DesignerTitle>{designer.name}</DesignerTitle>
+                      <DesignerSubtitle>{designer.title}</DesignerSubtitle>
+                    </div>
+                  </DesignerOverlay>
+                </DesignerImage>
+                <DesignerContent>
+                  <DesignerDescription>
+                    {designer.description}
+                  </DesignerDescription>
+                  <DesignerStats>
+                    <Stat>
+                      <StatNumber>{designer.stats.projects}</StatNumber>
+                      <StatLabel>Projects</StatLabel>
+                    </Stat>
+                    <Stat>
+                      <StatNumber>{designer.stats.years}</StatNumber>
+                      <StatLabel>Experience</StatLabel>
+                    </Stat>
+                    <Stat>
+                      <StatNumber>{designer.stats.awards}</StatNumber>
+                      <StatLabel>Awards</StatLabel>
+                    </Stat>
+                  </DesignerStats>
+                  <ViewButton to={`/collections/designer/${designer.slug}`}>
+                    View Collection
+                  </ViewButton>
+                </DesignerContent>
+              </DesignerCard>
+            ))}
+          </GridContainer>
+        </DesignersGrid>
+      )}
 
       <FeaturedSection>
         <FeaturedContainer>
           <FeaturedTitle>Crafting Automotive Excellence</FeaturedTitle>
           <FeaturedText>
-            Our designer collection features India's most talented automotive designers who have dedicated their careers 
-            to pushing the boundaries of automotive design. Each designer brings their unique perspective, combining 
-            traditional craftsmanship with modern innovation to create vehicles that are not just modes of transportation, 
-            but works of art. From luxury modifications to performance enhancements, these designers represent the pinnacle 
-            of automotive creativity and engineering excellence.
+            Our designer collection features India's most talented automotive
+            designers who have dedicated their careers to pushing the boundaries
+            of automotive design. Each designer brings their unique perspective,
+            combining traditional craftsmanship with modern innovation to create
+            vehicles that are not just modes of transportation, but works of
+            art. From luxury modifications to performance enhancements, these
+            designers represent the pinnacle of automotive creativity and
+            engineering excellence.
           </FeaturedText>
         </FeaturedContainer>
       </FeaturedSection>
@@ -326,4 +296,72 @@ const DesignerCollectionPage = () => {
   );
 };
 
-export default DesignerCollectionPage; 
+export default DesignerCollectionPage;
+
+// const designers = [
+//     {
+//       id: 1,
+//       name: "GS Designs",
+//       title: "Automotive Design Studio",
+//       description: "Pioneers in luxury automotive design, GS Designs has been creating stunning custom vehicles that blend traditional craftsmanship with modern innovation.",
+//       image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+//       icon: <Award size={24} />,
+//       stats: {
+//         projects: "50+",
+//         years: "15+",
+//         awards: "12"
+//       }
+//     },
+//     {
+//       id: 2,
+//       name: "DC Designs",
+//       title: "Custom Automotive Solutions",
+//       description: "Renowned for their bold and innovative approach to automotive design, DC Designs transforms ordinary vehicles into extraordinary masterpieces.",
+//       image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+//       icon: <Star size={24} />,
+//       stats: {
+//         projects: "75+",
+//         years: "20+",
+//         awards: "18"
+//       }
+//     },
+//     {
+//       id: 3,
+//       name: "Motormind Designs",
+//       title: "Performance & Aesthetics",
+//       description: "Specialists in high-performance vehicle modifications, Motormind Designs combines cutting-edge technology with artistic vision.",
+//       image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
+//       icon: <User size={24} />,
+//       stats: {
+//         projects: "40+",
+//         years: "10+",
+//         awards: "8"
+//       }
+//     },
+//     {
+//       id: 4,
+//       name: "Velocity Customs",
+//       title: "Bespoke Automotive Art",
+//       description: "Creating one-of-a-kind automotive experiences, Velocity Customs is known for their attention to detail and innovative design solutions.",
+//       image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+//       icon: <Award size={24} />,
+//       stats: {
+//         projects: "60+",
+//         years: "12+",
+//         awards: "15"
+//       }
+//     },
+//     {
+//       id: 5,
+//       name: "Apex Automotive Studios",
+//       title: "Luxury Vehicle Specialists",
+//       description: "Focused on ultra-luxury automotive modifications, Apex Automotive Studios creates vehicles that redefine automotive excellence.",
+//       image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+//       icon: <Star size={24} />,
+//       stats: {
+//         projects: "35+",
+//         years: "8+",
+//         awards: "10"
+//       }
+//     }
+//   ];

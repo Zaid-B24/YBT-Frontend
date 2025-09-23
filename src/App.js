@@ -20,10 +20,7 @@ import CarsPage from "./pages/CarsPage";
 import ModelsPage from "./pages/models/ModelsPage";
 import BlogPage from "./pages/BlogPage";
 
-// Auth Pages
-// import LoginPage from "./pages/auth/LoginPage";
-// import SignupPage from "./pages/auth/SignupPage";
-import { AuthPage, CarDetailsPage } from "./pages";
+import { AuthPage } from "./pages";
 
 // Collections Pages
 import CollectionsPage from "./pages/collections/CollectionsPage";
@@ -31,17 +28,10 @@ import YBTCollectionPage from "./pages/collections/YBTCollectionPage";
 import YBTCarsPage from "./pages/collections/YBTCarsPage";
 import YBTBikesPage from "./pages/collections/YBTBikesPage";
 import DesignerCollectionPage from "./pages/collections/DesignerCollectionPage";
-import GSDesignsPage from "./pages/collections/GSDesignsPage";
-import RollingHavenPage from "./pages/collections/RollingHavenPage";
 import TorqueTunerEditionPage from "./pages/collections/TorqueTunerEditionPage";
-import CustomWorkshopsPage from "./pages/collections/CustomWorkshopsPage";
-import DCDesignsPage from "./pages/collections/DCDesignsPage";
-import HeritageRestorationPage from "./pages/collections/HeritageRestorationPage";
-import LuxuryNomadPage from "./pages/collections/LuxuryNomadPage";
-import MotormindDesignsPage from "./pages/collections/MotormindDesignsPage";
-import PrecisionCraftWorkshopPage from "./pages/collections/PrecisionCraftWorkshopPage";
-import VelocityCustomsPage from "./pages/collections/VelocityCustomsPage";
-import WanderlustCaravansPage from "./pages/collections/WanderlustCaravansPage";
+import DesignerDetailPage from "./pages/collections/DesignerDetailsPage";
+import WorkshopCollectionPage from "./pages/collections/WorkshopCollectionPage";
+import WorkshopDetailPage from "./pages/collections/WorkshopDetailPage";
 
 // Rentals Pages
 import RentalsPage from "./pages/rentals/RentalsPage";
@@ -82,6 +72,8 @@ import VehicleInfoPage from "./pages/models/VehicleInfoPage";
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import BikeManagement from "./pages/admin/bikeManagement";
 
+import ScrollToTop from "./components/common/ScrollToTop";
+
 function App() {
   return (
     <AuthProvider>
@@ -89,6 +81,7 @@ function App() {
         <WishlistProvider>
           <GlobalStyle />
           <div className="App">
+            <ScrollToTop />
             <Routes>
               <Route path="/admin" element={<AdminLoginPage />} />
               {/* Admin Routes */}
@@ -272,25 +265,16 @@ function App() {
                 }
               />
               <Route
-                path="/collections/gs-designs"
+                path="/collections/designer/:slug"
                 element={
                   <>
                     <Header />
-                    <GSDesignsPage />
+                    <DesignerDetailPage />
                     <Footer />
                   </>
                 }
               />
-              <Route
-                path="/collections/rolling-haven"
-                element={
-                  <>
-                    <Header />
-                    <RollingHavenPage />
-                    <Footer />
-                  </>
-                }
-              />
+
               <Route
                 path="/collections/torque-tuner"
                 element={
@@ -302,81 +286,22 @@ function App() {
                 }
               />
               <Route
-                path="/collections/custom-workshops"
+                path="/collections/workshops"
                 element={
                   <>
                     <Header />
-                    <CustomWorkshopsPage />
+                    <WorkshopCollectionPage />
                     <Footer />
                   </>
                 }
               />
+
               <Route
-                path="/collections/dc-designs"
+                path="/collections/workshop/:slug"
                 element={
                   <>
                     <Header />
-                    <DCDesignsPage />
-                    <Footer />
-                  </>
-                }
-              />
-              <Route
-                path="/collections/heritage-restoration"
-                element={
-                  <>
-                    <Header />
-                    <HeritageRestorationPage />
-                    <Footer />
-                  </>
-                }
-              />
-              <Route
-                path="/collections/luxury-nomad"
-                element={
-                  <>
-                    <Header />
-                    <LuxuryNomadPage />
-                    <Footer />
-                  </>
-                }
-              />
-              <Route
-                path="/collections/motormind-designs"
-                element={
-                  <>
-                    <Header />
-                    <MotormindDesignsPage />
-                    <Footer />
-                  </>
-                }
-              />
-              <Route
-                path="/collections/precision-craft"
-                element={
-                  <>
-                    <Header />
-                    <PrecisionCraftWorkshopPage />
-                    <Footer />
-                  </>
-                }
-              />
-              <Route
-                path="/collections/velocity-customs"
-                element={
-                  <>
-                    <Header />
-                    <VelocityCustomsPage />
-                    <Footer />
-                  </>
-                }
-              />
-              <Route
-                path="/collections/wanderlust-caravans"
-                element={
-                  <>
-                    <Header />
-                    <WanderlustCaravansPage />
+                    <WorkshopDetailPage />
                     <Footer />
                   </>
                 }

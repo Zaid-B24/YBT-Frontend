@@ -20,6 +20,7 @@ import {
 import { FaDoorOpen } from "react-icons/fa";
 import { LuGitCommitHorizontal, LuGitCommitVertical } from "react-icons/lu";
 import { useQuery } from "@tanstack/react-query";
+import { VehicleInfoPageSkeleton } from "../../components/cards/VehicleInfoPageSkeleton";
 
 // Components
 
@@ -122,7 +123,7 @@ const VehicleInfoPage = () => {
     return `${parts[0]}/upload/${transformations.join(",")}/${parts[1]}`;
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <VehicleInfoPageSkeleton />;
   if (isError) return <div>Error: {error.message}</div>;
   if (!vehicle) return <div>Vehicle not found</div>;
 
@@ -141,7 +142,7 @@ const VehicleInfoPage = () => {
         {/* Back Button */}
         <BackButton onClick={() => navigate(-1)}>
           <ArrowLeft size={16} />
-          Back to Models
+          Back
         </BackButton>
 
         <VehicleHeader>

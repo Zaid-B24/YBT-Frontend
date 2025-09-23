@@ -9,9 +9,9 @@ export const carsData = [
     date: "2025-05-19",
     description: "One of one wide body kit for Ferrari Purosangue",
     price: "Contact for pricing",
-    image: "/images/ferrari-purosangue-red.jpg",
+    image: "https://images.pistonheads.com/nimg/48330/blobid0.jpg",
     features: ["Wide body kit", "Custom interior", "Carbon fiber body"],
-    category: "One of one"
+    category: "One of one",
   },
   {
     id: 2,
@@ -24,7 +24,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/ferrari-sf90-spider.jpg",
     features: ["Wide body kit", "Aerodynamic enhancements", "Custom wheels"],
-    category: "Wide body kit"
+    category: "Wide body kit",
   },
   {
     id: 3,
@@ -37,7 +37,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/ferrari-sf90-stradale.jpg",
     features: ["Wide body kit", "Carbon fiber components", "Custom styling"],
-    category: "Wide body kit"
+    category: "Wide body kit",
   },
   {
     id: 4,
@@ -50,7 +50,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/ferrari-sf90-yellow.jpg",
     features: ["Soft kit", "Custom paint", "Interior upgrades"],
-    category: "Soft kit"
+    category: "Soft kit",
   },
   {
     id: 5,
@@ -63,7 +63,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/ferrari-296-gts.jpg",
     features: ["Full body kit", "Performance upgrades", "Luxury interior"],
-    category: "Full body kit"
+    category: "Full body kit",
   },
   {
     id: 6,
@@ -76,7 +76,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/ferrari-296-gtb.jpg",
     features: ["Full body kit", "Carbon fiber", "Custom exhaust"],
-    category: "Full body kit"
+    category: "Full body kit",
   },
   {
     id: 7,
@@ -89,7 +89,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/ferrari-monza.jpg",
     features: ["Limited edition", "Exclusive styling", "Track-focused"],
-    category: "Limited edition"
+    category: "Limited edition",
   },
 
   // Lamborghini Models
@@ -104,7 +104,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/lamborghini-revuelto.jpg",
     features: ["Atelier craftsmanship", "Custom colors", "Performance tuning"],
-    category: "Atelier"
+    category: "Atelier",
   },
   {
     id: 9,
@@ -117,7 +117,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/lamborghini-aventador-svj.jpg",
     features: ["Wide body kit", "Aerodynamic package", "Track suspension"],
-    category: "Wide body kit"
+    category: "Wide body kit",
   },
   {
     id: 10,
@@ -130,7 +130,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/lamborghini-huracan-sterrato.jpg",
     features: ["Off-road kit", "Raised suspension", "All-terrain tires"],
-    category: "Full body kit"
+    category: "Full body kit",
   },
   {
     id: 11,
@@ -143,7 +143,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/lamborghini-urus-s.jpg",
     features: ["Full body kit", "Performance exhaust", "Custom interior"],
-    category: "Full body kit"
+    category: "Full body kit",
   },
 
   // Porsche Models
@@ -158,7 +158,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/porsche-p9lm-evo.jpg",
     features: ["900hp tune", "Wide body kit", "Atelier craftsmanship"],
-    category: "Atelier"
+    category: "Atelier",
   },
   {
     id: 13,
@@ -171,7 +171,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/porsche-p9lm-cabrio.jpg",
     features: ["900hp tune", "Wide body kit", "Convertible luxury"],
-    category: "Atelier"
+    category: "Atelier",
   },
   {
     id: 14,
@@ -184,7 +184,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/porsche-911-soft.jpg",
     features: ["Soft kit", "Subtle styling", "Performance tuning"],
-    category: "Soft kit"
+    category: "Soft kit",
   },
   {
     id: 15,
@@ -197,7 +197,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/porsche-918.jpg",
     features: ["Limited edition", "Hybrid performance", "Track-focused"],
-    category: "Limited edition"
+    category: "Limited edition",
   },
 
   // Mercedes-Benz Models
@@ -212,7 +212,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/mercedes-g-class-grand.jpg",
     features: ["One of one", "Full carbon", "Atelier craftsmanship"],
-    category: "One of one"
+    category: "One of one",
   },
   {
     id: 17,
@@ -225,7 +225,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/mercedes-gronos-pickup.jpg",
     features: ["Pickup conversion", "One of one", "Latest additions"],
-    category: "Atelier"
+    category: "Atelier",
   },
   {
     id: 18,
@@ -238,7 +238,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/mercedes-speranza.jpg",
     features: ["Limited edition", "One of one", "Atelier design"],
-    category: "Limited edition"
+    category: "Limited edition",
   },
 
   // Tesla Models
@@ -253,7 +253,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/tesla-cybertruck-mansory.jpg",
     features: ["Full carbon", "One of one", "Atelier craftsmanship"],
-    category: "Atelier"
+    category: "Atelier",
   },
 
   // BMW Models
@@ -268,7 +268,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/bmw-m5.jpg",
     features: ["Latest additions", "Performance tuning", "Luxury interior"],
-    category: "Latest additions"
+    category: "Latest additions",
   },
 
   // Bentley Models
@@ -282,8 +282,12 @@ export const carsData = [
     description: "2025 model year Continental GTC with Atelier modifications",
     price: "Contact for pricing",
     image: "/images/bentley-gtc-2025.jpg",
-    features: ["Atelier craftsmanship", "Latest additions", "Luxury refinement"],
-    category: "Atelier"
+    features: [
+      "Atelier craftsmanship",
+      "Latest additions",
+      "Luxury refinement",
+    ],
+    category: "Atelier",
   },
 
   // Rolls-Royce Models
@@ -298,7 +302,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/rolls-royce-cullinan.jpg",
     features: ["Full body kit", "Luxury interior", "Performance upgrades"],
-    category: "Full body kit"
+    category: "Full body kit",
   },
   {
     id: 23,
@@ -311,7 +315,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/rolls-royce-ghost.jpg",
     features: ["Luxury package", "Custom interior", "Performance tuning"],
-    category: "Luxury package"
+    category: "Luxury package",
   },
   {
     id: 24,
@@ -324,7 +328,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/rolls-royce-spectre.jpg",
     features: ["Electric luxury", "Custom styling", "Sustainable luxury"],
-    category: "Electric luxury"
+    category: "Electric luxury",
   },
 
   // McLaren Models
@@ -339,7 +343,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/mclaren-720s.jpg",
     features: ["Wide body kit", "Carbon fiber", "Track performance"],
-    category: "Wide body kit"
+    category: "Wide body kit",
   },
 
   // Aston Martin Models
@@ -354,7 +358,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/aston-martin-vantage.jpg",
     features: ["Performance package", "Custom exhaust", "Aerodynamics"],
-    category: "Performance package"
+    category: "Performance package",
   },
   {
     id: 27,
@@ -367,7 +371,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/aston-martin-dbx.jpg",
     features: ["SUV package", "Luxury interior", "Performance tuning"],
-    category: "SUV package"
+    category: "SUV package",
   },
 
   // Maserati Models
@@ -382,7 +386,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/maserati-mc20.jpg",
     features: ["Supercar package", "Carbon fiber", "Track performance"],
-    category: "Supercar package"
+    category: "Supercar package",
   },
   {
     id: 29,
@@ -395,7 +399,7 @@ export const carsData = [
     price: "Contact for pricing",
     image: "/images/maserati-levante.jpg",
     features: ["SUV enhancement", "Luxury package", "Performance upgrades"],
-    category: "SUV enhancement"
+    category: "SUV enhancement",
   },
 
   // Bugatti Models
@@ -409,24 +413,55 @@ export const carsData = [
     description: "Exclusive modifications for Bugatti Chiron",
     price: "Contact for pricing",
     image: "/images/bugatti-chiron.jpg",
-    features: ["Hypercar excellence", "Exclusive styling", "Performance tuning"],
-    category: "Hypercar excellence"
-  }
+    features: [
+      "Hypercar excellence",
+      "Exclusive styling",
+      "Performance tuning",
+    ],
+    category: "Hypercar excellence",
+  },
 ];
 
 // Filter options for the website
 export const filterOptions = {
   brands: [
-    "Aston Martin", "Audi", "BMW", "Bentley", "Bugatti", "Cadillac", 
-    "Ferrari", "Ford", "Lamborghini", "Land Rover", "Lotus", "Maserati", 
-    "McLaren", "Mercedes-Benz", "Porsche", "Rolls-Royce", "Tesla"
+    "Aston Martin",
+    "Audi",
+    "BMW",
+    "Bentley",
+    "Bugatti",
+    "Cadillac",
+    "Ferrari",
+    "Ford",
+    "Lamborghini",
+    "Land Rover",
+    "Lotus",
+    "Maserati",
+    "McLaren",
+    "Mercedes-Benz",
+    "Porsche",
+    "Rolls-Royce",
+    "Tesla",
   ],
   types: [
-    "Atelier", "Latest additions", "Wide body kit", "Full body kit", 
-    "Soft kit", "Limited edition", "One of one", "Full carbon"
+    "Atelier",
+    "Latest additions",
+    "Wide body kit",
+    "Full body kit",
+    "Soft kit",
+    "Limited edition",
+    "One of one",
+    "Full carbon",
   ],
   categories: [
-    "Atelier", "Wide body kit", "Latest additions", "Coming soon", 
-    "Add-on parts", "Full body kit", "Limited edition", "One of one", "Full carbon"
-  ]
-}; 
+    "Atelier",
+    "Wide body kit",
+    "Latest additions",
+    "Coming soon",
+    "Add-on parts",
+    "Full body kit",
+    "Limited edition",
+    "One of one",
+    "Full carbon",
+  ],
+};

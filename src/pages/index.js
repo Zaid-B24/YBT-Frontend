@@ -16,18 +16,8 @@ export { default as CollectionsPage } from "./collections/CollectionsPage";
 export { default as DesignerCollectionPage } from "./collections/DesignerCollectionPage";
 export { default as YBTCollectionPage } from "./collections/YBTCollectionPage";
 export { default as TorqueTunerEditionPage } from "./collections/TorqueTunerEditionPage";
-export { default as CustomWorkshopsPage } from "./collections/CustomWorkshopsPage";
-export { default as RollingHavenPage } from "./collections/RollingHavenPage";
 export { default as YBTCarsPage } from "./collections/YBTCarsPage";
 export { default as YBTBikesPage } from "./collections/YBTBikesPage";
-export { default as GSDesignsPage } from "./collections/GSDesignsPage";
-export { default as DCDesignsPage } from "./collections/DCDesignsPage";
-export { default as MotormindDesignsPage } from "./collections/MotormindDesignsPage";
-export { default as VelocityCustomsPage } from "./collections/VelocityCustomsPage";
-export { default as PrecisionCraftWorkshopPage } from "./collections/PrecisionCraftWorkshopPage";
-export { default as HeritageRestorationPage } from "./collections/HeritageRestorationPage";
-export { default as LuxuryNomadPage } from "./collections/LuxuryNomadPage";
-export { default as WanderlustCaravansPage } from "./collections/WanderlustCaravansPage";
 
 // Rentals Pages
 export { default as RentalsPage } from "./rentals/RentalsPage";

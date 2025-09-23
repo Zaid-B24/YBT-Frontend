@@ -525,6 +525,8 @@ const HamburgerIcon = styled.div`
   }
 `;
 
+//{ to: "/models", label: "Models" },
+
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -570,7 +572,6 @@ const Header = () => {
   }, [location.pathname]);
 
   const leftNavItems = [
-    { to: "/models", label: "Models" },
     { to: "/collections", label: "Collections" },
     { to: "/events", label: "Events" },
     { to: "/merchandise", label: "Merchandise" },

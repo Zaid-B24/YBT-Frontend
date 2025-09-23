@@ -164,7 +164,12 @@ const AuthPage = () => {
           setError("Passwords do not match");
           return;
         }
-        await signup(data.name, data.email, data.password);
+        await signup(
+          data.name,
+          data.email,
+          data.password,
+          data.confirmPassword
+        );
       }
       navigate("/"); // Navigate to home on success
     } catch (err) {
