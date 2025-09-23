@@ -33,6 +33,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import carValidationSchema from "../../utils/zodValidation";
 import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
+
+const fetchDealers = async () => {
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/dealer`);
+  if (!res.ok) throw new Error("Failed to fetch dealers");
+  return res.json();
+};
+const fetchDesigners = async () => {
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/designer`);
+  if (!res.ok) throw new Error("Failed to fetch designers");
+  return res.json();
+};
+const fetchWorkshops = async () => {
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/workshop`);
+  if (!res.ok) throw new Error("Failed to fetch workshops");
+  return res.json();
+};
 
 const renderField = (field, register, errors) => {
   const {
@@ -52,7 +69,7 @@ const renderField = (field, register, errors) => {
         return (
           <Select {...register(key)}>
             <option value="">-- Select {label} --</option>
-            {options.map((opt) => (
+            {options?.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
@@ -94,17 +111,34 @@ const renderField = (field, register, errors) => {
 };
 
 const CarDetailsForm = ({ onSuccess, onBack }) => {
+  const { data: dealers = [], isLoading: isLoadingDealers } = useQuery({
+    queryKey: ["dealers"],
+    queryFn: fetchDealers,
+  });
+  const { data: designers = [], isLoading: isLoadingDesigners } = useQuery({
+    queryKey: ["designers"],
+    queryFn: fetchDesigners,
+  });
+  const { data: workshops = [], isLoading: isLoadingWorkshops } = useQuery({
+    queryKey: ["workshops"],
+    queryFn: fetchWorkshops,
+  });
   const {
     register,
     handleSubmit,
     control,
     watch,
-    formState: { errors, isValid, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm({
     resolver: zodResolver(carValidationSchema),
     mode: "onChange", // Validate on change for real-time feedback
     defaultValues: {
       title: "",
+      dealerId: "",
+      collectionType: "YBT",
+      designerId: "",
+      workshopId: "",
+      tuningStage: "",
       brand: "",
       carType: "",
       manufactureYear: new Date().getFullYear(),
@@ -126,7 +160,6 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
       sellingPrice: 0,
       cutOffPrice: 0,
       ybtPrice: 0,
-      listedBy: "",
       city: "",
       state: "",
       carUSP: "",
@@ -138,6 +171,8 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
     },
   });
 
+  console.log("Validation Errors:", errors);
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "badges",
@@ -145,23 +180,24 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
 
   const carImages = watch("carImages");
 
+  const collectionType = watch("collectionType");
+
   const onSubmit = async (data) => {
     const formDataApi = new FormData();
-    formDataApi.append("dealerId", 1);
 
-    // Build the FormData object from the validated 'data'
     Object.keys(data).forEach((key) => {
+      const value = data[key];
+      // Skip null/undefined/empty string optional fields
+      if (value === null || value === "" || value === undefined) return;
+
       if (key === "carImages") {
-        Array.from(data.carImages).forEach((file) => {
-          formDataApi.append("carImages", file);
-        });
+        Array.from(value).forEach((file) =>
+          formDataApi.append("carImages", file)
+        );
       } else if (key === "badges") {
-        const validBadges = data.badges.filter(Boolean);
-        validBadges.forEach((badge) => {
-          formDataApi.append("badges", badge);
-        });
+        value.forEach((badge) => badge && formDataApi.append("badges", badge));
       } else {
-        formDataApi.append(key, data[key]);
+        formDataApi.append(key, value);
       }
     });
 
@@ -370,10 +406,13 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         required: true,
       },
       {
-        key: "listedBy",
-        label: "Listed By",
-        placeholder: "e.g., Dealer/Owner name",
+        key: "dealerId",
+        label: "Listed By (Dealer)",
+        component: "select",
         icon: UserCircle,
+        required: true,
+        // Dynamically populate options from our fetched dealers
+        options: dealers.map((d) => ({ value: d.id, label: d.name })),
       },
       {
         key: "city",
@@ -433,6 +472,92 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
           </Grid>
         </Section>
       ))}
+
+      <Section>
+        <SectionTitle>🗂️ Collection & Category</SectionTitle>
+        <Grid>
+          {/* Collection Type Dropdown */}
+          <Field>
+            <Label>
+              Collection Type <RequiredStar>*</RequiredStar>
+            </Label>
+            <Select {...register("collectionType")}>
+              <option value="YBT">YBT Collection</option>
+              <option value="DESIGNER">Designer Collection</option>
+              <option value="WORKSHOP">Workshop Collection</option>
+              <option value="TORQUE_TUNER">Torque Tuner Edition</option>
+            </Select>
+            {errors.collectionType && (
+              <ErrorMessage>{errors.collectionType.message}</ErrorMessage>
+            )}
+          </Field>
+
+          {/* --- Conditionally Rendered Fields --- */}
+
+          {collectionType === "DESIGNER" && (
+            <Field>
+              <Label>
+                Designer <RequiredStar>*</RequiredStar>
+              </Label>
+              <Select {...register("designerId")}>
+                <option value="">-- Select Designer --</option>
+                {isLoadingDesigners ? (
+                  <option>Loading...</option>
+                ) : (
+                  designers.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))
+                )}
+              </Select>
+              {errors.designerId && (
+                <ErrorMessage>{errors.designerId.message}</ErrorMessage>
+              )}
+            </Field>
+          )}
+
+          {collectionType === "WORKSHOP" && (
+            <Field>
+              <Label>
+                Workshop <RequiredStar>*</RequiredStar>
+              </Label>
+              <Select {...register("workshopId")}>
+                <option value="">-- Select Workshop --</option>
+                {isLoadingWorkshops ? (
+                  <option>Loading...</option>
+                ) : (
+                  workshops.map((w) => (
+                    <option key={w.id} value={w.id}>
+                      {w.name}
+                    </option>
+                  ))
+                )}
+              </Select>
+              {errors.workshopId && (
+                <ErrorMessage>{errors.workshopId.message}</ErrorMessage>
+              )}
+            </Field>
+          )}
+
+          {collectionType === "TORQUE_TUNER" && (
+            <Field>
+              <Label>
+                Tuning Stage <RequiredStar>*</RequiredStar>
+              </Label>
+              <Select {...register("tuningStage")}>
+                <option value="">-- Select Stage --</option>
+                <option value="STAGE1">Stage 1</option>
+                <option value="STAGE2">Stage 2</option>
+                <option value="STAGE3">Stage 3</option>
+              </Select>
+              {errors.tuningStage && (
+                <ErrorMessage>{errors.tuningStage.message}</ErrorMessage>
+              )}
+            </Field>
+          )}
+        </Grid>
+      </Section>
 
       {/* --- Special Fields Handled Separately --- */}
       <Section>
@@ -511,7 +636,10 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
       </Section>
 
       {/* --- Form Actions --- */}
-      <SubmitButton type="submit" disabled={!isValid || isSubmitting}>
+      <SubmitButton
+        type="submit"
+        disabled={!isDirty || Object.keys(errors).length > 0 || isSubmitting}
+      >
         {isSubmitting ? (
           <>
             <Spinner size={16} />
