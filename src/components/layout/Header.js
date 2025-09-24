@@ -46,7 +46,7 @@ const Nav = styled.nav`
 const LeftMenu = styled.ul`
   display: flex;
   list-style: none;
-  gap: 2rem;
+  gap: 2.3rem;
   align-items: center;
   margin: 0;
   padding: 0;
@@ -166,7 +166,7 @@ const RightMenuContainer = styled.div`
 const RightMenu = styled.ul`
   display: flex;
   list-style: none;
-  gap: 1.75rem;
+  gap: 2.3rem;
   align-items: center;
   margin: 0;
   padding: 0;
@@ -268,6 +268,8 @@ const UserButton = styled.button`
   span {
     max-width: 100px;
     overflow: hidden;
+    font-size: 1.1rem;
+    font-weight: 500;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
