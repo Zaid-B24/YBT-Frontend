@@ -643,7 +643,9 @@ const TorqueTunerEditionPage = () => {
                           <span key={idx}>{spec}</span>
                         ))}
                       </CarSpecs>
-                      <CarPrice>{vehicle.price}</CarPrice>
+                      <CarPrice>
+                        ₹ {vehicle.ybtPrice.toLocaleString("en-IN")}
+                      </CarPrice>
                     </CarContent>
                   </CarCard>
                 </CarCardLink>

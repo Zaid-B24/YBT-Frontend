@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { collections, stats } from "../../data/collectionspageData";
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -50,7 +51,7 @@ const GridContainer = styled.div`
   }
 `;
 
-const CollectionCard = styled(motion(Link))`
+const CollectionCard = styled(motion.div)`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
@@ -179,6 +180,23 @@ const StatLabel = styled.div`
   letter-spacing: 1px;
 `;
 
+const ViewButton = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+
+  &:hover {
+    gap: 1rem;
+  }
+`;
+
 const CollectionsPage = () => {
   return (
     <PageWrapper>
@@ -195,7 +213,6 @@ const CollectionsPage = () => {
           {collections.map((collection, index) => (
             <CollectionCard
               key={collection.id}
-              to={collection.route}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -221,6 +238,10 @@ const CollectionsPage = () => {
                     <Feature key={idx}>{feature}</Feature>
                   ))}
                 </CollectionFeatures>
+                <ViewButton to={collection.route}>
+                  Explore Collection
+                  <ArrowRight size={16} />
+                </ViewButton>
               </CollectionContent>
             </CollectionCard>
           ))}

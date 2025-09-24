@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { DesignerCardSkeleton } from "../../components/cards/DesignerCardSkeleton";
+import { ArrowRight } from "lucide-react";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -52,7 +53,7 @@ const GridContainer = styled.div`
   }
 `;
 
-const DesignerCard = styled(motion(Link))`
+const DesignerCard = styled(motion.div)`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
@@ -168,6 +169,23 @@ const FeaturedText = styled.p`
   margin: 0 auto;
 `;
 
+const ViewButton = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+
+  &:hover {
+    gap: 1rem;
+  }
+`;
+
 const fetchDesigners = async () => {
   const apiUrl = `${process.env.REACT_APP_API_URL}/designer`;
   const response = await fetch(apiUrl);
@@ -217,7 +235,6 @@ const DesignerCollectionPage = () => {
             {designers.map((designer, index) => (
               <DesignerCard
                 key={designer.id}
-                to={`/collections/designer/${designer.slug}`}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -250,6 +267,10 @@ const DesignerCollectionPage = () => {
                       <StatLabel>Awards</StatLabel>
                     </Stat>
                   </DesignerStats>
+                  <ViewButton to={`/collections/designer/${designer.slug}`}>
+                    View Designer
+                    <ArrowRight size={16} />
+                  </ViewButton>
                 </DesignerContent>
               </DesignerCard>
             ))}

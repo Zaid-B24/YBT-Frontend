@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { Car, Bike } from "lucide-react";
+import { Car, Bike, ArrowRight } from "lucide-react";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -12,7 +12,7 @@ const PageWrapper = styled.div`
 `;
 
 const HeroSection = styled.section`
-  padding: 2rem 2rem;
+  padding: 1rem 1rem;
   text-align: center;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
 `;
@@ -32,7 +32,7 @@ const HeroSubtitle = styled.p`
   font-size: 1.2rem;
   color: #ccc;
   max-width: 600px;
-  margin: 0 auto 2rem;
+  margin: 0 auto;
 `;
 
 const VehicleTypeSection = styled.section`
@@ -52,7 +52,7 @@ const VehicleGrid = styled.div`
   }
 `;
 
-const VehicleLinkCard = styled(motion(Link))`
+const VehicleLinkCard = styled(motion.div)`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
@@ -60,7 +60,7 @@ const VehicleLinkCard = styled(motion(Link))`
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
-  height: 450px;
+  height: 550px;
   text-decoration: none;
   color: inherit;
   display: flex;
@@ -151,6 +151,25 @@ const StatLabel = styled.div`
   letter-spacing: 1px;
 `;
 
+const ExploreButton = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+
+  &:hover {
+    gap: 1rem;
+    transform: translateX(5px);
+  }
+`;
+
 const YBTCollectionPage = () => {
   const vehicleTypes = [
     {
@@ -212,6 +231,10 @@ const YBTCollectionPage = () => {
                   <VehicleTitle>{type.title}</VehicleTitle>
                   <VehicleDescription>{type.description}</VehicleDescription>
                 </div>
+                <ExploreButton to={type.link}>
+                  Explore {type.title}
+                  <ArrowRight size={16} />
+                </ExploreButton>
               </VehicleContent>
             </VehicleLinkCard>
           ))}
