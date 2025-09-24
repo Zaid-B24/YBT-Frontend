@@ -7,7 +7,7 @@ import { Car, Bike, ArrowRight } from "lucide-react";
 const PageWrapper = styled.div`
   padding-top: 100px;
   min-height: 100vh;
-  background: #000;
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
   color: #fff;
 `;
 
@@ -19,7 +19,7 @@ const HeroSection = styled.section`
 
 const HeroTitle = styled.h1`
   font-family: "Playfair Display", serif;
-  font-size: 4rem;
+  font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 400;
   margin-bottom: 0.5rem;
 
@@ -65,6 +65,27 @@ const VehicleLinkCard = styled(motion.div)`
   color: inherit;
   display: flex;
   flex-direction: column;
+
+  &:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background: radial-gradient(
+      600px circle at var(--x) var(--y),
+      rgba(255, 255, 255, 0.06),
+      transparent 40%
+    );
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none;
+  }
+
+  &:hover:before {
+    opacity: 1;
+  }
 
   &:hover {
     transform: translateY(-10px);
@@ -178,7 +199,7 @@ const YBTCollectionPage = () => {
       description:
         "Explore our exclusive collection of luxury cars featuring signature YBT modifications, performance upgrades, and bespoke styling.",
       image:
-        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+        "https://images.unsplash.com/photo-1625511245400-5cba76705d35?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       icon: <Car size={32} />,
       link: "/collections/ybt-cars",
     },
@@ -188,7 +209,7 @@ const YBTCollectionPage = () => {
       description:
         "Discover our premium motorcycle collection with custom modifications, performance enhancements, and unique design elements.",
       image:
-        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+        "https://images.unsplash.com/photo-1607091083645-31f4e28dc9af?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       icon: <Bike size={32} />,
       link: "/collections/ybt-bikes",
     },
@@ -200,6 +221,14 @@ const YBTCollectionPage = () => {
     { number: "15+", label: "Years Heritage" },
     { number: "100%", label: "Satisfaction Rate" },
   ];
+
+  const handleMouseMove = (e, card) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty("--x", `${x}px`);
+    card.style.setProperty("--y", `${y}px`);
+  };
 
   return (
     <PageWrapper>
@@ -222,6 +251,7 @@ const YBTCollectionPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.2 }}
               viewport={{ once: true }}
+              onMouseMove={(e) => handleMouseMove(e, e.currentTarget)}
             >
               <VehicleImage image={type.image}>
                 <VehicleIcon>{type.icon}</VehicleIcon>

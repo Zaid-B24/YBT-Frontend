@@ -7,7 +7,7 @@ import { ArrowRight } from "lucide-react";
 const PageWrapper = styled.div`
   padding-top: 100px;
   min-height: 100vh;
-  background: #000;
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
   color: #fff;
 `;
 
@@ -19,7 +19,7 @@ const HeroSection = styled.section`
 
 const HeroTitle = styled.h1`
   font-family: "Playfair Display", serif;
-  font-size: 4rem;
+  font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 400;
   margin-bottom: 1rem;
 
@@ -59,6 +59,27 @@ const CollectionCard = styled(motion.div)`
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+
+  &:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background: radial-gradient(
+      600px circle at var(--x) var(--y),
+      rgba(255, 255, 255, 0.06),
+      transparent 40%
+    );
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none;
+  }
+
+  &:hover:before {
+    opacity: 1;
+  }
 
   &:hover {
     transform: translateY(-5px);
@@ -198,6 +219,14 @@ const ViewButton = styled(Link)`
 `;
 
 const CollectionsPage = () => {
+  const handleMouseMove = (e, card) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty("--x", `${x}px`);
+    card.style.setProperty("--y", `${y}px`);
+  };
+
   return (
     <PageWrapper>
       <HeroSection>
@@ -217,6 +246,7 @@ const CollectionsPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
+              onMouseMove={(e) => handleMouseMove(e, e.currentTarget)}
             >
               <CollectionImage image={collection.image}>
                 <CollectionIcon>{collection.icon}</CollectionIcon>

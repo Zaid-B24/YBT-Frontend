@@ -1,4 +1,4 @@
-import { Star, Award, Zap } from "lucide-react";
+import { Star, Award, Zap, Wrench } from "lucide-react";
 
 export const collections = [
   {
@@ -63,7 +63,7 @@ export const collections = [
       "Specialized workshops offering custom fabrication, restoration, and unique modification services for discerning clients.",
     image:
       "https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    icon: <Award size={24} />,
+    icon: <Wrench size={24} />,
     route: "/collections/workshops",
     features: [
       "Custom fabrication",

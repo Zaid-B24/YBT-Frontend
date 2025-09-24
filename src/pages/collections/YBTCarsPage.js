@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Filter, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -9,7 +9,7 @@ import { CarCardSkeleton } from "../../components/cards/CarCardSkeleton";
 const PageWrapper = styled.div`
   padding-top: 100px;
   min-height: 100vh;
-  background: #000;
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
   color: #fff;
   display: flex;
 `;
@@ -61,6 +61,31 @@ const FilterSection = styled.div`
   margin-bottom: 2rem;
 `;
 
+const FilterButtonGroup = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
+
+const FilterButton = styled.button`
+  background: ${(props) =>
+    props.isActive ? "#fff" : "rgba(255, 255, 255, 0.05)"};
+  color: ${(props) => (props.isActive ? "#000" : "#fff")};
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background: ${(props) =>
+      props.isActive ? "#fff" : "rgba(255, 255, 255, 0.1)"};
+    border-color: #fff;
+  }
+`;
+
 const FilterTitle = styled.h3`
   font-family: "Playfair Display", serif;
   font-size: 1.2rem;
@@ -110,6 +135,7 @@ const CarsGrid = styled.div`
 const CarCard = styled(motion.div)`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -130,6 +156,7 @@ const CarImage = styled.div`
         : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
     center center/cover no-repeat;
   position: relative;
+  border-radius: 20px 20px 0 0;
 `;
 
 const CarBadge = styled.div`
@@ -288,18 +315,29 @@ const YBTCarsPage = () => {
 
           <FilterGroup>
             <FilterLabel>Brand</FilterLabel>
-            <FilterSelect
-              name="brand"
-              value={filters.brand}
-              onChange={handleFilterChange}
-            >
-              <option value="">All Brands</option>
+            <FilterButtonGroup>
+              <FilterButton
+                isActive={!filters.brand}
+                onClick={() =>
+                  handleFilterChange({ target: { name: "brand", value: "" } })
+                }
+              >
+                All
+              </FilterButton>
               {brands.map((brand) => (
-                <option key={brand} value={brand}>
+                <FilterButton
+                  key={brand}
+                  isActive={filters.brand === brand}
+                  onClick={() =>
+                    handleFilterChange({
+                      target: { name: "brand", value: brand },
+                    })
+                  }
+                >
                   {brand}
-                </option>
+                </FilterButton>
               ))}
-            </FilterSelect>
+            </FilterButtonGroup>
           </FilterGroup>
 
           <FilterGroup>
@@ -361,34 +399,35 @@ const YBTCarsPage = () => {
         )}
 
         {!isLoading && !isError && transformedCars.length > 0 && (
-          <CarsGrid>
-            {transformedCars.map((car, index) => (
-              <CarCard
-                key={car.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <CarImage image={car.image}>
-                  <CarBadge>{car.badge}</CarBadge>
-                </CarImage>
-                <CarContent>
-                  <CarTitle>YBT {car.title}</CarTitle>
-                  <CarSpecs>
-                    {car.specs.map((spec, idx) => (
-                      <span key={idx}>{spec}</span>
-                    ))}
-                  </CarSpecs>
-                  <CarPrice>{car.price.toLocaleString("en-IN")}</CarPrice>
-                  <ViewButton to={`/cars/${car.id}`}>
-                    View Details
-                    <ArrowRight size={16} />
-                  </ViewButton>
-                </CarContent>
-              </CarCard>
-            ))}
-          </CarsGrid>
+          <AnimatePresence>
+            <CarsGrid layout>
+              {transformedCars.map((car, index) => (
+                <CarCard
+                  key={car.id}
+                  layout
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -30 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                >
+                  <CarImage image={car.image}>
+                    <CarBadge>{car.badge}</CarBadge>
+                  </CarImage>
+                  <CarContent>
+                    <CarTitle>YBT {car.title}</CarTitle>
+                    <CarSpecs>
+                      <span>{car.specs.join(" • ")}</span>
+                    </CarSpecs>
+                    <CarPrice>₹{car.price.toLocaleString("en-IN")}</CarPrice>
+                    <ViewButton to={`/cars/${car.id}`}>
+                      View Details
+                      <ArrowRight size={16} />
+                    </ViewButton>
+                  </CarContent>
+                </CarCard>
+              ))}
+            </CarsGrid>
+          </AnimatePresence>
         )}
       </MainContent>
     </PageWrapper>

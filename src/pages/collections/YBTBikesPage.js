@@ -9,7 +9,7 @@ import { CarCardSkeleton } from "../../components/cards/CarCardSkeleton";
 const PageWrapper = styled.div`
   padding-top: 100px;
   min-height: 100vh;
-  background: #000;
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
   color: #fff;
   display: flex;
 `;
@@ -59,6 +59,31 @@ const HeroSubtitle = styled.p`
 
 const FilterSection = styled.div`
   margin-bottom: 2rem;
+`;
+
+const FilterButtonGroup = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+`;
+
+const FilterButton = styled.button`
+  background: ${(props) =>
+    props.isActive ? "#fff" : "rgba(255, 255, 255, 0.05)"};
+  color: ${(props) => (props.isActive ? "#000" : "#fff")};
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background: ${(props) =>
+      props.isActive ? "#fff" : "rgba(255, 255, 255, 0.1)"};
+    border-color: #fff;
+  }
 `;
 
 const FilterTitle = styled.h3`
@@ -131,6 +156,7 @@ const BikeImage = styled.div`
         : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
     center center/cover no-repeat;
   position: relative;
+  border-radius: 20px 20px 0 0;
 `;
 
 const BikeBadge = styled.div`
@@ -280,18 +306,29 @@ const YBTBikesPage = () => {
 
           <FilterGroup>
             <FilterLabel>Brand</FilterLabel>
-            <FilterSelect
-              name="brand"
-              value={filters.brand}
-              onChange={handleFilterChange}
-            >
-              <option value="">All Brands</option>
+            <FilterButtonGroup>
+              <FilterButton
+                isActive={!filters.brand}
+                onClick={() =>
+                  handleFilterChange({ target: { name: "brand", value: "" } })
+                }
+              >
+                All
+              </FilterButton>
               {brands.map((brand) => (
-                <option key={brand} value={brand}>
+                <FilterButton
+                  key={brand}
+                  isActive={filters.brand === brand}
+                  onClick={() =>
+                    handleFilterChange({
+                      target: { name: "brand", value: brand },
+                    })
+                  }
+                >
                   {brand}
-                </option>
+                </FilterButton>
               ))}
-            </FilterSelect>
+            </FilterButtonGroup>
           </FilterGroup>
 
           <FilterGroup>
@@ -367,11 +404,10 @@ const YBTBikesPage = () => {
                 <BikeContent>
                   <BikeTitle>{bike.title}</BikeTitle>
                   <BikeSpecs>
-                    {/* Your API doesn't send specs yet, so use placeholders or add to backend */}
-                    {/* Example: bike.specs?.map(...) */}
+                    <span>{bike.specs.join(" • ")}</span>
                   </BikeSpecs>
                   <BikePrice>
-                    {bike.ybtPrice?.toLocaleString("en-IN")}
+                    ₹{bike.ybtPrice?.toLocaleString("en-IN")}
                   </BikePrice>{" "}
                   {/* Safely format price */}
                   <ViewButton to={`/bikes/${bike.id}`}>
