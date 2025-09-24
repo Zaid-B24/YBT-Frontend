@@ -170,19 +170,19 @@ const BottomLink = styled(Link)`
 
 const Footer = () => {
   const mainLinks = [
-    { to: "/models", label: "Models" },
-    { to: "/rims", label: "Rims" },
+    // { to: "/models", label: "Models" },
+    // { to: "/rims", label: "Rims" },
     { to: "/cars", label: "Cars for sale" },
-    { to: "/atelier", label: "Atelier" },
-    { to: "/boutique", label: "Boutique" },
+    // { to: "/atelier", label: "Atelier" },
+    // { to: "/boutique", label: "Boutique" },
   ];
 
   const companyLinks = [
-    { to: "/armoring", label: "Armoring" },
+    // { to: "/armoring", label: "Armoring" },
     { to: "/dealers", label: "Dealers" },
     { to: "/company", label: "Company" },
     { to: "/careers", label: "Careers" },
-    { to: "/press", label: "Press room" },
+    // { to: "/press", label: "Press room" },
     { to: "/blog", label: "Blog" },
     { to: "/contact", label: "Contact" },
   ];

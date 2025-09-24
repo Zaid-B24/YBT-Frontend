@@ -110,6 +110,7 @@ const BikesGrid = styled.div`
 const BikeCard = styled(motion.div)`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -144,29 +145,6 @@ const BikeBadge = styled.div`
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-`;
-
-const BikeActions = styled.div`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  gap: 0.5rem;
-`;
-
-const ActionButton = styled.button`
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.1);
-  }
 `;
 
 const BikeContent = styled.div`
@@ -385,14 +363,6 @@ const YBTBikesPage = () => {
                   {/* Use thumbnail from API */}
                   <BikeBadge>{bike.badges?.[0] || "Featured"}</BikeBadge>{" "}
                   {/* Safely access first badge */}
-                  <BikeActions>
-                    <ActionButton>
-                      <Heart size={16} />
-                    </ActionButton>
-                    <ActionButton>
-                      <ShoppingCart size={16} />
-                    </ActionButton>
-                  </BikeActions>
                 </BikeImage>
                 <BikeContent>
                   <BikeTitle>{bike.title}</BikeTitle>

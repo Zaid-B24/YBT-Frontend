@@ -1,20 +1,41 @@
 import styled from "styled-components";
 import AdminNav from "../../components/admin/AdminNav";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import BikeDetailsForm from "../../components/forms/BikeDetailsForm";
-import { ChevronLeft, ChevronRight, Plus, Search, Trash2 } from "lucide-react";
+import { Plus, Search, Trash2 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Slide, toast, ToastContainer } from "react-toastify";
+import { useDebounce } from "../../hooks/useDebounceHook";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+const fetchBikes = async ({ queryKey }) => {
+  const [_key, { limit, sortBy, searchTerm, cursor }] = queryKey;
+
+  const params = new URLSearchParams({ limit, sortBy });
+  if (searchTerm) params.append("searchTerm", searchTerm);
+  if (cursor) params.append("cursor", cursor);
+
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/bikes?${params.toString()}`
+  );
+  console.log("response on bike page", response);
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+  return response.json();
+};
 
 const BikeManagement = () => {
-  const [showAddBikeForm, setShowAddBikeForm] = useState(false);
-  const [bikes, setBikes] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [sortBy, setSortBy] = useState("newest");
-  const [nextCursor, setNextCursor] = useState(null);
-  const [previousCursors, setPreviousCursors] = useState([]);
+  const [showAddBikeForm, setShowAddBikeForm] = useState(false);
+
+  // --- Pagination States ---
+  const [cursorHistory, setCursorHistory] = useState([null]);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+
+  const queryClient = useQueryClient();
   const location = useLocation();
 
   useEffect(() => {
@@ -24,99 +45,61 @@ const BikeManagement = () => {
   }, [location.state]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
+    setCurrentPageIndex(0);
+    setCursorHistory([null]);
+  }, [debouncedSearchTerm, sortBy]);
 
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  const fetchBikes = useCallback(
-    async (cursor) => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams({
-          limit: "9",
-          sortBy: sortBy,
-        });
-
-        if (debouncedSearchTerm) {
-          params.append("searchTerm", debouncedSearchTerm);
-        }
-
-        if (cursor) {
-          params.append("cursor", cursor);
-        }
-
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/bikes?${params.toString()}`
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-
-        setBikes(data.data);
-        setNextCursor(data.nextCursor);
-      } catch (error) {
-        console.error("Failed to fetch bikes:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [sortBy, debouncedSearchTerm]
+  const queryFilters = useMemo(
+    () => ({
+      limit: 9,
+      sortBy,
+      searchTerm: debouncedSearchTerm,
+      cursor: cursorHistory[currentPageIndex],
+    }),
+    [sortBy, debouncedSearchTerm, cursorHistory, currentPageIndex]
   );
 
-  useEffect(() => {
-    const currentCursor =
-      previousCursors.length > 0
-        ? previousCursors[previousCursors.length - 1]
-        : null;
-    fetchBikes(currentCursor);
-  }, [fetchBikes, previousCursors]);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["adminBikes", queryFilters],
+    queryFn: fetchBikes,
+    keepPreviousData: true,
+  });
 
-  useEffect(() => {
-    setPreviousCursors([]);
-    fetchBikes(null);
-  }, [sortBy, debouncedSearchTerm, fetchBikes]);
+  const bikes = data?.data || [];
+  const nextCursor = data?.pagination?.nextCursor;
 
-  const handleDelete = async (bikeId) => {
-    if (!window.confirm("Are you sure you want to delete this bike?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/bikes/${bikeId}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      // Instead of filtering, refetch the bikes to get the most up-to-date list
-      fetchBikes(previousCursors[previousCursors.length - 1] || null);
-      console.log("Bike deleted successfully");
+  const deleteBikeMutation = useMutation({
+    mutationFn: (bikeId) =>
+      fetch(`${process.env.REACT_APP_API_URL}/bikes/${bikeId}`, {
+        method: "DELETE",
+      }),
+    onSuccess: () => {
       toast.success("Bike deleted successfully! 🗑️");
-    } catch (error) {
-      console.error("Failed to delete bike:", error);
-      toast.error(error);
+      queryClient.invalidateQueries({ queryKey: ["adminBikes"] });
+    },
+    onError: (err) => {
+      toast.error(err.message || "Failed to delete bike.");
+    },
+  });
+
+  const handleDelete = (bikeId) => {
+    if (window.confirm("Are you sure you want to delete this bike?")) {
+      deleteBikeMutation.mutate(bikeId);
     }
   };
 
   const handleNextPage = () => {
     if (!nextCursor) return;
-    // Add the current page's cursor to history and move to the next page
-    setPreviousCursors([...previousCursors, nextCursor]);
+    if (!cursorHistory.includes(nextCursor)) {
+      setCursorHistory([...cursorHistory, nextCursor]);
+    }
+    setCurrentPageIndex(currentPageIndex + 1);
   };
 
   const handlePreviousPage = () => {
-    if (previousCursors.length === 0) return;
-    // Remove the last cursor from history to go back
-    setPreviousCursors(previousCursors.slice(0, -1));
+    if (currentPageIndex > 0) {
+      setCurrentPageIndex(currentPageIndex - 1);
+    }
   };
 
   return (
@@ -124,20 +107,12 @@ const BikeManagement = () => {
       <AdminNav />
       <StyledToastContainer />
       <PageContainer>
-        <PageHeader>
-          <PageTitle>Bike Management</PageTitle>
-          <PageSubtitle>
-            Manage your luxury Bike inventory and listings
-          </PageSubtitle>
-        </PageHeader>
-
         {showAddBikeForm && (
           <BikeDetailsForm
             onBack={() => setShowAddBikeForm(false)}
             onSuccess={() => {
               setShowAddBikeForm(false);
-              // Refetch bikes on success to show the new bike
-              fetchBikes(previousCursors[previousCursors.length - 1] || null);
+              queryClient.invalidateQueries({ queryKey: ["adminBikes"] });
             }}
           />
         )}
@@ -145,16 +120,15 @@ const BikeManagement = () => {
         <ControlsSection>
           <ControlsRow>
             <SearchContainer>
-              <SearchIcon size={20} />
+              <SearchIcon size={18} />
               <SearchInput
                 type="text"
-                placeholder="Search bikes by name, category, or location..."
+                placeholder="Search bikes by name or brand..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </SearchContainer>
-
-            <select
+            <StyledSelect
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               style={{
@@ -169,66 +143,66 @@ const BikeManagement = () => {
               <option value="oldest">Oldest First</option>
               <option value="name_asc">Name (A-Z)</option>
               <option value="name_desc">Name (Z-A)</option>
-              <option value="price_asc">Price (Low to High)</option>
-              <option value="price_desc">Price (High to Low)</option>
-            </select>
+            </StyledSelect>
             <AddButton onClick={() => setShowAddBikeForm(true)}>
-              <Plus size={20} />
+              <Plus size={18} />
               Add New Bike
             </AddButton>
           </ControlsRow>
         </ControlsSection>
 
-        {loading ? (
-          <p>Loading bikes...</p>
-        ) : bikes.length > 0 ? (
-          <BikeGrid>
-            {bikes.map((bike) => (
-              <BikeCard key={bike.id}>
-                {/* Corrected props to match the new component name and data */}
-                <BikeImage imageUrl={bike.thumbnail}></BikeImage>
-                <BikeContent>
-                  <BikeHeader>
-                    <div>
-                      <BikeTitle>
-                        {bike.brand} {bike.title}
-                      </BikeTitle>
-                      {/* You can show price if you update your backend 'select' */}
-                      <BikePrice>Selling Price: {bike.sellingPrice}</BikePrice>
-                    </div>
-                  </BikeHeader>
-                  <BikeActions>
-                    <ActionButton
-                      title="Delete Bike"
-                      onClick={() => handleDelete(bike.id)}
-                    >
-                      <Trash2 size={18} />
-                    </ActionButton>
-                  </BikeActions>
-                </BikeContent>
-              </BikeCard>
-            ))}
-          </BikeGrid>
-        ) : (
-          <p>No bikes found matching your criteria.</p>
-        )}
+        {isLoading && <p>Loading bikes...</p>}
+        {isError && <p>Error: {error.message}</p>}
+
+        {!isLoading &&
+          !isError &&
+          (bikes.length > 0 ? (
+            <BikeGrid>
+              {bikes.map((bike) => (
+                <BikeCard key={bike.id}>
+                  <BikeImage imageUrl={bike.thumbnail} />
+                  <BikeContent>
+                    <BikeHeader>
+                      <div>
+                        <BikeTitle>
+                          {bike.brand} {bike.title}
+                        </BikeTitle>
+                        <BikePrice>
+                          Selling Price: {bike.ybtPrice.toLocaleString("en-IN")}
+                        </BikePrice>
+                      </div>
+                    </BikeHeader>
+                    {/* Add more bike-specific info here if needed */}
+                    <BikeActions>
+                      <ActionButton
+                        title="Delete Bike"
+                        onClick={() => handleDelete(bike.id)}
+                      >
+                        <Trash2 size={16} />
+                      </ActionButton>
+                    </BikeActions>
+                  </BikeContent>
+                </BikeCard>
+              ))}
+            </BikeGrid>
+          ) : (
+            <p>No bikes found matching your criteria.</p>
+          ))}
 
         <Pagination>
-          <ChevronLeft
+          <PageButton
             onClick={handlePreviousPage}
-            disabled={previousCursors.length === 0 || loading}
-            style={{
-              opacity: previousCursors.length === 0 || loading ? 0.5 : 1,
-            }}
-          />
-          <span style={{ color: "white", alignSelf: "center" }}>
-            Page {previousCursors.length + 1}
-          </span>
-          <ChevronRight
+            disabled={currentPageIndex === 0 || isLoading}
+          >
+            Previous
+          </PageButton>
+          <span>Page {currentPageIndex + 1}</span>
+          <PageButton
             onClick={handleNextPage}
-            disabled={!nextCursor || loading}
-            style={{ opacity: !nextCursor || loading ? 0.5 : 1 }}
-          />
+            disabled={!nextCursor || isLoading}
+          >
+            Next
+          </PageButton>
         </Pagination>
       </PageContainer>
     </PageWrapper>
@@ -241,7 +215,7 @@ const BikeCard = styled.div`
   // Your original styled component styles here
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
+  border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -270,45 +244,16 @@ const BikeCard = styled.div`
 
 const BikeImage = styled.div`
   height: 250px;
-  background-color: #1a1a1a;
   background-image: url(${(props) => props.imageUrl});
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      45deg,
-      transparent 30%,
-      rgba(255, 255, 255, 0.05) 50%,
-      transparent 70%
-    );
-    animation: shimmer 2s infinite;
-  }
-
-  @keyframes shimmer {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
-  }
 `;
 
 const BikeContent = styled.div`
   padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 `;
 
 const BikeHeader = styled.div`
@@ -374,54 +319,15 @@ const PageContainer = styled.div`
   margin: 0 auto;
   padding: 2rem;
 `;
-const PageHeader = styled.div`
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 3rem;
-  margin-bottom: 3rem;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.2),
-      transparent
-    );
-  }
-`;
 
 const BikePrice = styled.div``;
-const PageTitle = styled.h1`
-  font-family: "Playfair Display", serif;
-  font-size: 3rem;
-  font-weight: 400;
-  margin-bottom: 1rem;
-  background: linear-gradient(135deg, #fff, #ccc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 1px;
-`;
-const PageSubtitle = styled.p`
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.2rem;
-  margin-bottom: 0;
-  font-weight: 300;
-`;
+
 const ControlsSection = styled.div`
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 2.5rem;
-  margin-bottom: 3rem;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
   position: relative;
   overflow: hidden;
 
@@ -440,6 +346,7 @@ const ControlsSection = styled.div`
     );
   }
 `;
+
 const ControlsRow = styled.div`
   display: flex;
   justify-content: space-between;
@@ -451,6 +358,7 @@ const ControlsRow = styled.div`
     align-items: stretch;
   }
 `;
+
 const SearchContainer = styled.div`
   position: relative;
   flex: 1;
@@ -460,6 +368,7 @@ const SearchContainer = styled.div`
     max-width: none;
   }
 `;
+
 const SearchInput = styled.input`
   width: 100%;
   padding: 1rem 1rem 1rem 3rem;
@@ -481,6 +390,7 @@ const SearchInput = styled.input`
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
   }
 `;
+
 const SearchIcon = styled(Search)`
   position: absolute;
   left: 1rem;
@@ -488,6 +398,22 @@ const SearchIcon = styled(Search)`
   transform: translateY(-50%);
   color: rgba(255, 255, 255, 0.5);
   size: 20px;
+`;
+
+const StyledSelect = styled.select`
+  padding: 1rem 1rem 1rem 3rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: #ff4444;
+  }
 `;
 const AddButton = styled.button`
   background: linear-gradient(135deg, #ff4444, #ff6b6b);
@@ -555,5 +481,19 @@ const StyledToastContainer = styled(ToastContainer).attrs({
 
   .Toastify__progress-bar {
     background: rgba(255, 255, 255, 0.7);
+  }
+`;
+
+const PageButton = styled.button`
+  background: ${(props) => (props.disabled ? "#2a2a2a" : "#333")};
+  border: 1px solid #555;
+  color: ${(props) => (props.disabled ? "#666" : "#fff")};
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  transition: background-color 0.2s ease;
+
+  &:not(:disabled):hover {
+    background: #444;
   }
 `;

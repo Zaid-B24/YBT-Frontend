@@ -134,53 +134,61 @@ const BookingFormValidationSchema = z.object({
     .regex(/^\+?[1-9]\d{9,14}$/, "Please enter a valid phone number"),
 });
 
-const BikeValidationSchema = z.object({
+const bikeValidationSchema = z.object({
+  // --- Core Details ---
   title: z
     .string()
-    .min(3, "Title must be at least 3 characters long.")
-    .max(100, "Title is too long.")
-    .nonempty("Title is required."), // Correctly required
-  brand: z.string().optional(), // Optional in Prisma
-  manufactureYear: z.coerce
+    .min(3, "Title must be at least 3 characters.")
+    .nonempty("Title is required."),
+  description: z.string().optional(),
+  brand: z.string().optional(),
+  bikeUSP: z.string().optional(),
+  status: VehicleStatus.optional(),
+
+  // --- Dealer ---
+  dealerId: z.string().nonempty("Please select who is listing this bike."),
+
+  // --- Pricing ---
+  ybtPrice: z.coerce
     .number()
-    .int()
-    .min(1950)
-    .max(new Date().getFullYear())
-    .optional(), // Optional in Prisma
-  kmsDriven: z.coerce.number().int().min(0, "Kilometers must be 0 or more."), // Required in Prisma
-  ownerCount: z.coerce.number().int().min(1, "Owner count must be at least 1."), // Required in Prisma
-  insurance: z.string().optional(), // Optional in Prisma
+    .positive("YBT price is a required positive number."),
+  sellingPrice: z.coerce
+    .number()
+    .positive("Selling price must be positive.")
+    .optional(),
+  cutOffPrice: z.coerce
+    .number()
+    .positive("Cut-off price must be positive.")
+    .optional(),
+
+  // --- Ownership & History ---
   registrationYear: z.coerce
     .number()
     .int()
-    .min(1950, "Year seems too old.")
-    .max(new Date().getFullYear(), "Year cannot be in the future."), // Required in Prisma
-  registrationNumber: z
-    .string()
-    .regex(
-      /^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/i,
-      "Invalid registration number format (e.g., MH12AB1234)."
-    )
-    .nonempty(), // Correctly required
-  fuelType: FuelType, // Required in Prisma
-  sellingPrice: z.coerce
-    .number({ required_error: "Selling price is required." })
-    .positive("Selling price must be a positive number."), // Required
-  cutOffPrice: z.coerce.number().positive("Cut-off price must be positive."), // Required
-  ybtPrice: z.coerce.number().positive("YBT price must be positive."), // Required
-  listedBy: z.string().nonempty("Listed By is required."), // Required
-  badges: z.array(z.string()).optional(), // Optional in Prisma
-  vipNumber: z.boolean().default(false).optional(), // Default value in Prisma makes it optional
-  description: z.string().max(5000, "Description is too long.").optional(), // Optional
-  status: VehicleStatus.default("AVAILABLE").optional(), // Optional
-  bikeImages: z.any().refine(
-    (files) => files && files.length > 0, // Corrected to ensure at least one file
-    "At least one bike image is required."
-  ),
-  bikeUSP: z.string().optional(), // Optional
+    .min(1900)
+    .max(new Date().getFullYear()),
+  registrationNumber: z.string().nonempty("Registration number is required."),
+  kmsDriven: z.coerce.number().int().min(0, "Kms must be 0 or more."),
+  ownerCount: z.coerce.number().int().min(1).optional(),
+  insurance: z.string().optional(),
+
+  // --- Specs ---
+  engine: z.string().optional(),
+  specs: z.array(z.string()).optional(),
+  fuelType: FuelType.optional(),
+  badges: z.array(z.string()).optional(),
+  vipNumber: z.boolean().optional(),
+
+  // --- Media ---
+  bikeImages: z
+    .any()
+    .refine(
+      (files) => files?.length > 0,
+      "At least one bike image is required."
+    ),
 });
 
-export { BikeValidationSchema };
+export { bikeValidationSchema };
 
 export { BookingFormValidationSchema };
 export default carValidationSchema;

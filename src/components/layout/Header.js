@@ -580,7 +580,7 @@ const Header = () => {
   const rightNavItems = [
     // { to: '/faq', label: 'FAQ' },
     // { to: '/blog', label: 'Blog' },
-    { to: "/auctions", label: "Auctions" },
+    // { to: "/auctions", label: "Auctions" },
     { to: "/rentals", label: "Rentals" },
     { to: "/about", label: "About Us" },
     { to: "/contact", label: "Contact Us" },

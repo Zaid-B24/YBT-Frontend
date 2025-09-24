@@ -53,6 +53,7 @@ const GridContainer = styled.div`
 const CollectionCard = styled(motion(Link))`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;

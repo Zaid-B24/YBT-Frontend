@@ -195,7 +195,9 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
           formDataApi.append("carImages", file)
         );
       } else if (key === "badges") {
-        value.forEach((badge) => badge && formDataApi.append("badges", badge));
+        value.forEach(
+          (badge) => badge && formDataApi.append("badges[]", badge)
+        );
       } else {
         formDataApi.append(key, value);
       }
@@ -458,10 +460,10 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
   return (
     <FormContainer onSubmit={handleSubmit(onSubmit)}>
       <HeaderContainer>
-        <BackButton type="button" onClick={onBack} title="Go Back">
-          <ArrowLeft size={16} />
-        </BackButton>
         <Title>Enter Car Details</Title>
+        <BackButton type="button" onClick={onBack} title="Close">
+          <X size={16} />
+        </BackButton>
       </HeaderContainer>
 
       {Object.entries(sections).map(([sectionTitle, fields]) => (
@@ -853,25 +855,51 @@ const BackButton = styled.button`
 const SubmitButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 2rem;
-  background: black;
-  color: #ff4d4d;
+  justify-content: center; /* Center content inside the button */
+  gap: 0.75rem; /* Slightly more space for the icon */
+  padding: 1rem 2.5rem; /* Increased padding to make it bigger */
+  font-size: 1rem; /* Explicitly set font size */
   font-weight: 600;
-  border: 1px solid #ff0000;
-  border-radius: 10px;
+  color: #ffffff; /* White text for better contrast on gradient */
+
+  /* A modern, sleek gradient */
+  background: linear-gradient(135deg, #e53935, #b71c1c);
+
+  border: none; /* Removed border for a flatter look */
+  border-radius: 8px; /* Slightly adjusted border-radius */
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-  transition: transform 0.2s, background 0.2s;
+
+  /* A more subtle shadow that lifts on hover */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+
+  /* Smooth transitions for all animated properties */
+  transition: all 0.2s ease-in-out;
+
   &:hover {
-    transform: scale(1.05);
-    background: #111;
-    color: white;
+    transform: translateY(-3px); /* Lifts the button up */
+    box-shadow: 0 7px 20px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(
+      135deg,
+      #f44336,
+      #c62828
+    ); /* Brighter gradient on hover */
   }
+
+  /* Style for when the button is being clicked */
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Accessibility: Style for keyboard navigation */
+  &:focus-visible {
+    outline: 2px solid #ff8a80;
+    outline-offset: 2px;
+  }
+
   &:disabled {
-    background-color: #2d2d2d;
-    color: #6c6c6c;
-    border-color: #444;
+    background: #424242; /* Darker grey for disabled state */
+    color: #9e9e9e;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -888,4 +916,5 @@ const HeaderContainer = styled.div`
   align-items: center;
   gap: 1rem;
   margin-bottom: 2.5rem;
+  justify-content: space-between; /* Add this line */
 `;

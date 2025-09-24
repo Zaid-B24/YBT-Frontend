@@ -670,7 +670,7 @@ const AdminDashboard = () => {
 
   return (
     <DashboardWrapper>
-      {activeOverlay && (
+      {/* {activeOverlay && (
         <Overlay onClick={handleOverlayClick}>
           <ModalWrapper>
             <CloseButton
@@ -690,7 +690,7 @@ const AdminDashboard = () => {
             </Card>
           </ModalWrapper>
         </Overlay>
-      )}
+      )} */}
       <AdminNav />
       <DashboardContainer>
         <StatsGrid>
@@ -832,14 +832,14 @@ const AdminDashboard = () => {
                 Quick Actions
               </SectionTitle>
 
-              <QuickAction
+              {/* <QuickAction
                 onClick={() => {
                   setActiveOverlay("addVehicle");
                 }}
               >
                 <Plus size={20} />
                 Add New Vehicle
-              </QuickAction>
+              </QuickAction> */}
               <QuickAction
                 onClick={() => {
                   setActiveOverlay("createEvent");

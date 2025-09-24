@@ -126,7 +126,7 @@ const RightMenu = styled.ul`
 `;
 
 const NavLink = styled(Link)`
-  color: ${(props) => (props.active ? "#fff" : "rgba(255, 255, 255, 0.8)")};
+  color: ${(props) => (props.$active ? "#fff" : "rgba(255, 255, 255, 0.8)")};
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -161,7 +161,7 @@ const NavLink = styled(Link)`
   }
 
   ${(props) =>
-    props.active &&
+    props.$active &&
     `
     &::after {
       width: 100%;
@@ -287,7 +287,7 @@ const MobileNavLinks = styled.div`
 `;
 
 const MobileNavLink = styled(Link)`
-  color: ${(props) => (props.active ? "#fff" : "rgba(255, 255, 255, 0.8)")};
+  color: ${(props) => (props.$active ? "#fff" : "rgba(255, 255, 255, 0.8)")};
   text-decoration: none;
   font-size: 1.1rem;
   font-weight: 500;
@@ -306,7 +306,7 @@ const MobileNavLink = styled(Link)`
   }
 
   ${(props) =>
-    props.active &&
+    props.$active &&
     `
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
@@ -378,7 +378,7 @@ const AdminNav = () => {
               <li key={item.path}>
                 <NavLink
                   to={item.path}
-                  active={location.pathname === item.path}
+                  $active={location.pathname === item.path}
                 >
                   <item.icon size={16} />
                   {item.label}
@@ -395,7 +395,7 @@ const AdminNav = () => {
                 <li key={item.path}>
                   <NavLink
                     to={item.path}
-                    active={location.pathname === item.path}
+                    $active={location.pathname === item.path}
                   >
                     <item.icon size={16} />
                     {item.label}
@@ -433,7 +433,7 @@ const AdminNav = () => {
             <MobileNavLink
               key={item.path}
               to={item.path}
-              active={location.pathname === item.path}
+              $active={location.pathname === item.path}
               onClick={() => setMobileMenuOpen(false)}
             >
               <item.icon size={20} />

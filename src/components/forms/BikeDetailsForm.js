@@ -16,12 +16,20 @@ import {
   FileText,
   BadgeCheck,
   RotateCw,
+  Cog,
 } from "lucide-react";
 import { TbBikeFilled } from "react-icons/tb";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
-import { BikeValidationSchema } from "../../utils/zodValidation";
+import { bikeValidationSchema } from "../../utils/zodValidation";
+import { useQuery } from "@tanstack/react-query";
+
+const fetchDealers = async () => {
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/dealer `);
+  if (!res.ok) throw new Error("Failed to fetch dealers");
+  return res.json();
+};
 
 const renderField = (field, register, errors) => {
   const {
@@ -83,61 +91,72 @@ const renderField = (field, register, errors) => {
 };
 
 const BikeDetailsForm = ({ onSuccess, onBack }) => {
+  const { data: dealers = [] } = useQuery({
+    queryKey: ["dealers"],
+    queryFn: fetchDealers,
+  });
+
   const {
     register,
     handleSubmit,
     control,
     watch,
-    formState: { errors, isValid, isSubmitting },
+    formState: { errors, isDirty, isSubmitting }, // Use isDirty instead of isValid
   } = useForm({
-    resolver: zodResolver(BikeValidationSchema),
+    resolver: zodResolver(bikeValidationSchema),
     mode: "onChange",
+    // --- UPDATED: Default values to match the new schema ---
     defaultValues: {
       title: "",
+      dealerId: "",
       brand: "",
-      manufactureYear: new Date().getFullYear(),
-      kmsDriven: 0,
-      ownerCount: 1,
       registrationYear: new Date().getFullYear(),
+      kmsDriven: "",
+      ownerCount: "",
       registrationNumber: "",
       insurance: "",
       fuelType: "PETROL",
-      sellingPrice: 0,
-      cutOffPrice: 0,
-      ybtPrice: 0,
-      listedBy: "",
+      ybtPrice: "",
+      sellingPrice: "",
+      cutOffPrice: "",
       bikeUSP: "",
       description: "",
       status: "AVAILABLE",
       vipNumber: false,
-      badges: [],
+      specs: [""],
+      engine: "",
+      badges: [""],
       bikeImages: [],
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "badges",
-  });
-
+  const {
+    fields: badgeFields,
+    append: appendBadge,
+    remove: removeBadge,
+  } = useFieldArray({ control, name: "badges" });
+  const {
+    fields: specFields,
+    append: appendSpec,
+    remove: removeSpec,
+  } = useFieldArray({ control, name: "specs" });
   const bikeImages = watch("bikeImages");
 
   const onSubmit = async (data) => {
     const formDataApi = new FormData();
-    formDataApi.append("dealerId", 1);
 
     Object.keys(data).forEach((key) => {
+      const value = data[key];
+      if (value === null || value === "" || value === undefined) return;
+
       if (key === "bikeImages") {
-        Array.from(data.bikeImages).forEach((file) => {
-          formDataApi.append("bikeImages", file);
-        });
-      } else if (key === "badges") {
-        const validBadges = data.badges.filter(Boolean);
-        validBadges.forEach((badge) => {
-          formDataApi.append("badges", badge);
-        });
+        Array.from(value).forEach((file) =>
+          formDataApi.append("bikeImages", file)
+        );
+      } else if (key === "badges" || key === "specs") {
+        value.forEach((item) => item && formDataApi.append(key, item));
       } else {
-        formDataApi.append(key, data[key]);
+        formDataApi.append(key, value);
       }
     });
 
@@ -241,6 +260,12 @@ const BikeDetailsForm = ({ onSuccess, onBack }) => {
         ],
         required: true,
       },
+      {
+        key: "engine",
+        label: "Engine (cc)",
+        placeholder: "e.g., 998cc",
+        icon: Cog, // Assuming you have this icon
+      },
     ],
     "💰 Listing & Price": [
       {
@@ -268,11 +293,12 @@ const BikeDetailsForm = ({ onSuccess, onBack }) => {
         required: true,
       },
       {
-        key: "listedBy",
-        label: "Listed By",
-        placeholder: "e.g., Dealer/Owner name",
-        icon: UserCircle,
+        key: "dealerId",
+        label: "Listed By (Dealer)",
+        component: "select",
+        icon: UserCircle, // Assuming icon
         required: true,
+        options: dealers.map((d) => ({ value: d.id, label: d.name })),
       },
       {
         key: "status",
@@ -307,10 +333,10 @@ const BikeDetailsForm = ({ onSuccess, onBack }) => {
   return (
     <FormContainer onSubmit={handleSubmit(onSubmit)}>
       <HeaderContainer>
-        <BackButton type="button" onClick={onBack} title="Go Back">
-          <ArrowLeft size={16} />
+        <Title>Enter Car Details</Title>
+        <BackButton type="button" onClick={onBack} title="Close">
+          <X size={16} />
         </BackButton>
-        <Title>Enter Bike Details</Title>
       </HeaderContainer>
 
       {Object.entries(sections).map(([sectionTitle, fields]) => (
@@ -321,7 +347,6 @@ const BikeDetailsForm = ({ onSuccess, onBack }) => {
           </Grid>
         </Section>
       ))}
-
       {/* --- Special Fields Handled Separately --- */}
       <Section>
         <SectionTitle>💎 Special Features</SectionTitle>
@@ -338,25 +363,44 @@ const BikeDetailsForm = ({ onSuccess, onBack }) => {
 
           <Field style={{ gridColumn: "1 / -1" }}>
             <Label>Badges</Label>
-            {fields.map((field, index) => (
+            {badgeFields.map((field, index) => (
               <BadgeRow key={field.id}>
                 <Input
-                  placeholder="e.g., Premium"
+                  placeholder="e.g., Limited Edition"
                   {...register(`badges.${index}`)}
                 />
-                {fields.length > 1 && (
-                  <RemoveButton type="button" onClick={() => remove(index)}>
+                {badgeFields.length > 1 && (
+                  <RemoveButton
+                    type="button"
+                    onClick={() => removeBadge(index)}
+                  >
                     <X size={16} />
                   </RemoveButton>
                 )}
               </BadgeRow>
             ))}
-            <AddBadgeButton type="button" onClick={() => append("")}>
+            <AddBadgeButton type="button" onClick={() => appendBadge("")}>
               + Add Badge
             </AddBadgeButton>
-            {errors.badges && (
-              <ErrorMessage>{errors.badges.message}</ErrorMessage>
-            )}
+          </Field>
+          <Field style={{ gridColumn: "1 / -1" }}>
+            <Label>Specs</Label>
+            {specFields.map((field, index) => (
+              <BadgeRow key={field.id}>
+                <Input
+                  placeholder="e.g., Akrapovič Exhaust"
+                  {...register(`specs.${index}`)}
+                />
+                {specFields.length > 1 && (
+                  <RemoveButton type="button" onClick={() => removeSpec(index)}>
+                    <X size={16} />
+                  </RemoveButton>
+                )}
+              </BadgeRow>
+            ))}
+            <AddBadgeButton type="button" onClick={() => appendSpec("")}>
+              + Add Spec
+            </AddBadgeButton>
           </Field>
         </Grid>
       </Section>
@@ -398,15 +442,11 @@ const BikeDetailsForm = ({ onSuccess, onBack }) => {
       </Section>
 
       {/* --- Form Actions --- */}
-      <SubmitButton type="submit" disabled={!isValid || isSubmitting}>
-        {isSubmitting ? (
-          <>
-            <Spinner size={16} />
-            <span>Adding Bike...</span>
-          </>
-        ) : (
-          <span>Add Bike</span>
-        )}
+      <SubmitButton
+        type="submit"
+        disabled={!isDirty || Object.keys(errors).length > 0 || isSubmitting}
+      >
+        {isSubmitting ? "Adding Bike..." : "Add Bike"}
       </SubmitButton>
     </FormContainer>
   );
@@ -648,4 +688,5 @@ const HeaderContainer = styled.div`
   align-items: center;
   gap: 1rem;
   margin-bottom: 2.5rem;
+  justify-content: space-between; /* Add this line */
 `;

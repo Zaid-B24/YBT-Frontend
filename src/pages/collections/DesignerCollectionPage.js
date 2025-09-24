@@ -52,9 +52,10 @@ const GridContainer = styled.div`
   }
 `;
 
-const DesignerCard = styled(motion.div)`
+const DesignerCard = styled(motion(Link))`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -140,23 +141,6 @@ const StatLabel = styled.div`
   letter-spacing: 0.5px;
 `;
 
-const ViewButton = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-
-  &:hover {
-    gap: 1rem;
-  }
-`;
-
 const FeaturedSection = styled.section`
   padding: 4rem 2rem;
   background: rgba(255, 255, 255, 0.02);
@@ -233,6 +217,7 @@ const DesignerCollectionPage = () => {
             {designers.map((designer, index) => (
               <DesignerCard
                 key={designer.id}
+                to={`/collections/designer/${designer.slug}`}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -265,9 +250,6 @@ const DesignerCollectionPage = () => {
                       <StatLabel>Awards</StatLabel>
                     </Stat>
                   </DesignerStats>
-                  <ViewButton to={`/collections/designer/${designer.slug}`}>
-                    View Collection
-                  </ViewButton>
                 </DesignerContent>
               </DesignerCard>
             ))}
