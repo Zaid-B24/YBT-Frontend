@@ -4,26 +4,26 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { DesignerCardSkeleton } from "../../components/cards/DesignerCardSkeleton";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Award, Briefcase, Calendar } from "lucide-react";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
   min-height: 100vh;
-  background: #000;
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
   color: #fff;
 `;
 
 const HeroSection = styled.section`
-  padding: 4rem 2rem;
+  padding: 1rem 1rem;
   text-align: center;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
 `;
 
 const HeroTitle = styled.h1`
   font-family: "Playfair Display", serif;
-  font-size: 4rem;
+  font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 400;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 
   @media (max-width: 768px) {
     font-size: 2.5rem;
@@ -53,6 +53,26 @@ const GridContainer = styled.div`
   }
 `;
 
+const ViewButton = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  opacity: 0; /* Hidden by default */
+  transform: translateY(10px); /* Start 10px lower */
+  transition: all 0.3s ease;
+
+  &:hover {
+    gap: 1rem;
+    color: #b8860b;
+  }
+`;
+
 const DesignerCard = styled(motion.div)`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -61,11 +81,41 @@ const DesignerCard = styled(motion.div)`
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  height: 550px;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+
+  &:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background: radial-gradient(
+      600px circle at var(--x) var(--y),
+      rgba(255, 255, 255, 0.06),
+      transparent 40%
+    );
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none;
+  }
+
+  &:hover:before {
+    opacity: 1;
+  }
 
   &:hover {
-    transform: translateY(-5px);
-    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-10px);
+    border-color: rgba(255, 255, 255, 0.3);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+  &:hover ${ViewButton} {
+    opacity: 1; /* Make it visible */
+    transform: translateY(0); /* Move it back to its original position */
   }
 `;
 
@@ -133,6 +183,7 @@ const StatNumber = styled.div`
   font-size: 1.5rem;
   font-weight: 400;
   color: #fff;
+  color: #b8860b;
 `;
 
 const StatLabel = styled.div`
@@ -169,23 +220,6 @@ const FeaturedText = styled.p`
   margin: 0 auto;
 `;
 
-const ViewButton = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-
-  &:hover {
-    gap: 1rem;
-  }
-`;
-
 const fetchDesigners = async () => {
   const apiUrl = `${process.env.REACT_APP_API_URL}/designer`;
   const response = await fetch(apiUrl);
@@ -205,6 +239,14 @@ const DesignerCollectionPage = () => {
     queryKey: ["designers"],
     queryFn: fetchDesigners,
   });
+
+  const handleMouseMove = (e, card) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty("--x", `${x}px`);
+    card.style.setProperty("--y", `${y}px`);
+  };
 
   return (
     <PageWrapper>
@@ -239,6 +281,7 @@ const DesignerCollectionPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
+                onMouseMove={(e) => handleMouseMove(e, e.currentTarget)}
               >
                 <DesignerImage image={designer.image}>
                   {/* <DesignerIcon>{designer.icon}</DesignerIcon> */}
@@ -255,15 +298,21 @@ const DesignerCollectionPage = () => {
                   </DesignerDescription>
                   <DesignerStats>
                     <Stat>
-                      <StatNumber>{designer.stats.projects}</StatNumber>
+                      <StatNumber>
+                        <Briefcase size={20} /> {designer.stats.projects}
+                      </StatNumber>
                       <StatLabel>Projects</StatLabel>
                     </Stat>
                     <Stat>
-                      <StatNumber>{designer.stats.years}</StatNumber>
+                      <StatNumber>
+                        <Calendar size={20} /> {designer.stats.years}
+                      </StatNumber>
                       <StatLabel>Experience</StatLabel>
                     </Stat>
                     <Stat>
-                      <StatNumber>{designer.stats.awards}</StatNumber>
+                      <StatNumber>
+                        <Award size={20} /> {designer.stats.awards}
+                      </StatNumber>
                       <StatLabel>Awards</StatLabel>
                     </Stat>
                   </DesignerStats>

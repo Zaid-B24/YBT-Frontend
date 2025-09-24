@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Filter, ArrowRight, Heart, ShoppingCart } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { CarCardSkeleton } from "../../components/cards/CarCardSkeleton";
 
 const PageWrapper = styled.div`
@@ -234,14 +234,39 @@ const ResetButton = styled.button`
   }
 `;
 
-const fetchBikes = async (filters) => {
-  const params = new URLSearchParams();
+// const fetchBikes = async (filters) => {
+//   const params = new URLSearchParams();
 
+//   params.append("collectionType", "YBT");
+
+//   if (filters.brand) params.append("brands", filters.brand);
+//   if (filters.year) params.append("registrationYear", filters.year);
+//   if (filters.engine) params.append("engine", filters.engine); // Assuming backend supports this
+
+//   const apiUrl = `${process.env.REACT_APP_API_URL}/bikes?${params.toString()}`;
+//   console.log(`Fetching bikes from: ${apiUrl}`);
+
+//   const response = await fetch(apiUrl);
+//   if (!response.ok) {
+//     throw new Error(`Server responded with ${response.status}.`);
+//   }
+//   const responseData = await response.json();
+//   return responseData.data || [];
+// };
+
+const fetchBikes = async ({ pageParam = null, queryKey }) => {
+  const [_key, filters] = queryKey;
+
+  const params = new URLSearchParams();
   params.append("collectionType", "YBT");
 
   if (filters.brand) params.append("brands", filters.brand);
   if (filters.year) params.append("registrationYear", filters.year);
-  if (filters.engine) params.append("engine", filters.engine); // Assuming backend supports this
+  if (filters.engine) params.append("engine", filters.engine);
+
+  if (pageParam) {
+    params.append("cursor", pageParam);
+  }
 
   const apiUrl = `${process.env.REACT_APP_API_URL}/bikes?${params.toString()}`;
   console.log(`Fetching bikes from: ${apiUrl}`);
@@ -250,8 +275,8 @@ const fetchBikes = async (filters) => {
   if (!response.ok) {
     throw new Error(`Server responded with ${response.status}.`);
   }
-  const responseData = await response.json();
-  return responseData.data || [];
+
+  return response.json();
 };
 
 const YBTBikesPage = () => {
@@ -274,23 +299,55 @@ const YBTBikesPage = () => {
   };
 
   const {
-    data: bikes = [],
-    isLoading,
-    isError,
+    data,
     error,
-  } = useQuery({
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
     queryKey: ["bikes", filters],
-    queryFn: () => fetchBikes(filters),
+    queryFn: fetchBikes,
+    getNextPageParam: (lastPage, pages) => {
+      return lastPage.pagination.nextCursor ?? undefined;
+    },
     keepPreviousData: true,
   });
 
-  const brands = [...new Set(bikes.map((bike) => bike.brand))];
+  const loadMoreRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Is the entry intersecting the viewport?
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1.0 } // Trigger when the element is 100% visible
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const bikes = useMemo(
+    () => data?.pages.flatMap((page) => page.data) ?? [],
+    [data]
+  );
+
+  const brands = [...new Set(bikes.map((bike) => bike.brand).filter(Boolean))];
   const years = [
-    ...new Set(
-      bikes
-        .map((bike) => bike.year) // Or bike.registrationYear
-        .filter((year) => year != null) // This removes null and undefined
-    ),
+    ...new Set(bikes.map((bike) => bike.registrationYear).filter(Boolean)),
   ];
 
   console.log("Brands array:", brands);
@@ -375,51 +432,63 @@ const YBTBikesPage = () => {
           </HeroSubtitle>
         </HeroSection>
 
-        {isError && <p>Error: {error.message}</p>}
-        {isLoading && (
+        {status === "loading" ? (
           <BikesGrid>
             {Array.from({ length: 6 }).map((_, index) => (
               <CarCardSkeleton key={index} />
             ))}
           </BikesGrid>
-        )}
+        ) : status === "error" ? (
+          <p>Error: {error.message}</p>
+        ) : (
+          <>
+            <BikesGrid>
+              {/* ✨ Map over the pages, and then map over the bikes in each page */}
+              {data?.pages.map((page, i) => (
+                <React.Fragment key={i}>
+                  {page.data.map((bike, index) => (
+                    <BikeCard
+                      key={bike.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: (index % 6) * 0.1 }}
+                      viewport={{ once: true }}
+                    >
+                      <BikeImage image={bike.thumbnail}>
+                        <BikeBadge>{bike.badges?.[0] || "Featured"}</BikeBadge>
+                      </BikeImage>
+                      <BikeContent>
+                        <BikeTitle>{bike.title}</BikeTitle>
+                        <BikeSpecs>
+                          <span>{bike.specs.join(" • ")}</span>
+                        </BikeSpecs>
+                        <BikePrice>
+                          ₹{bike.ybtPrice?.toLocaleString("en-IN")}
+                        </BikePrice>
+                        <ViewButton to={`/bikes/${bike.id}`}>
+                          View Details <ArrowRight size={16} />
+                        </ViewButton>
+                      </BikeContent>
+                    </BikeCard>
+                  ))}
+                </React.Fragment>
+              ))}
+            </BikesGrid>
 
-        {!isLoading && !isError && (
-          <BikesGrid>
-            {/* Map over the 'bikes' array from useQuery */}
-            {bikes.map((bike, index) => (
-              <BikeCard
-                key={bike.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <BikeImage image={bike.thumbnail}>
-                  {" "}
-                  {/* Use thumbnail from API */}
-                  <BikeBadge>{bike.badges?.[0] || "Featured"}</BikeBadge>{" "}
-                  {/* Safely access first badge */}
-                </BikeImage>
-                <BikeContent>
-                  <BikeTitle>{bike.title}</BikeTitle>
-                  <BikeSpecs>
-                    <span>{bike.specs.join(" • ")}</span>
-                  </BikeSpecs>
-                  <BikePrice>
-                    ₹{bike.ybtPrice?.toLocaleString("en-IN")}
-                  </BikePrice>{" "}
-                  {/* Safely format price */}
-                  <ViewButton to={`/bikes/${bike.id}`}>
-                    {" "}
-                    {/* Link to bike detail page */}
-                    View Details
-                    <ArrowRight size={16} />
-                  </ViewButton>
-                </BikeContent>
-              </BikeCard>
-            ))}
-          </BikesGrid>
+            {/* ✨ Add the loading trigger at the end */}
+            <div
+              ref={loadMoreRef}
+              style={{ height: "100px", margin: "20px 0" }}
+            >
+              {isFetchingNextPage ? (
+                <p style={{ textAlign: "center" }}>Loading more...</p>
+              ) : hasNextPage ? (
+                <p style={{ textAlign: "center" }}>Scroll to load more</p>
+              ) : (
+                <p style={{ textAlign: "center" }}>You've reached the end!</p>
+              )}
+            </div>
+          </>
         )}
       </MainContent>
     </PageWrapper>
@@ -427,6 +496,55 @@ const YBTBikesPage = () => {
 };
 
 export default YBTBikesPage;
+
+// {isError && <p>Error: {error.message}</p>}
+//         {isLoading && (
+//           <BikesGrid>
+//             {Array.from({ length: 6 }).map((_, index) => (
+//               <CarCardSkeleton key={index} />
+//             ))}
+//           </BikesGrid>
+//         )}
+
+//         {!isLoading && !isError && (
+//           <BikesGrid>
+//             {/* Map over the 'bikes' array from useQuery */}
+//             {bikes.map((bike, index) => (
+//               <BikeCard
+//                 key={bike.id}
+//                 initial={{ opacity: 0, y: 30 }}
+//                 whileInView={{ opacity: 1, y: 0 }}
+//                 transition={{ duration: 0.6, delay: index * 0.1 }}
+//                 viewport={{ once: true }}
+//               >
+//                 <BikeImage image={bike.thumbnail}>
+//                   {" "}
+//                   {/* Use thumbnail from API */}
+//                   <BikeBadge>{bike.badges?.[0] || "Featured"}</BikeBadge>{" "}
+//                   {/* Safely access first badge */}
+//                 </BikeImage>
+//                 <BikeContent>
+//                   <BikeTitle>{bike.title}</BikeTitle>
+//                   <BikeSpecs>
+//                     <span>{bike.specs.join(" • ")}</span>
+//                   </BikeSpecs>
+//                   <BikePrice>
+//                     ₹{bike.ybtPrice?.toLocaleString("en-IN")}
+//                   </BikePrice>{" "}
+//                   {/* Safely format price */}
+//                   <ViewButton to={`/bikes/${bike.id}`}>
+//                     {" "}
+//                     {/* Link to bike detail page */}
+//                     View Details
+//                     <ArrowRight size={16} />
+//                   </ViewButton>
+//                 </BikeContent>
+//               </BikeCard>
+//             ))}
+//           </BikesGrid>
+//         )}
+
+///////////////////////////////////////////////////
 
 // {
 //   /*

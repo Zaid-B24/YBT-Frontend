@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Filter, ArrowRight } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { CarCardSkeleton } from "../../components/cards/CarCardSkeleton";
+import React from "react";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -234,16 +235,17 @@ const ResetButton = styled.button`
   }
 `;
 
-const fetchCars = async (filters) => {
+const fetchCars = async ({ pageParam = null, queryKey }) => {
+  const [_key, filters] = queryKey;
   const params = new URLSearchParams();
 
   params.append("collectionType", "YBT");
 
-  if (filters.brand) {
-    params.append("brands", filters.brand);
-  }
-  if (filters.year) {
-    params.append("registrationYear", filters.year);
+  if (filters.brand) params.append("brands", filters.brand);
+  if (filters.year) params.append("registrationYear", filters.year);
+
+  if (pageParam) {
+    params.append("cursor", pageParam);
   }
 
   const apiUrl = `${process.env.REACT_APP_API_URL}/cars?${params.toString()}`;
@@ -253,8 +255,8 @@ const fetchCars = async (filters) => {
   if (!response.ok) {
     throw new Error(`Server responded with ${response.status}.`);
   }
-  const responseData = await response.json();
-  return responseData.data || [];
+
+  return response.json();
 };
 
 const YBTCarsPage = () => {
@@ -272,16 +274,33 @@ const YBTCarsPage = () => {
     });
   };
 
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }));
+  };
+
   const {
-    data: cars = [],
-    isLoading,
-    isError,
+    data,
     error,
-  } = useQuery({
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
     queryKey: ["cars", filters],
-    queryFn: () => fetchCars(filters),
+    queryFn: fetchCars,
+    // ✨ Tell React Query how to get the cursor for the next page
+    getNextPageParam: (lastPage) => lastPage.pagination.nextCursor ?? undefined,
     keepPreviousData: true,
   });
+
+  const cars = useMemo(
+    () => data?.pages.flatMap((page) => page.data) ?? [],
+    [data]
+  );
 
   const transformedCars = cars.map((car) => ({
     id: car.id,
@@ -294,16 +313,36 @@ const YBTCarsPage = () => {
     specs: car.specs || ["V10 Engine", "630 HP", "AWD"],
   }));
 
-  const brands = [...new Set(transformedCars.map((car) => car.brand))];
-  const years = [...new Set(transformedCars.map((car) => car.year))];
+  const brands = [
+    ...new Set(transformedCars.map((car) => car.brand).filter(Boolean)),
+  ];
+  const years = [
+    ...new Set(transformedCars.map((car) => car.year).filter(Boolean)),
+  ];
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: value,
-    }));
-  };
+  const loadMoreRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
     <PageWrapper>
@@ -383,51 +422,66 @@ const YBTCarsPage = () => {
           </HeroSubtitle>
         </HeroSection>
 
-        {isError && <p>Error: {error.message}</p>}
-        {isLoading && (
+        {status === "loading" ? (
           <CarsGrid>
             {Array.from({ length: 6 }).map((_, index) => (
               <CarCardSkeleton key={index} />
             ))}
           </CarsGrid>
-        )}
+        ) : status === "error" ? (
+          <p>Error: {error.message}</p>
+        ) : (
+          <>
+            <AnimatePresence>
+              <CarsGrid layout>
+                {transformedCars.map((car, index) => (
+                  <CarCard
+                    key={car.id} // Use the unique car ID for the key
+                    layout
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -30 }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
+                  >
+                    <CarImage image={car.image}>
+                      <CarBadge>{car.badge}</CarBadge>
+                    </CarImage>
+                    <CarContent>
+                      <CarTitle>YBT {car.title}</CarTitle>
+                      <CarSpecs>
+                        {/* Make sure car.specs is an array before joining */}
+                        <span>
+                          {Array.isArray(car.specs)
+                            ? car.specs.join(" • ")
+                            : ""}
+                        </span>
+                      </CarSpecs>
+                      <CarPrice>
+                        {/* Add a check for price to prevent errors */}₹
+                        {car.price?.toLocaleString("en-IN")}
+                      </CarPrice>
+                      <ViewButton to={`/cars/${car.id}`}>
+                        View Details
+                        <ArrowRight size={16} />
+                      </ViewButton>
+                    </CarContent>
+                  </CarCard>
+                ))}
+              </CarsGrid>
+            </AnimatePresence>
 
-        {!isLoading && !isError && transformedCars.length === 0 && (
-          <p style={{ fontSize: "1.5rem", color: "#666" }}>
-            Oops, we're cooking something! 🍳 Please wait...
-          </p>
-        )}
-
-        {!isLoading && !isError && transformedCars.length > 0 && (
-          <AnimatePresence>
-            <CarsGrid layout>
-              {transformedCars.map((car, index) => (
-                <CarCard
-                  key={car.id}
-                  layout
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -30 }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                >
-                  <CarImage image={car.image}>
-                    <CarBadge>{car.badge}</CarBadge>
-                  </CarImage>
-                  <CarContent>
-                    <CarTitle>YBT {car.title}</CarTitle>
-                    <CarSpecs>
-                      <span>{car.specs.join(" • ")}</span>
-                    </CarSpecs>
-                    <CarPrice>₹{car.price.toLocaleString("en-IN")}</CarPrice>
-                    <ViewButton to={`/cars/${car.id}`}>
-                      View Details
-                      <ArrowRight size={16} />
-                    </ViewButton>
-                  </CarContent>
-                </CarCard>
-              ))}
-            </CarsGrid>
-          </AnimatePresence>
+            {/* Add the loading trigger at the end of the list */}
+            <div
+              ref={loadMoreRef}
+              style={{ height: "100px", marginTop: "2rem" }}
+            >
+              {isFetchingNextPage ? (
+                <p style={{ textAlign: "center" }}>Loading more...</p>
+              ) : !hasNextPage ? (
+                <p style={{ textAlign: "center" }}>You've reached the end!</p>
+              ) : null}
+            </div>
+          </>
         )}
       </MainContent>
     </PageWrapper>
@@ -435,6 +489,55 @@ const YBTCarsPage = () => {
 };
 
 export default YBTCarsPage;
+
+//  {isError && <p>Error: {error.message}</p>}
+//         {isLoading && (
+//           <CarsGrid>
+//             {Array.from({ length: 6 }).map((_, index) => (
+//               <CarCardSkeleton key={index} />
+//             ))}
+//           </CarsGrid>
+//         )}
+
+//         {!isLoading && !isError && transformedCars.length === 0 && (
+//           <p style={{ fontSize: "1.5rem", color: "#666" }}>
+//             Oops, we're cooking something! 🍳 Please wait...
+//           </p>
+//         )}
+
+//         {!isLoading && !isError && transformedCars.length > 0 && (
+//           <AnimatePresence>
+//             <CarsGrid layout>
+//               {transformedCars.map((car, index) => (
+//                 <CarCard
+//                   key={car.id}
+//                   layout
+//                   initial={{ opacity: 0, y: 30 }}
+//                   animate={{ opacity: 1, y: 0 }}
+//                   exit={{ opacity: 0, y: -30 }}
+//                   transition={{ duration: 0.4, delay: index * 0.05 }}
+//                 >
+//                   <CarImage image={car.image}>
+//                     <CarBadge>{car.badge}</CarBadge>
+//                   </CarImage>
+//                   <CarContent>
+//                     <CarTitle>YBT {car.title}</CarTitle>
+//                     <CarSpecs>
+//                       <span>{car.specs.join(" • ")}</span>
+//                     </CarSpecs>
+//                     <CarPrice>₹{car.price.toLocaleString("en-IN")}</CarPrice>
+//                     <ViewButton to={`/cars/${car.id}`}>
+//                       View Details
+//                       <ArrowRight size={16} />
+//                     </ViewButton>
+//                   </CarContent>
+//                 </CarCard>
+//               ))}
+//             </CarsGrid>
+//           </AnimatePresence>
+//         )}
+
+////////////////////////////////////////////////
 
 // const dummyCars = [
 //   {
