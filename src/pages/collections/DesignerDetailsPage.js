@@ -62,7 +62,7 @@ const DesignerDetailPage = () => {
             <DesignerMeta>
               <MetaItem>
                 <Calendar size={16} />{" "}
-                <span>{designer.stats.years} Experience</span>
+                <span>{designer.stats.experience} years of Experience</span>
               </MetaItem>
               <MetaItem>
                 <MapPin size={16} />{" "}

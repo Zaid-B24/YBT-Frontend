@@ -78,7 +78,7 @@ const WorkshopCollectionPage = () => {
                       <StatLabel>Projects</StatLabel>
                     </Stat>
                     <Stat>
-                      <StatNumber>{workshop.stats.years}</StatNumber>
+                      <StatNumber>{workshop.stats.experience}</StatNumber>
                       <StatLabel>Experience</StatLabel>
                     </Stat>
                     <Stat>

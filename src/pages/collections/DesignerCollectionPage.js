@@ -305,7 +305,7 @@ const DesignerCollectionPage = () => {
                     </Stat>
                     <Stat>
                       <StatNumber>
-                        <Calendar size={20} /> {designer.stats.years}
+                        <Calendar size={20} /> {designer.stats.experience}
                       </StatNumber>
                       <StatLabel>Experience</StatLabel>
                     </Stat>

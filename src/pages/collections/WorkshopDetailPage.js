@@ -56,7 +56,7 @@ const WorkshopDetailPage = () => {
             <WorkshopMeta>
               <MetaItem>
                 <Calendar size={16} />{" "}
-                <span>{workshop.stats.years} Experience</span>
+                <span>{workshop.stats.specialists} Years of Experience</span>
               </MetaItem>
               <MetaItem>
                 <MapPin size={16} />{" "}
