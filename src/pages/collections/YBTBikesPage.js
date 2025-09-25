@@ -135,7 +135,7 @@ const BikesGrid = styled.div`
 const BikeCard = styled(motion.div)`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 20px 20px 0 0;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -150,6 +150,7 @@ const BikeCard = styled(motion.div)`
 
 const BikeImage = styled.div`
   height: 250px;
+
   background: ${(props) =>
       props.image
         ? `url(${props.image})`
