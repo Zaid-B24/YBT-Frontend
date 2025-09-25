@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -147,6 +147,9 @@ const AuthPage = () => {
   const [error, setError] = useState("");
   const { login, signup } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/";
 
   const {
     register,
@@ -171,7 +174,7 @@ const AuthPage = () => {
           data.confirmPassword
         );
       }
-      navigate("/"); // Navigate to home on success
+      navigate(from, { replace: true }); // Navigate to home on success
     } catch (err) {
       setError(err.message);
     }

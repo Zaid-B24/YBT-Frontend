@@ -21,6 +21,8 @@ import { FaDoorOpen } from "react-icons/fa";
 import { LuGitCommitHorizontal, LuGitCommitVertical } from "react-icons/lu";
 import { useQuery } from "@tanstack/react-query";
 import { VehicleInfoPageSkeleton } from "../../components/cards/VehicleInfoPageSkeleton";
+import { useAuth } from "../../contexts/AuthContext";
+import LockedContent from "../../components/common/Locked";
 
 // Components
 
@@ -73,6 +75,27 @@ const dummyVehicle = {
   ],
 };
 
+const resizeCloudinaryImage = (
+  url,
+  { width, height, crop = "scale", quality = "auto:best" }
+) => {
+  if (!url || !url.includes("res.cloudinary.com")) {
+    return url;
+  }
+  const parts = url.split("/upload/");
+  if (parts.length !== 2) {
+    return url;
+  }
+
+  const transformations = [];
+  if (width) transformations.push(`w_${width}`);
+  if (height) transformations.push(`h_${height}`);
+  if (crop) transformations.push(`c_${crop}`);
+  if (quality) transformations.push(`q_${quality}`);
+
+  return `${parts[0]}/upload/${transformations.join(",")}/${parts[1]}`;
+};
+
 // =================== Component ===================
 const VehicleInfoPage = () => {
   const { category, idAndSlug } = useParams();
@@ -80,6 +103,8 @@ const VehicleInfoPage = () => {
   const [selectedImage, setSelectedImage] = useState(0);
 
   const vehicleId = idAndSlug ? idAndSlug.split("-")[0] : null;
+
+  const { isLoggedIn } = useAuth();
 
   const {
     data: vehicle,
@@ -101,27 +126,6 @@ const VehicleInfoPage = () => {
     enabled: !!vehicleId,
     staleTime: 1000 * 60 * 60, // 1 hour
   });
-
-  const resizeCloudinaryImage = (
-    url,
-    { width, height, crop = "scale", quality = "auto:best" }
-  ) => {
-    if (!url || !url.includes("res.cloudinary.com")) {
-      return url;
-    }
-    const parts = url.split("/upload/");
-    if (parts.length !== 2) {
-      return url;
-    }
-
-    const transformations = [];
-    if (width) transformations.push(`w_${width}`);
-    if (height) transformations.push(`h_${height}`);
-    if (crop) transformations.push(`c_${crop}`);
-    if (quality) transformations.push(`q_${quality}`);
-
-    return `${parts[0]}/upload/${transformations.join(",")}/${parts[1]}`;
-  };
 
   if (isLoading) return <VehicleInfoPageSkeleton />;
   if (isError) return <div>Error: {error.message}</div>;
@@ -220,22 +224,30 @@ const VehicleInfoPage = () => {
 
             <DetailsSection>
               <SectionTitle>About This Vehicle</SectionTitle>
-              <Description>{vehicle.description}</Description>
+              {isLoggedIn ? (
+                <Description>{vehicle.description}</Description>
+              ) : (
+                <LockedContent />
+              )}
             </DetailsSection>
 
             <DetailsSection>
               <SectionTitle>Specifications</SectionTitle>
-              <SpecsGrid>
-                {specList.map(({ key, label, value, Icon }) => (
-                  <SpecItem key={key}>
-                    <SpecIcon>
-                      <Icon size={20} />
-                    </SpecIcon>
-                    <SpecLabel>{label}</SpecLabel>
-                    <SpecValue>{value}</SpecValue>
-                  </SpecItem>
-                ))}
-              </SpecsGrid>
+              {isLoggedIn ? (
+                <SpecsGrid>
+                  {specList.map(({ key, label, value, Icon }) => (
+                    <SpecItem key={key}>
+                      <SpecIcon>
+                        <Icon size={20} />
+                      </SpecIcon>
+                      <SpecLabel>{label}</SpecLabel>
+                      <SpecValue>{value}</SpecValue>
+                    </SpecItem>
+                  ))}
+                </SpecsGrid>
+              ) : (
+                <LockedContent />
+              )}
             </DetailsSection>
 
             <DetailsSection>
@@ -243,7 +255,7 @@ const VehicleInfoPage = () => {
               <FeatureList>
                 {dummyVehicle.features?.map((feature, index) => (
                   <FeatureItem key={index}>
-                    <CheckCircle size={16} color="#dc2626" />
+                    <CheckCircle size={16} color="#e1c841" />
                     {feature}
                   </FeatureItem>
                 ))}
@@ -322,7 +334,7 @@ const ImageSection = styled.div`
 `;
 
 const DetailsSection = styled.section`
-  padding-top: 1.5rem;
+  padding-top: 0.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   &:first-of-type {
     border-top: none;
@@ -356,6 +368,8 @@ const Description = styled.p`
   color: #b3b3b3;
   line-height: 1.7;
   font-size: 1rem;
+  font-family: "Inter", sans-serif;
+  max-width: 70ch;
 `;
 
 // =================== Image Gallery ===================
@@ -383,7 +397,7 @@ const ImageBadges = styled.div`
 `;
 
 const ImageBadge = styled.span`
-  background: inear-gradient(to right, #ffffff, #ff6b6b, #e53935);
+  background: linear-gradient(to right, #ffffff, #ff6b6b, #e53935);
   color: #fff;
   padding: 0.3rem 0.8rem;
   font-size: 0.7rem;

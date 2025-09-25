@@ -206,10 +206,13 @@ export const AuthProvider = ({ children }) => {
     setIsAdmin(false);
   };
 
+  const isLoggedIn = !!user;
+
   const value = {
     user,
     token,
     isAdmin,
+    isLoggedIn,
     loading,
     login,
     adminLogin,
