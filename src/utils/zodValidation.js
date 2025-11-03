@@ -18,14 +18,14 @@ export const carValidationSchema = z
     description: z.string().optional(),
     status: VehicleStatus.optional(),
 
-    // --- Collection & Dealer ---
+    // --- Collection & Dealer (No changes needed, these are correct for a form) ---
     dealerId: z.string().nonempty("Please select who is listing this car."),
     collectionType: CollectionType,
     designerId: z.string().optional(),
     workshopId: z.string().optional(),
     tuningStage: z.union([Stage, z.literal("")]).optional(),
 
-    // --- Pricing (Corrected) ---
+    // --- Pricing (No changes needed) ---
     sellingPrice: z.coerce
       .number()
       .positive("Selling price must be a positive number."),
@@ -36,7 +36,7 @@ export const carValidationSchema = z
       .number()
       .positive("YBT price must be a positive number."),
 
-    // --- Ownership & History ---
+    // --- Ownership & History (No changes needed) ---
     registrationYear: z.coerce
       .number()
       .int()
@@ -53,8 +53,11 @@ export const carValidationSchema = z
       .max(new Date().getFullYear())
       .optional(),
 
-    // --- Other Specs ---
-    badges: z.array(z.string()).optional(),
+    // --- Car Specifications ---
+    // MODIFIED: Changed from array to string to match backend expectation for multipart/form-data
+    badges: z.string().optional(),
+    // ADDED: The 'specs' field was missing
+    specs: z.string().optional(),
     vipNumber: z.boolean().optional(),
     city: z.string().optional(),
     state: z.string().optional(),
@@ -70,10 +73,11 @@ export const carValidationSchema = z
     doors: z.coerce.number().int().positive().optional(),
     seatingCapacity: z.coerce.number().int().positive().optional(),
     engine: z.string().optional(),
-    fuelType: FuelType.optional(),
+    fuelType: z.union([FuelType, z.literal("")]).optional(),
     mileage: z.coerce.number().min(0).optional(),
     driveType: z.union([DriveType, z.literal("")]).optional(),
 
+    // --- File Validation (No changes needed) ---
     carImages: z
       .any()
       .refine(
@@ -81,38 +85,31 @@ export const carValidationSchema = z
         "At least one car image is required."
       ),
   })
+  // MODIFIED: Aligned the refine logic to be more robust, like the backend
   .refine(
     (data) => {
-      // Conditional validation logic
-      if (data.collectionType === "DESIGNER") return !!data.designerId;
+      if (data.collectionType === "DESIGNER") {
+        return !!data.designerId && !data.workshopId;
+      }
       return true;
     },
     {
-      message: "A designer must be selected for the Designer Collection.",
+      message: "A Designer car must have a designer ID and no workshop ID.",
       path: ["designerId"],
     }
   )
   .refine(
     (data) => {
-      if (data.collectionType === "WORKSHOP") return !!data.workshopId;
+      if (data.collectionType === "WORKSHOP") {
+        return !!data.workshopId && !data.designerId;
+      }
       return true;
     },
     {
-      message: "A workshop must be selected for the Workshop Collection.",
+      message: "A Workshop car must have a workshop ID and no designer ID.",
       path: ["workshopId"],
     }
-  )
-  .refine(
-    (data) => {
-      if (data.collectionType === "TORQUE_TUNER") return !!data.tuningStage;
-      return true;
-    },
-    {
-      message: "A tuning stage is required for the Torque Tuner Collection.",
-      path: ["tuningStage"],
-    }
   );
-
 const BookingFormValidationSchema = z.object({
   name: z
     .string()
