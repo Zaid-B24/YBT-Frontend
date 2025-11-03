@@ -1,16 +1,30 @@
-import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import styled from "styled-components";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import {
   Calendar,
-  MapPin,
   Clock,
   Users,
-  ArrowLeft,
   Share2,
+  AirVent,
+  UtensilsCrossed,
+  Waves,
+  Lightbulb,
+  Send,
+  Wifi,
+  Car,
+  Accessibility,
+  Utensils,
+  HelpCircle,
+  Feather,
+  Minimize2,
+  Sparkles,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+
+import { useAuth } from "../../contexts/AuthContext";
+import LockedLocation from "../../components/common/LockedEvents";
+import { useEffect, useMemo, useState } from "react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -24,296 +38,274 @@ const fadeUp = {
   },
 };
 
+// 1. Page Layout & Structure
 const PageWrapper = styled.div`
-  padding-top: 0px;
+  padding: 80px 1.5rem 2rem 1.5rem;
   min-height: 100vh;
-  background: #000;
+  background: #0a0a0a;
   color: #fff;
 `;
 
-const TitleSection = styled.section`
-  // Change the background to a semi-transparent color
-  background: rgba(
-    10,
-    10,
-    10,
-    0.2
-  ); // 0.7 is the transparency. Adjust between 0.1 and 1.
+const EventLayout = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 50px;
+  display: grid;
+  grid-template-columns: 2.5fr 1fr;
+  gap: 3rem;
 
-  // Add this line to create the frosted glass effect
-  backdrop-filter: blur(12px);
+  @media (max-width: 968px) {
+    grid-template-columns: 1fr;
+  }
+`;
 
-  // Keep the other styles
-  padding: 1.5rem 2rem;
-  text-align: center;
-  position: relative;
-  z-index: 2;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  margin-top: -20px;
+const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
 
-  // A subtle border helps define the glass edge
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: 2px solid rgba(255, 255, 255, 0.1);
-  border-right: 2px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+const RightColumn = styled(motion.div)`
+  position: sticky;
+  top: 80px;
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
+
+// 2. Header & Banner Elements
+// const EventBannerVideo = styled(motion.video)`
+//   width: 100%;
+//   height: auto;
+//   border-radius: 12px;
+//   object-fit: cover;
+//   border: 1px solid rgba(255, 255, 255, 0.1);
+// `;
+
+const EventHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
 `;
 
 const EventTitle = styled.h1`
   font-family: "Playfair Display", serif;
-  font-size: 3rem;
-  font-weight: 400;
-  margin-bottom: 1rem;
-  background: linear-gradient(135deg, #ffffff 70%, #b8b8b8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-
-  @media (max-width: 768px) {
-    font-size: 2rem;
-  }
+  font-size: 2.2rem;
+  line-height: 1.2;
+  font-weight: 500;
 `;
 
-const TitleContent = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
-`;
-
-// -- MODIFIED STYLED COMPONENT --
-const HeroSection = styled.section`
-  position: relative;
-  height: 50vh;
-  overflow: hidden;
-  background-color: #000;
-
-  // Keep the back button positioned relative to the banner
-  & > a {
-    position: absolute;
-    top: 2rem;
-    left: 2rem;
-    z-index: 3;
-  }
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 150px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-    z-index: 1;
-  }
-`;
-
-const HeroOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.5) 100%
-  );
-  z-index: 2; // Make sure this is higher than the video's z-index
-`;
-
-const HeroContent = styled.div`
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  max-width: 800px;
-  padding: 0 2rem;
-`;
-
-const BackButton = styled(Link)`
-  position: absolute;
-  top: 2rem;
-  left: 2rem;
-  z-index: 3;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 0.75rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  text-decoration: none;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.9);
-    transform: translateX(-5px);
-  }
-`;
-
-const EventMeta = styled.div`
-  display: flex;
-  gap: 2rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-`;
-
-const MetaItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #ccc;
-  font-size: 0.9rem;
-  position: relative; // Needed for the separator
-
-  // NEW: Adds a dot separator between items
-  &:not(:last-child)::after {
-    content: "•";
-    color: #555;
-    margin-left: 2rem;
-  }
-
-  // Hides the separator when items wrap on mobile
-  @media (max-width: 768px) {
-    &:not(:last-child)::after {
-      display: none;
-    }
-  }
-`;
-
-const RegisterButton = styled(motion.button)`
-  background: linear-gradient(45deg, #fff, #dcdcdc);
-  color: #000;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
-
-  // Setup for shimmer effect
-  background-size: 200% auto;
-  transition: all 0.4s ease-in-out;
-
-  &:hover {
-    background-position: right center; // Shifts the gradient on hover
-    transform: translateY(-2px);
-  }
-`;
-
-const ContentSection = styled.section`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 4rem 2rem;
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 4rem;
-
-  @media (max-width: 968px) {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-`;
-
-const MainContent = styled.div``;
-
-const Sidebar = styled.div``;
-
-const ContentBlock = styled.div`
-  margin-bottom: 3rem;
-`;
+// 3. Content Blocks & Typography
+const MainContent = styled(motion.div)``;
 
 const SectionTitle = styled.h2`
   font-family: "Playfair Display", serif;
   font-size: 2rem;
-  font-weight: 400;
-  margin-bottom: 1.5rem;
-  color: #fff;
+  margin-bottom: 1rem;
 `;
 
 const Description = styled.div`
   color: #ccc;
   line-height: 1.8;
-  font-size: 1.1rem;
-
-  p {
-    margin-bottom: 1.5rem;
-  }
+  font-size: 1rem;
 `;
 
-const AgendaList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+const TagContainer = styled.div`
+  display: flex;
+  gap: 0.75rem; /* More space between tags */
+  flex-wrap: wrap;
 `;
 
-const AgendaItem = styled.div`
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 1.5rem;
-  display: flex;
-  gap: 1rem;
+const Tag = styled.span`
+  /* Use your accent color for tags */
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
 `;
 
-const AgendaTime = styled.div`
-  font-weight: 600;
-  color: #fff;
-  min-width: 80px;
-`;
-
-const AgendaContent = styled.div`
-  flex: 1;
-
-  h3 {
-    color: #fff;
-    margin-bottom: 0.5rem;
-  }
-
-  p {
-    color: #ccc;
-    font-size: 0.9rem;
-  }
-`;
-
-const SidebarCard = styled.div`
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: scale(1.02);
-    border-color: rgba(255, 255, 255, 0.2);
-  }
-`;
-const SidebarTitle = styled.h3`
-  font-family: "Playfair Display", serif;
-  font-size: 1.3rem;
-  font-weight: 400;
-  margin-bottom: 1rem;
-  color: #fff;
-`;
-
+// 4. Information & Lists
 const InfoList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* More space */
 `;
 
 const InfoItem = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  color: #ccc;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #E0E0E0; /* Match body text */
+  font-size: 0.95rem;
 
-  svg {
-    margin-top: 0.25rem;
-    flex-shrink: 0;
+  svg {
+    flex-shrink: 0;
+    /* Use a consistent, non-gray color for icons. The yellow from Lightbulb is a good choice. */
+    color: #facc15;
+  }
+`;
+
+const FacilitiesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+`;
+
+const FacilityItem = styled.div`
+  /* Use a complementary dark color for cards */
+  background: #1C1E22;
+  /* Make borders even more subtle */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #E0E0E0;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease;
+
+  svg {
+    color: #facc15; /* Use the same yellow for icon consistency */
+  }
+
+  &:hover {
+    background-color: #25272B; /* Subtle hover for interaction */
+  }
+`;
+
+// 5. Cards & Containers
+const DetailsCard = styled.div`
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+const LocationCard = styled(DetailsCard)``;
+
+const InfoBox = styled.div`
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const InfoBoxHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #f0f0f0;
+`;
+
+const InfoBoxList = styled.ul`
+  list-style-position: inside;
+  padding-left: 0.5rem;
+  color: #ccc;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  li::marker {
+    color: #ef4444;
+  }
+`;
+
+// 6. Buttons & Actions
+const EventActions = styled.div`
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const PriceInfo = styled.div`
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+
+  span {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #ccc;
+    display: block;
+  }
+`;
+
+const BookNowButton = styled(motion.button)`
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #dc2626;
+    transform: translateY(-2px);
   }
 `;
 
 const ShareButton = styled.button`
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.6rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+  }
+`;
+
+const TermsndCondiitonsButton = styled.button`
+  display: block;
+  width: fit-content;
+  margin: 2.5rem auto 0; /* Adds space above and centers it */
+  padding: 0.5rem 0; /* Adds some vertical clickable area */
+
+  /* Reset default button appearance */
+  background: transparent;
+  border: none;
+
+  /* Theming to match your page */
+  color: #a0a0a0; /* A muted white for secondary text */
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 4px; /* Pushes the underline down slightly */
+
+  /* Interactivity */
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: #fff; /* Brightens to full white on hover */
+  }
+`;
+
+const DirectionsButton = styled.button`
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
@@ -321,41 +313,127 @@ const ShareButton = styled.button`
   border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   cursor: pointer;
   transition: all 0.3s ease;
   width: 100%;
   justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 500;
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
   }
 `;
 
-const VideoBackground = styled.video`
-  position: absolute;
-  top: 50%;
-  left: 50%;
+const MediaContainer = styled.div`
   width: 100%;
-  height: 100%;
-  object-fit: cover; // Ensures the video covers the area without distortion
-  transform: translate(-50%, -50%);
-  z-index: 1; // Places it below the overlay
+  aspect-ratio: 16 / 9; /* Ensures a consistent shape */
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #000;
 `;
 
-const EventDetailsPage = () => {
-  const { id } = useParams();
-  const [isRegistered, setIsRegistered] = useState(false);
+const DisplayedImage = styled(motion.img)`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+`;
 
-  const fetchEventDetails = async (eventSlug) => {
-    // This is the API call to get a single event by its slug
+const DisplayedVideo = styled(motion.video)`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+`;
+
+const ThumbnailContainer = styled.div`
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap; /* Allows thumbnails to wrap on smaller screens */
+`;
+
+const Thumbnail = styled.div`
+  width: 80px;
+  height: 60px;
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  border: 2px solid
+    ${(props) => (props.isActive ? "#ef4444" : "rgba(255, 255, 255, 0.2)")};
+  transition: border-color 0.3s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: #ef4444;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+const facilityIconMap = {
+  "Air Conditioned": <AirVent size={24} />,
+  "Family Friendly": <Users size={24} />,
+  "Outside Food Not Allowed": <UtensilsCrossed size={24} />,
+  Restrooms: <Waves size={24} />,
+  "Free WiFi": <Wifi size={24} />,
+  "Parking Available": <Car size={24} />,
+  "Wheelchair Accessible": <Accessibility size={24} />,
+  "Lunch Provided": <Utensils size={24} />,
+  Soft: <Feather size={24} />,
+  Small: <Minimize2 size={24} />,
+  Luxurious: <Sparkles size={24} />,
+  // Add any other facilities you expect from your backend
+};
+
+// --- The Reusable Locked Component ---
+
+const formatDateRange = (startDateStr, endDateStr) => {
+  const options = {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  };
+  const startDate = new Date(startDateStr);
+  const endDate = new Date(endDateStr);
+
+  const formattedStart = new Intl.DateTimeFormat("en-US", options).format(
+    startDate
+  );
+
+  if (endDateStr && startDate.toDateString() !== endDate.toDateString()) {
+    const formattedEnd = new Intl.DateTimeFormat("en-US", options).format(
+      endDate
+    );
+    return `${formattedStart} - ${formattedEnd}`;
+  }
+
+  return formattedStart;
+};
+
+const EventDetailsPage = () => {
+  const { slug } = useParams();
+  const { isLoggedIn } = useAuth();
+  const [currentMedia, setCurrentMedia] = useState(null);
+
+  const fetchEventDetails = async () => {
     const response = await fetch(
-      `${process.env.REACT_APP_API_URL}/events/${id}`
+      `${process.env.REACT_APP_API_URL}/events/${slug}`
     );
     if (!response.ok) {
       throw new Error("Event not found or failed to fetch.");
     }
-    return response.json();
+    const responseData = await response.json();
+    console.log("responseData :", responseData);
+    return responseData.data;
   };
 
   const {
@@ -364,17 +442,34 @@ const EventDetailsPage = () => {
     isError,
     error,
   } = useQuery({
-    queryKey: ["event", id], // A unique key for this query
-    queryFn: () => fetchEventDetails(id),
-    enabled: !!id, // Only run the query if a slug exists
+    queryKey: ["event", slug],
+    queryFn: fetchEventDetails,
+    enabled: !!slug,
   });
 
-  // const event = eventData[id] || eventData["luxury-car-show-2024"];
+  const mediaGallery = useMemo(() => {
+    if (!event?.imageUrls) return [];
 
-  const handleRegister = () => {
-    setIsRegistered(true);
-    // In a real app, this would make an API call
-  };
+    return [
+      ...event.imageUrls.map((url) => ({
+        type: "image",
+        url: url,
+        thumbnail: url,
+      })),
+      {
+        type: "video",
+        url: "/videos/trial.mp4",
+        thumbnail: event.primaryImage,
+      },
+    ];
+  }, [event]);
+
+  // 3. Update the useEffect dependency
+  useEffect(() => {
+    if (mediaGallery.length > 0) {
+      setCurrentMedia(mediaGallery[0]);
+    }
+  }, [mediaGallery]);
 
   const handleShare = () => {
     if (navigator.share && event) {
@@ -384,255 +479,208 @@ const EventDetailsPage = () => {
         url: window.location.href,
       });
     } else {
-      // Fallback for browsers that don't support Web Share API
       navigator.clipboard.writeText(window.location.href);
       alert("Event link copied to clipboard!");
     }
   };
 
-  if (isLoading) {
-    return <PageWrapper>Loading event details...</PageWrapper>;
-  }
+  const handleGetDirections = () => {
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=18.922064,72.834641`;
+    if (mapsUrl) {
+      window.open(mapsUrl, "_blank", "noopener,noreferrer");
+    } else {
+      alert("Directions are not available for this venue.");
+    }
+  };
 
-  if (isError) {
-    return <PageWrapper>Error: {error.message}</PageWrapper>;
-  }
+  if (isLoading) return <PageWrapper>Loading event details...</PageWrapper>;
+  if (isError) return <PageWrapper>Error: {error.message}</PageWrapper>;
+  if (!event) return <PageWrapper>Event not found.</PageWrapper>;
 
-  if (!event) {
-    return <PageWrapper>Event not found.</PageWrapper>;
-  }
+  // Data for rendering
+  const eventDetails = [
+    {
+      icon: <Calendar size={20} />,
+      text: formatDateRange(event.startDate, event.endDate),
+    },
+    {
+      icon: <Clock size={20} />,
+      text: `Starts at ${new Date(event.startDate).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`,
+    },
+  ];
+
+  const facilities = (event.facilities || []).map((text) => ({
+    text: text,
+    icon: facilityIconMap[text] || <HelpCircle size={24} />, // Use the mapped icon or a default one
+  }));
+
+  if (isLoading) return <PageWrapper>Loading event details...</PageWrapper>;
+  if (isError) return <PageWrapper>Error: {error.message}</PageWrapper>;
+  if (!event) return <PageWrapper>Event not found.</PageWrapper>;
 
   return (
     <PageWrapper>
-      <HeroSection>
-        <VideoBackground
-          autoPlay // Makes the video play automatically
-          loop // Loops the video
-          muted // Mutes the video (required for autoplay in most browsers)
-          playsInline // Important for iOS to prevent fullscreen // Use the image as a loading thumbnail!
-          src="/videos/trial.mp4"
-        />
-        <BackButton to="/events">
-          <ArrowLeft size={20} />
-        </BackButton>
-      </HeroSection>
-      {/* <HeroOverlay /> */}
+      <EventLayout>
+        <LeftColumn>
+          {currentMedia && (
+            <MediaContainer>
+              {currentMedia.type === "image" ? (
+                <DisplayedImage
+                  key={currentMedia.url} // Key helps framer-motion re-animate on change
+                  src={currentMedia.url}
+                  alt="Event gallery image"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                />
+              ) : (
+                <DisplayedVideo
+                  key={currentMedia.url}
+                  src={currentMedia.url}
+                  poster={currentMedia.thumbnail}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                />
+              )}
+            </MediaContainer>
+          )}
 
-      <TitleSection>
-        <TitleContent>
-          <EventTitle>{event.title}</EventTitle>
-          {/* <EventSubtitle>{event.subtitle}</EventSubtitle> */}
-          <EventMeta>
-            <MetaItem>
-              <Calendar size={16} />
-              <span>
-                {new Date(event.startDate).toLocaleDateString("en-US", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </span>
-            </MetaItem>
-            <MetaItem>
-              <Clock size={16} />
-              <span>
-                {new Date(event.startDate).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </span>
-            </MetaItem>
-            <MetaItem>
-              <MapPin size={16} />
-              <span>{event.location}</span>
-            </MetaItem>
-            <MetaItem>
-              <Users size={16} />
-              <span>{event.maxAttendees}</span>
-            </MetaItem>
-          </EventMeta>
-          <RegisterButton
-            onClick={handleRegister}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            disabled={isRegistered}
-          >
-            {isRegistered ? "Registered ✓" : "Register Now"}
-          </RegisterButton>
-        </TitleContent>
-      </TitleSection>
+          {/* Thumbnail navigation */}
+          {mediaGallery && mediaGallery.length > 1 && (
+            <ThumbnailContainer>
+              {mediaGallery.map((mediaItem, index) => (
+                <Thumbnail
+                  key={index}
+                  isActive={currentMedia?.url === mediaItem.url}
+                  onClick={() => setCurrentMedia(mediaItem)}
+                >
+                  <img
+                    src={mediaItem.thumbnail}
+                    alt={`View media ${index + 1}`}
+                  />
+                </Thumbnail>
+              ))}
+            </ThumbnailContainer>
+          )}
+          <TagContainer>
+            <Tag>Great</Tag>
+            <Tag>Trending</Tag>
+          </TagContainer>
 
-      <ContentSection>
-        <MainContent>
-          <motion.div
-            variants={fadeUp}
+          <MainContent
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate="visible"
+            variants={fadeUp}
+            transition={{ delay: 0.2 }}
           >
-            <ContentBlock>
-              <SectionTitle>About This Event</SectionTitle>
-              <Description
-                dangerouslySetInnerHTML={{ __html: event.description }}
-              />
-            </ContentBlock>
-          </motion.div>
+            <SectionTitle>About The Event</SectionTitle>
+            <Description
+              dangerouslySetInnerHTML={{ __html: event.description }}
+            />
+          </MainContent>
 
           <motion.div
-            variants={fadeUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate="visible"
+            variants={fadeUp}
+            transition={{ delay: 0.3 }}
           >
-            <ContentBlock>
-              <SectionTitle>Event Agenda</SectionTitle>
-              <AgendaList>
-                {event.agenda?.map((item, index) => (
-                  <AgendaItem key={index}>
-                    <AgendaTime>
-                      {new Date(item.time).toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </AgendaTime>
-                    <AgendaContent>
-                      <h3>{item.title}</h3>
-                      <p>{item.description}</p>
-                    </AgendaContent>
-                  </AgendaItem>
+            <SectionTitle>You Should Know</SectionTitle>
+            <InfoBox>
+              <InfoBoxHeader>
+                <Lightbulb size={24} color="#facc15" />
+                <span>Important Information</span>
+              </InfoBoxHeader>
+              <InfoBoxList>
+                {(event.youshouldKnow || []).map((item, index) => (
+                  <li key={index}>{item}</li>
                 ))}
-              </AgendaList>
-            </ContentBlock>
-          </motion.div>
-        </MainContent>
-
-        <Sidebar>
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            <SidebarCard>
-              <SidebarTitle>Event Details</SidebarTitle>
-              <InfoList>
-                <InfoItem>
-                  <Calendar size={16} />
-                  <div>
-                    <strong>Date</strong>
-                    <br />
-                    {new Date(event.startDate).toLocaleDateString("en-US", {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </div>
-                </InfoItem>
-                <InfoItem>
-                  <Clock size={16} />
-                  <div>
-                    <strong>Time</strong>
-                    <br />
-                    {new Date(event.startDate).toLocaleTimeString("en-US", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}
-                  </div>
-                </InfoItem>
-                <InfoItem>
-                  <MapPin size={16} />
-                  <div>
-                    <strong>Location</strong>
-                    <br />
-                    {event.location}
-                    <br />
-                    <small>{event.address}</small>
-                  </div>
-                </InfoItem>
-                <InfoItem>
-                  <Users size={16} />
-                  <div>
-                    <strong>Expected Attendance</strong>
-                    <br />
-                    {/* Use currentAttendees and maxAttendees */}
-                    {event.currentAttendees} / {event.maxAttendees}
-                  </div>
-                </InfoItem>
-              </InfoList>
-            </SidebarCard>
+              </InfoBoxList>
+            </InfoBox>
           </motion.div>
 
           <motion.div
-            variants={fadeUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate="visible"
+            variants={fadeUp}
+            transition={{ delay: 0.4 }}
           >
-            <SidebarCard>
-              <SidebarTitle>Share Event</SidebarTitle>
+            <SectionTitle>Facilities</SectionTitle>
+            <FacilitiesGrid>
+              {facilities.map((facility, index) => (
+                <FacilityItem key={index}>
+                  {facility.icon}
+                  <span>{facility.text}</span>
+                </FacilityItem>
+              ))}
+            </FacilitiesGrid>
+            <TermsndCondiitonsButton>
+              Terms & Condiitons
+            </TermsndCondiitonsButton>
+          </motion.div>
+        </LeftColumn>
+
+        <RightColumn initial="hidden" animate="visible" variants={fadeUp}>
+          <DetailsCard>
+            <EventHeader>
+              <EventTitle>{event.title}</EventTitle>
               <ShareButton onClick={handleShare}>
-                <Share2 size={16} />
-                Share Event
+                <Share2 size={18} />
               </ShareButton>
-            </SidebarCard>
-          </motion.div>
-        </Sidebar>
-      </ContentSection>
+            </EventHeader>
+
+            <InfoList>
+              {eventDetails.map((detail, index) => (
+                <InfoItem key={index}>
+                  {detail.icon}
+                  <span>{detail.text}</span>
+                </InfoItem>
+              ))}
+            </InfoList>
+
+            <EventActions>
+              <PriceInfo>
+                {event.ticketTypes?.[0]?.price ? (
+                  <>
+                    ₹{event.ticketTypes[0].price}
+                    <span>onwards</span>
+                  </>
+                ) : (
+                  <span>Pricing not available</span>
+                )}
+              </PriceInfo>
+              <Link to={`/book/${event.slug}`}>
+                <BookNowButton>Book Now</BookNowButton>
+              </Link>
+            </EventActions>
+          </DetailsCard>
+          {isLoggedIn ? (
+            <LocationCard>
+              <SectionTitle
+                style={{ fontSize: "1.5rem", marginBottom: "1rem" }}
+              >
+                Location
+              </SectionTitle>
+              <DirectionsButton onClick={handleGetDirections}>
+                <Send size={16} />
+                Get Directions
+              </DirectionsButton>
+            </LocationCard>
+          ) : (
+            <LockedLocation />
+          )}
+        </RightColumn>
+      </EventLayout>
     </PageWrapper>
   );
 };
 
 export default EventDetailsPage;
-
-// Mock event data - in a real app, this would come from an API
-// const eventData = {
-//   "luxury-car-show-2024": {
-//     title: "Luxury Car Show 2024",
-//     subtitle: "The Ultimate Automotive Experience",
-//     category: "Auto Show",
-//     date: "2024-04-15",
-//     time: "10:00 AM - 6:00 PM",
-//     location: "Los Angeles Convention Center",
-//     address: "1201 S Figueroa St, Los Angeles, CA 90015",
-//     attendees: "5,000+ Expected",
-//     image:
-//       "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
-//     description: `
-//       <p>Join us for the most prestigious luxury car show on the West Coast. Experience the latest in automotive excellence, from classic vintage cars to cutting-edge supercars.</p>
-//       <p>YOUNG BOY TOYZ will be showcasing our latest customization projects, including exclusive one-off builds and limited edition collections. Meet our master craftsmen and discover the artistry behind luxury automotive customization.</p>
-//       <p>This exclusive event features live demonstrations, expert panels, and networking opportunities with industry leaders and fellow automotive enthusiasts.</p>
-//     `,
-//     agenda: [
-//       {
-//         time: "10:00 AM",
-//         title: "Doors Open & Registration",
-//         description: "Welcome reception and event registration",
-//       },
-//       {
-//         time: "11:00 AM",
-//         title: "YOUNG BOY TOYZ Showcase",
-//         description: "Unveiling of our latest custom builds and collections",
-//       },
-//       {
-//         time: "1:00 PM",
-//         title: "Expert Panel Discussion",
-//         description: "The Future of Luxury Automotive Customization",
-//       },
-//       {
-//         time: "3:00 PM",
-//         title: "Live Customization Demo",
-//         description: "Watch our craftsmen work on exclusive pieces",
-//       },
-//       {
-//         time: "5:00 PM",
-//         title: "Networking Reception",
-//         description: "Connect with industry leaders and enthusiasts",
-//       },
-//     ],
-//   },
-// };

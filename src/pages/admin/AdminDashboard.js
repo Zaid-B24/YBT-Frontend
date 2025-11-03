@@ -18,10 +18,6 @@ import {
   ArrowDownRight,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
-import AdminNav from "../../components/admin/AdminNav";
-import CarDetailsForm from "../../components/forms/CarDetailsForm";
-import AddVehicleFlow from "../../components/admin/AddVehicleFlow";
-import AddEventFlow from "../events/CreateEvent";
 import CreateEventForm from "../../components/forms/CreateEventForm";
 
 const DashboardWrapper = styled.div`
@@ -512,7 +508,6 @@ const AdminDashboard = () => {
 
         const headers = {
           "Content-Type": "application/json",
-          // Add the Authorization header
           Authorization: `Bearer ${token}`,
         };
 
@@ -542,9 +537,9 @@ const AdminDashboard = () => {
         // Update state once with all the new data
         setStats((prevStats) => ({
           ...prevStats,
-          totalVehicles: vehicleData.totalVehicles,
-          totalEvents: eventData.totalEvents,
-          totalUsers: userData.totalUsers,
+          totalVehicles: vehicleData.data.totalVehicles,
+          totalEvents: eventData.data.totalEvents,
+          totalUsers: userData.data.totalUsers,
         }));
       } catch (error) {
         console.error("Failed to fetch dashboard stats:", error);
@@ -670,7 +665,7 @@ const AdminDashboard = () => {
 
   return (
     <DashboardWrapper>
-      {/* {activeOverlay && (
+      {activeOverlay && (
         <Overlay onClick={handleOverlayClick}>
           <ModalWrapper>
             <CloseButton
@@ -681,17 +676,16 @@ const AdminDashboard = () => {
               <X size={20} />
             </CloseButton>
             <Card>
-              {activeOverlay === "addVehicle" && (
+              {/* {activeOverlay === "addVehicle" && (
                 <AddVehicleFlow onSuccess={() => setActiveOverlay(null)} />
-              )}
+              )} */}
               {activeOverlay === "createEvent" && (
                 <CreateEventForm onSuccess={() => setActiveOverlay(null)} />
               )}
             </Card>
           </ModalWrapper>
         </Overlay>
-      )} */}
-      <AdminNav />
+      )}
       <DashboardContainer>
         <StatsGrid>
           <StatCard>

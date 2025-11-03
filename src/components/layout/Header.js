@@ -246,6 +246,30 @@ const UserMenu = styled.div`
   position: relative;
 `;
 
+const GreetingText = styled.div`
+  display: flex;
+  align-items: baseline; /* Aligns text with different font sizes properly */
+  gap: 0.3rem; /* Adds a small space between "Hii" and the name */
+  max-width: 120px; /* Adjust width as needed */
+  overflow: hidden;
+
+  /* Style for "Hii" */
+  span {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* Style for the user's name */
+  strong {
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+`;
+
 const UserButton = styled.button`
   background: none;
   border: none;
@@ -254,7 +278,7 @@ const UserButton = styled.button`
   padding: 0.75rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 8px;
   font-size: 0.9rem;
@@ -263,15 +287,6 @@ const UserButton = styled.button`
     opacity: 0.8;
     background: rgba(255, 255, 255, 0.05);
     transform: translateY(-1px);
-  }
-
-  span {
-    max-width: 100px;
-    overflow: hidden;
-    font-size: 1.1rem;
-    font-weight: 500;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 `;
 
@@ -643,7 +658,10 @@ const Header = () => {
               <UserMenu data-user-menu>
                 <UserButton onClick={() => setUserMenuOpen(!userMenuOpen)}>
                   <User size={20} />
-                  <span>{user.name}</span>
+                  <GreetingText>
+                    <span>Hii</span>
+                    <strong>{user.name}</strong>
+                  </GreetingText>
                 </UserButton>
                 <UserDropdown isOpen={userMenuOpen}>
                   <DropdownItem to="/profile">

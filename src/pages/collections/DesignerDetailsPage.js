@@ -12,9 +12,9 @@ const fetchDesignerBySlug = async (slug) => {
   const response = await fetch(
     `${process.env.REACT_APP_API_URL}/designer/slug/${slug}`
   );
-  console.log("THis is the response in Designer details page", response);
   if (!response.ok) throw new Error("Designer not found");
-  return response.json();
+  const responseData = await response.json();
+  return responseData.data;
 };
 
 const fetchCarsByDesignerId = async (designerId) => {
@@ -93,6 +93,11 @@ const DesignerDetailPage = () => {
                 </ProductImage>
                 <ProductContent>
                   <ProductTitle>{car.title}</ProductTitle>
+                  <CarSpecs>
+                    {car.specs.map((spec, idx) => (
+                      <span key={idx}>{spec}</span>
+                    ))}
+                  </CarSpecs>
                   <ProductPrice>
                     {car.ybtPrice.toLocaleString("en-IN")}
                   </ProductPrice>
@@ -114,7 +119,7 @@ export default DesignerDetailPage;
 const PageWrapper = styled.div`
   padding-top: 100px;
   min-height: 100vh;
-  background: #000;
+  background: black;
   color: #fff;
 `;
 
@@ -285,6 +290,14 @@ const ViewButton = styled(Link)`
   &:hover {
     gap: 1rem;
   }
+`;
+
+const CarSpecs = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #ccc;
 `;
 
 const DesignerInfo = styled.div``;

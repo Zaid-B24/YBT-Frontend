@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Search, ChevronDown, ChevronUp, MapPin, Star } from 'lucide-react';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { Search, ChevronDown, ChevronUp, MapPin, Star } from "lucide-react";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -16,8 +16,9 @@ const MainContainer = styled.div`
   margin: 0 auto;
   padding: 2rem;
   display: grid;
-  grid-template-columns: ${props => props.filtersVisible ? '300px 1fr' : '1fr'};
-  gap: ${props => props.filtersVisible ? '3rem' : '0'};
+  grid-template-columns: ${(props) =>
+    props.filtersVisible ? "300px 1fr" : "1fr"};
+  gap: ${(props) => (props.filtersVisible ? "3rem" : "0")};
   transition: all 0.3s ease;
 
   @media (max-width: 1200px) {
@@ -169,7 +170,7 @@ const FilterSectionTitle = styled.h4`
 
 const FilterOptions = styled.div`
   padding: 0 1.5rem 1.5rem;
-  display: ${props => props.isOpen ? 'block' : 'none'};
+  display: ${(props) => (props.isOpen ? "block" : "none")};
 `;
 
 const FilterOption = styled.div`
@@ -214,12 +215,12 @@ const HeroSection = styled.section`
 `;
 
 const HeroTitle = styled.h1`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 3rem;
   font-weight: 400;
   margin-bottom: 1.5rem;
   color: #fff;
-  
+
   @media (max-width: 768px) {
     font-size: 2.5rem;
   }
@@ -231,7 +232,7 @@ const HeroDescription = styled.p`
   line-height: 1.7;
   max-width: 800px;
   margin: 0 auto;
-  
+
   @media (max-width: 768px) {
     font-size: 1rem;
     padding: 0 1rem;
@@ -243,7 +244,7 @@ const CategoryTabs = styled.div`
   gap: 1rem;
   margin-bottom: 2rem;
   justify-content: center;
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: center;
@@ -251,7 +252,8 @@ const CategoryTabs = styled.div`
 `;
 
 const CategoryTab = styled.button`
-  background: ${props => props.active ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
+  background: ${(props) =>
+    props.active ? "rgba(255, 255, 255, 0.1)" : "transparent"};
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   padding: 0.75rem 1.5rem;
@@ -338,7 +340,11 @@ const VehicleCardLink = styled(Link)`
 
 const VehicleImage = styled.div`
   height: 250px;
-  background: ${props => props.image ? `url(${props.image})` : 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)'} center center/cover no-repeat;
+  background: ${(props) =>
+      props.image
+        ? `url(${props.image})`
+        : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
+    center center/cover no-repeat;
   position: relative;
 `;
 
@@ -382,7 +388,7 @@ const VehicleContent = styled.div`
 `;
 
 const VehicleTitle = styled.h3`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.3rem;
   font-weight: 400;
   margin-bottom: 0.5rem;
@@ -438,36 +444,36 @@ const VehicleLocation = styled.div`
 `;
 
 const RentalsPage = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('name');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("name");
   const [filtersVisible, setFiltersVisible] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('all');
-  
+  const [activeCategory, setActiveCategory] = useState("all");
+
   // Filter states
   const [categoryFilters, setCategoryFilters] = useState({
-    'Cars': false,
-    'Bikes': false,
-    'Motorhomes': false
+    Cars: false,
+    Bikes: false,
+    Motorhomes: false,
   });
 
   const [brandFilters, setBrandFilters] = useState({
-    'BMW': false,
-    'Audi': false,
-    'Mercedes': false,
-    'Porsche': false,
-    'Lamborghini': false,
-    'Ducati': false,
-    'Kawasaki': false,
-    'Luxury Nomad': false
+    BMW: false,
+    Audi: false,
+    Mercedes: false,
+    Porsche: false,
+    Lamborghini: false,
+    Ducati: false,
+    Kawasaki: false,
+    "Luxury Nomad": false,
   });
 
   const [locationFilters, setLocationFilters] = useState({
-    'Mumbai': false,
-    'Delhi': false,
-    'Bangalore': false,
-    'Chennai': false,
-    'Pune': false,
-    'Hyderabad': false
+    Mumbai: false,
+    Delhi: false,
+    Bangalore: false,
+    Chennai: false,
+    Pune: false,
+    Hyderabad: false,
   });
 
   const [categorySectionOpen, setCategorySectionOpen] = useState(true);
@@ -478,159 +484,204 @@ const RentalsPage = () => {
     {
       id: 1,
       title: "BMW M3 Competition",
-      description: "Experience the thrill of German engineering with this high-performance sedan featuring twin-turbo power and precision handling.",
+      description:
+        "Experience the thrill of German engineering with this high-performance sedan featuring twin-turbo power and precision handling.",
       category: "Cars",
       brand: "BMW",
       location: "Mumbai",
-      image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+      image:
+        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
       specs: ["3.0L Twin-Turbo", "503 HP", "Auto"],
       badges: ["LUXURY", "PERFORMANCE"],
       rating: 4.8,
       dailyPrice: "₹15,000",
-      monthlyPrice: "₹3,50,000"
+      monthlyPrice: "₹3,50,000",
     },
     {
       id: 2,
       title: "Ducati Panigale V4",
-      description: "Italian superbike excellence with V4 engine delivering unmatched performance and racing heritage on two wheels.",
+      description:
+        "Italian superbike excellence with V4 engine delivering unmatched performance and racing heritage on two wheels.",
       category: "Bikes",
       brand: "Ducati",
       location: "Delhi",
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+      image:
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
       specs: ["1103cc V4", "214 HP", "6-Speed"],
       badges: ["SUPERBIKE", "TRACK"],
       rating: 4.9,
       dailyPrice: "₹8,000",
-      monthlyPrice: "₹1,80,000"
+      monthlyPrice: "₹1,80,000",
     },
     {
       id: 3,
       title: "Luxury Nomad Elite 35",
-      description: "Premium motorhome with luxury amenities, perfect for family road trips and extended travel adventures across India.",
+      description:
+        "Premium motorhome with luxury amenities, perfect for family road trips and extended travel adventures across India.",
       category: "Motorhomes",
       brand: "Luxury Nomad",
       location: "Bangalore",
-      image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+      image:
+        "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
       specs: ["35 ft", "6 Berth", "Diesel"],
       badges: ["LUXURY", "FAMILY"],
       rating: 4.7,
       dailyPrice: "₹12,000",
-      monthlyPrice: "₹2,80,000"
+      monthlyPrice: "₹2,80,000",
     },
     {
       id: 4,
       title: "Porsche 911 Carrera",
-      description: "Iconic sports car combining timeless design with modern performance, delivering the ultimate driving experience.",
+      description:
+        "Iconic sports car combining timeless design with modern performance, delivering the ultimate driving experience.",
       category: "Cars",
       brand: "Porsche",
       location: "Chennai",
-      image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
+      image:
+        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
       specs: ["3.0L Turbo", "379 HP", "PDK"],
       badges: ["SPORTS", "PREMIUM"],
       rating: 4.9,
       dailyPrice: "₹18,000",
-      monthlyPrice: "₹4,20,000"
+      monthlyPrice: "₹4,20,000",
     },
     {
       id: 5,
       title: "Kawasaki Ninja H2",
-      description: "Supercharged hyperbike pushing the boundaries of motorcycle performance with cutting-edge technology.",
+      description:
+        "Supercharged hyperbike pushing the boundaries of motorcycle performance with cutting-edge technology.",
       category: "Bikes",
       brand: "Kawasaki",
       location: "Pune",
-      image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+      image:
+        "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
       specs: ["998cc SC", "197 HP", "6-Speed"],
       badges: ["HYPERBIKE", "SUPERCHARGED"],
       rating: 4.8,
       dailyPrice: "₹10,000",
-      monthlyPrice: "₹2,20,000"
+      monthlyPrice: "₹2,20,000",
     },
     {
       id: 6,
       title: "Mercedes AMG GT",
-      description: "German grand tourer combining luxury and performance with handcrafted AMG engineering excellence.",
+      description:
+        "German grand tourer combining luxury and performance with handcrafted AMG engineering excellence.",
       category: "Cars",
       brand: "Mercedes",
       location: "Hyderabad",
-      image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+      image:
+        "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
       specs: ["4.0L V8", "469 HP", "AMG"],
       badges: ["AMG", "GT"],
       rating: 4.8,
       dailyPrice: "₹20,000",
-      monthlyPrice: "₹4,80,000"
-    }
+      monthlyPrice: "₹4,80,000",
+    },
   ];
 
   const handleCategoryFilterChange = (category) => {
-    setCategoryFilters(prev => ({
+    setCategoryFilters((prev) => ({
       ...prev,
-      [category]: !prev[category]
+      [category]: !prev[category],
     }));
   };
 
   const handleBrandFilterChange = (brand) => {
-    setBrandFilters(prev => ({
+    setBrandFilters((prev) => ({
       ...prev,
-      [brand]: !prev[brand]
+      [brand]: !prev[brand],
     }));
   };
 
   const handleLocationFilterChange = (location) => {
-    setLocationFilters(prev => ({
+    setLocationFilters((prev) => ({
       ...prev,
-      [location]: !prev[location]
+      [location]: !prev[location],
     }));
   };
 
   const resetFilters = () => {
-    setCategoryFilters(Object.keys(categoryFilters).reduce((acc, key) => ({ ...acc, [key]: false }), {}));
-    setBrandFilters(Object.keys(brandFilters).reduce((acc, key) => ({ ...acc, [key]: false }), {}));
-    setLocationFilters(Object.keys(locationFilters).reduce((acc, key) => ({ ...acc, [key]: false }), {}));
-    setSearchTerm('');
-    setActiveCategory('all');
+    setCategoryFilters(
+      Object.keys(categoryFilters).reduce(
+        (acc, key) => ({ ...acc, [key]: false }),
+        {}
+      )
+    );
+    setBrandFilters(
+      Object.keys(brandFilters).reduce(
+        (acc, key) => ({ ...acc, [key]: false }),
+        {}
+      )
+    );
+    setLocationFilters(
+      Object.keys(locationFilters).reduce(
+        (acc, key) => ({ ...acc, [key]: false }),
+        {}
+      )
+    );
+    setSearchTerm("");
+    setActiveCategory("all");
   };
 
   const getActiveCategories = () => {
-    return Object.keys(categoryFilters).filter(category => categoryFilters[category]);
+    return Object.keys(categoryFilters).filter(
+      (category) => categoryFilters[category]
+    );
   };
 
   const getActiveBrands = () => {
-    return Object.keys(brandFilters).filter(brand => brandFilters[brand]);
+    return Object.keys(brandFilters).filter((brand) => brandFilters[brand]);
   };
 
   const getActiveLocations = () => {
-    return Object.keys(locationFilters).filter(location => locationFilters[location]);
+    return Object.keys(locationFilters).filter(
+      (location) => locationFilters[location]
+    );
   };
 
-  const filteredVehicles = rentalVehicles.filter(vehicle => {
-    const matchesSearch = vehicle.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         vehicle.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
+  const filteredVehicles = rentalVehicles.filter((vehicle) => {
+    const matchesSearch =
+      vehicle.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vehicle.description.toLowerCase().includes(searchTerm.toLowerCase());
+
     const activeCategories = getActiveCategories();
-    const matchesCategory = activeCategories.length === 0 || activeCategories.includes(vehicle.category);
-    
+    const matchesCategory =
+      activeCategories.length === 0 ||
+      activeCategories.includes(vehicle.category);
+
     const activeBrands = getActiveBrands();
-    const matchesBrand = activeBrands.length === 0 || activeBrands.includes(vehicle.brand);
-    
+    const matchesBrand =
+      activeBrands.length === 0 || activeBrands.includes(vehicle.brand);
+
     const activeLocations = getActiveLocations();
-    const matchesLocation = activeLocations.length === 0 || activeLocations.includes(vehicle.location);
-    
-    const matchesTab = activeCategory === 'all' || vehicle.category.toLowerCase() === activeCategory;
-    
-    return matchesSearch && matchesCategory && matchesBrand && matchesLocation && matchesTab;
+    const matchesLocation =
+      activeLocations.length === 0 ||
+      activeLocations.includes(vehicle.location);
+
+    const matchesTab =
+      activeCategory === "all" ||
+      vehicle.category.toLowerCase() === activeCategory;
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesBrand &&
+      matchesLocation &&
+      matchesTab
+    );
   });
 
   const sortedVehicles = [...filteredVehicles].sort((a, b) => {
     switch (sortBy) {
-      case 'name':
+      case "name":
         return a.title.localeCompare(b.title);
-      case 'brand':
+      case "brand":
         return a.brand.localeCompare(b.brand);
-      case 'price':
-        const priceA = parseInt(a.dailyPrice.replace(/[₹,]/g, ''));
-        const priceB = parseInt(b.dailyPrice.replace(/[₹,]/g, ''));
+      case "price":
+        const priceA = parseInt(a.dailyPrice.replace(/[₹,]/g, ""));
+        const priceB = parseInt(b.dailyPrice.replace(/[₹,]/g, ""));
         return priceA - priceB;
-      case 'rating':
+      case "rating":
         return b.rating - a.rating;
       default:
         return 0;
@@ -639,7 +690,10 @@ const RentalsPage = () => {
 
   return (
     <PageWrapper>
-      <MainContainer filtersVisible={filtersVisible}>
+      <p style={{ fontSize: "1.5rem", color: "#666" }}>
+        Oops, we're cooking something! 🍳 Please wait...
+      </p>
+      {/* <MainContainer filtersVisible={filtersVisible}>
         {filtersVisible && (
           <Sidebar>
             <FilterHeader>
@@ -830,9 +884,9 @@ const RentalsPage = () => {
             ))}
           </VehiclesGrid>
         </MainContent>
-      </MainContainer>
+      </MainContainer> */}
     </PageWrapper>
   );
 };
 
-export default RentalsPage; 
+export default RentalsPage;

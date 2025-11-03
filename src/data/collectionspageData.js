@@ -55,24 +55,6 @@ export const collections = [
       "Racing-grade components",
     ],
   },
-  {
-    id: 4,
-    title: "Custom Workshops",
-    subtitle: "Tailored Automotive Solutions",
-    description:
-      "Specialized workshops offering custom fabrication, restoration, and unique modification services for discerning clients.",
-    image:
-      "https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    icon: <Wrench size={24} />,
-    route: "/collections/workshops",
-    features: [
-      "Custom fabrication",
-      "Restoration services",
-      "Specialized workshops",
-      "Unique modifications",
-      "Bespoke solutions",
-    ],
-  },
 ];
 
 export const stats = [
@@ -81,3 +63,22 @@ export const stats = [
   { number: "25+", label: "Years Experience" },
   { number: "100%", label: "Client Satisfaction" },
 ];
+
+// {
+//     id: 4,
+//     title: "Custom Workshops",
+//     subtitle: "Tailored Automotive Solutions",
+//     description:
+//       "Specialized workshops offering custom fabrication, restoration, and unique modification services for discerning clients.",
+//     image:
+//       "https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+//     icon: <Wrench size={24} />,
+//     route: "/collections/workshops",
+//     features: [
+//       "Custom fabrication",
+//       "Restoration services",
+//       "Specialized workshops",
+//       "Unique modifications",
+//       "Bespoke solutions",
+//     ],
+//   }

@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import AdminNav from "../../components/admin/AdminNav";
 import { useEffect, useMemo, useState } from "react";
 import BikeDetailsForm from "../../components/forms/BikeDetailsForm";
 import { Plus, Search, Trash2 } from "lucide-react";
@@ -104,7 +103,6 @@ const BikeManagement = () => {
 
   return (
     <PageWrapper>
-      <AdminNav />
       <StyledToastContainer />
       <PageContainer>
         {showAddBikeForm && (

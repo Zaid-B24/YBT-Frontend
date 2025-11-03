@@ -283,7 +283,7 @@ const ProfilePage = () => {
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
-    confirmPassword: "",
+    confirmNewPassword: "",
   });
 
   const [preferences, setPreferences] = useState({
@@ -592,8 +592,8 @@ const ProfilePage = () => {
                 </FormLabel>
                 <FormInput
                   type="password"
-                  name="confirmPassword"
-                  value={passwordData.confirmPassword}
+                  name="confirmNewPassword"
+                  value={passwordData.confirmNewPassword}
                   onChange={handlePasswordChange}
                   required
                   minLength="8"

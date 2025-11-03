@@ -36,7 +36,8 @@ const CarReservePage = () => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      return response.json();
+      const result = await response.json(); // 1. Get the full JSON result
+      return result.data;
     },
     enabled: !!vehicleId,
     placeholderData: {

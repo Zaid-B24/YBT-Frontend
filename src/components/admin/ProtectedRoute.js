@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const { user, isAdmin, loading } = useAuth();
+  console.log("Auth Context State:", { user, isAdmin, loading });
 
   if (loading) {
     return (
@@ -24,7 +25,7 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   }
 
   if (!user) {
-    return <Navigate to={requireAdmin ? "/admin" : "/login"} replace />;
+    return <Navigate to={requireAdmin ? "/admin/login" : "/auth"} replace />;
   }
 
   if (requireAdmin && !isAdmin) {

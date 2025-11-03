@@ -9,7 +9,7 @@ import { CarCardSkeleton } from "../../components/cards/CarCardSkeleton";
 const PageWrapper = styled.div`
   padding-top: 100px;
   min-height: 100vh;
-  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+  background: black;
   color: #fff;
   display: flex;
 `;
@@ -476,18 +476,15 @@ const YBTBikesPage = () => {
               ))}
             </BikesGrid>
 
-            {/* ✨ Add the loading trigger at the end */}
             <div
               ref={loadMoreRef}
-              style={{ height: "100px", margin: "20px 0" }}
+              style={{ height: "100px", marginTop: "2rem" }}
             >
               {isFetchingNextPage ? (
                 <p style={{ textAlign: "center" }}>Loading more...</p>
-              ) : hasNextPage ? (
-                <p style={{ textAlign: "center" }}>Scroll to load more</p>
-              ) : (
+              ) : !hasNextPage && bikes.length > 0 ? (
                 <p style={{ textAlign: "center" }}>You've reached the end!</p>
-              )}
+              ) : null}
             </div>
           </>
         )}

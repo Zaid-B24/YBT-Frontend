@@ -99,6 +99,7 @@ const resizeCloudinaryImage = (
 // =================== Component ===================
 const VehicleInfoPage = () => {
   const { category, idAndSlug } = useParams();
+  console.log(category, idAndSlug, "These are recieved in params");
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -121,7 +122,8 @@ const VehicleInfoPage = () => {
       if (!res.ok) {
         throw new Error("Failed to fetch vehicle");
       }
-      return res.json();
+      const responseData = await res.json();
+      return responseData.data;
     },
     enabled: !!vehicleId,
     staleTime: 1000 * 60 * 60, // 1 hour

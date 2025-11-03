@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  Car, 
-  DollarSign, 
+import React, { useState } from "react";
+import styled from "styled-components";
+import {
+  BarChart3,
+  TrendingUp,
+  TrendingDown,
+  Users,
+  Car,
+  DollarSign,
   Calendar,
   Eye,
   ShoppingCart,
@@ -15,9 +15,8 @@ import {
   Clock,
   Filter,
   Download,
-  RefreshCw
-} from 'lucide-react';
-import AdminNav from '../../components/admin/AdminNav';
+  RefreshCw,
+} from "lucide-react";
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -33,8 +32,8 @@ const PageContainer = styled.div`
 `;
 
 const PageHeader = styled.div`
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   padding: 3rem;
   margin-bottom: 3rem;
@@ -43,18 +42,23 @@ const PageHeader = styled.div`
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
   }
 `;
 
 const PageTitle = styled.h1`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 3rem;
   font-weight: 400;
   margin-bottom: 1rem;
@@ -65,15 +69,15 @@ const PageTitle = styled.h1`
 `;
 
 const PageSubtitle = styled.p`
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 1.2rem;
   margin-bottom: 0;
   font-weight: 300;
 `;
 
 const ControlsSection = styled.div`
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   padding: 2.5rem;
   margin-bottom: 3rem;
@@ -82,13 +86,18 @@ const ControlsSection = styled.div`
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
   }
 `;
 
@@ -105,9 +114,9 @@ const ControlsRow = styled.div`
 `;
 
 const FilterButton = styled.button`
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.8);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
   padding: 1rem 1.5rem;
   border-radius: 12px;
   font-size: 1rem;
@@ -119,8 +128,8 @@ const FilterButton = styled.button`
   gap: 0.75rem;
 
   &:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
   }
 
@@ -162,8 +171,8 @@ const StatsGrid = styled.div`
 `;
 
 const StatCard = styled.div`
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 2rem;
   backdrop-filter: blur(20px);
@@ -172,19 +181,24 @@ const StatCard = styled.div`
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
   }
 
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
   }
 `;
 
@@ -202,9 +216,9 @@ const StatIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.color};
+  background: ${(props) => props.color};
   color: #fff;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 `;
 
 const StatValue = styled.div`
@@ -217,7 +231,7 @@ const StatValue = styled.div`
 `;
 
 const StatLabel = styled.div`
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -229,7 +243,7 @@ const StatChange = styled.div`
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
-  color: ${props => props.positive ? '#10b981' : '#ef4444'};
+  color: ${(props) => (props.positive ? "#10b981" : "#ef4444")};
   font-weight: 500;
 `;
 
@@ -245,8 +259,8 @@ const ChartsGrid = styled.div`
 `;
 
 const ChartCard = styled.div`
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   padding: 2.5rem;
   backdrop-filter: blur(20px);
@@ -254,18 +268,23 @@ const ChartCard = styled.div`
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
   }
 `;
 
 const ChartTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.8rem;
   font-weight: 400;
   margin-bottom: 2rem;
@@ -281,17 +300,17 @@ const ChartPlaceholder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   border-radius: 12px;
-  border: 2px dashed rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.5);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 1.2rem;
   font-weight: 300;
 `;
 
 const TopItemsSection = styled.div`
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   padding: 2.5rem;
   backdrop-filter: blur(20px);
@@ -300,13 +319,18 @@ const TopItemsSection = styled.div`
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
   }
 `;
 
@@ -317,15 +341,15 @@ const TopItemsGrid = styled.div`
 `;
 
 const TopItemCard = styled.div`
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 2rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     transform: translateY(-4px);
-    border-color: rgba(255,255,255,0.1);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 `;
 
@@ -350,9 +374,9 @@ const TopItem = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 `;
 
 const TopItemInfo = styled.div`
@@ -365,12 +389,16 @@ const TopItemRank = styled.div`
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: ${props => {
+  background: ${(props) => {
     switch (props.rank) {
-      case 1: return 'linear-gradient(135deg, #ffd700, #ffed4e)';
-      case 2: return 'linear-gradient(135deg, #c0c0c0, #e5e5e5)';
-      case 3: return 'linear-gradient(135deg, #cd7f32, #daa520)';
-      default: return 'rgba(255,255,255,0.1)';
+      case 1:
+        return "linear-gradient(135deg, #ffd700, #ffed4e)";
+      case 2:
+        return "linear-gradient(135deg, #c0c0c0, #e5e5e5)";
+      case 3:
+        return "linear-gradient(135deg, #cd7f32, #daa520)";
+      default:
+        return "rgba(255,255,255,0.1)";
     }
   }};
   display: flex;
@@ -378,12 +406,12 @@ const TopItemRank = styled.div`
   justify-content: center;
   font-weight: 700;
   font-size: 0.9rem;
-  color: ${props => props.rank <= 3 ? '#000' : 'rgba(255,255,255,0.7)'};
+  color: ${(props) => (props.rank <= 3 ? "#000" : "rgba(255,255,255,0.7)")};
 `;
 
 const TopItemName = styled.div`
   font-weight: 500;
-  color: rgba(255,255,255,0.9);
+  color: rgba(255, 255, 255, 0.9);
 `;
 
 const TopItemValue = styled.div`
@@ -392,74 +420,75 @@ const TopItemValue = styled.div`
 `;
 
 const AnalyticsPage = () => {
-  const [timeRange, setTimeRange] = useState('30d');
+  const [timeRange, setTimeRange] = useState("30d");
 
   const stats = [
     {
-      title: 'Total Revenue',
-      value: '$1,250,000',
-      change: '+12.5%',
+      title: "Total Revenue",
+      value: "$1,250,000",
+      change: "+12.5%",
       positive: true,
       icon: DollarSign,
-      color: 'linear-gradient(135deg, #10b981, #059669)'
+      color: "linear-gradient(135deg, #10b981, #059669)",
     },
     {
-      title: 'Total Users',
-      value: '12,847',
-      change: '+8.2%',
+      title: "Total Users",
+      value: "12,847",
+      change: "+8.2%",
       positive: true,
       icon: Users,
-      color: 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
+      color: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
     },
     {
-      title: 'Total Cars',
-      value: '1,289',
-      change: '+15.7%',
+      title: "Total Cars",
+      value: "1,289",
+      change: "+15.7%",
       positive: true,
       icon: Car,
-      color: 'linear-gradient(135deg, #f59e0b, #d97706)'
+      color: "linear-gradient(135deg, #f59e0b, #d97706)",
     },
     {
-      title: 'Conversion Rate',
-      value: '3.2%',
-      change: '-0.8%',
+      title: "Conversion Rate",
+      value: "3.2%",
+      change: "-0.8%",
       positive: false,
       icon: TrendingUp,
-      color: 'linear-gradient(135deg, #8b5cf6, #7c3aed)'
-    }
+      color: "linear-gradient(135deg, #8b5cf6, #7c3aed)",
+    },
   ];
 
   const topCars = [
-    { name: 'Ferrari 488 GTB', views: 1247, revenue: 250000 },
-    { name: 'Lamborghini Huracán', views: 892, revenue: 320000 },
-    { name: 'Porsche 911 GT3 RS', views: 1567, revenue: 180000 },
-    { name: 'McLaren 720S', views: 634, revenue: 450000 },
-    { name: 'Aston Martin DB11', views: 456, revenue: 280000 }
+    { name: "Ferrari 488 GTB", views: 1247, revenue: 250000 },
+    { name: "Lamborghini Huracán", views: 892, revenue: 320000 },
+    { name: "Porsche 911 GT3 RS", views: 1567, revenue: 180000 },
+    { name: "McLaren 720S", views: 634, revenue: 450000 },
+    { name: "Aston Martin DB11", views: 456, revenue: 280000 },
   ];
 
   const topUsers = [
-    { name: 'John Doe', purchases: 15, totalSpent: 125000 },
-    { name: 'Jane Smith', purchases: 12, totalSpent: 98000 },
-    { name: 'Mike Johnson', purchases: 8, totalSpent: 75000 },
-    { name: 'Sarah Wilson', purchases: 6, totalSpent: 62000 },
-    { name: 'David Brown', purchases: 4, totalSpent: 45000 }
+    { name: "John Doe", purchases: 15, totalSpent: 125000 },
+    { name: "Jane Smith", purchases: 12, totalSpent: 98000 },
+    { name: "Mike Johnson", purchases: 8, totalSpent: 75000 },
+    { name: "Sarah Wilson", purchases: 6, totalSpent: 62000 },
+    { name: "David Brown", purchases: 4, totalSpent: 45000 },
   ];
 
   const topLocations = [
-    { name: 'Los Angeles, CA', users: 1247, revenue: 450000 },
-    { name: 'New York, NY', users: 892, revenue: 380000 },
-    { name: 'Miami, FL', users: 756, revenue: 320000 },
-    { name: 'Chicago, IL', users: 634, revenue: 280000 },
-    { name: 'Las Vegas, NV', users: 456, revenue: 220000 }
+    { name: "Los Angeles, CA", users: 1247, revenue: 450000 },
+    { name: "New York, NY", users: 892, revenue: 380000 },
+    { name: "Miami, FL", users: 756, revenue: 320000 },
+    { name: "Chicago, IL", users: 634, revenue: 280000 },
+    { name: "Las Vegas, NV", users: 456, revenue: 220000 },
   ];
 
   return (
     <PageWrapper>
-      <AdminNav />
       <PageContainer>
         <PageHeader>
           <PageTitle>Analytics Dashboard</PageTitle>
-          <PageSubtitle>Comprehensive insights into your YBT platform performance</PageSubtitle>
+          <PageSubtitle>
+            Comprehensive insights into your YBT platform performance
+          </PageSubtitle>
         </PageHeader>
 
         <ControlsSection>
@@ -468,7 +497,7 @@ const AnalyticsPage = () => {
               <Filter size={20} />
               Last 30 Days
             </FilterButton>
-            <div style={{ display: 'flex', gap: '1rem' }}>
+            <div style={{ display: "flex", gap: "1rem" }}>
               <FilterButton>
                 <RefreshCw size={20} />
                 Refresh
@@ -494,7 +523,11 @@ const AnalyticsPage = () => {
                 </StatIcon>
               </StatHeader>
               <StatChange positive={stat.positive}>
-                {stat.positive ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
+                {stat.positive ? (
+                  <TrendingUp size={18} />
+                ) : (
+                  <TrendingDown size={18} />
+                )}
                 {stat.change} from last month
               </StatChange>
             </StatCard>
@@ -541,7 +574,9 @@ const AnalyticsPage = () => {
                       <TopItemRank rank={index + 1}>{index + 1}</TopItemRank>
                       <TopItemName>{car.name}</TopItemName>
                     </TopItemInfo>
-                    <TopItemValue>{car.views.toLocaleString()} views</TopItemValue>
+                    <TopItemValue>
+                      {car.views.toLocaleString()} views
+                    </TopItemValue>
                   </TopItem>
                 ))}
               </TopItemList>
@@ -577,7 +612,9 @@ const AnalyticsPage = () => {
                       <TopItemRank rank={index + 1}>{index + 1}</TopItemRank>
                       <TopItemName>{location.name}</TopItemName>
                     </TopItemInfo>
-                    <TopItemValue>${location.revenue.toLocaleString()}</TopItemValue>
+                    <TopItemValue>
+                      ${location.revenue.toLocaleString()}
+                    </TopItemValue>
                   </TopItem>
                 ))}
               </TopItemList>
@@ -589,4 +626,4 @@ const AnalyticsPage = () => {
   );
 };
 
-export default AnalyticsPage; 
+export default AnalyticsPage;

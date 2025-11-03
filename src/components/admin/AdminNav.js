@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BarChart3, Car, Users, LogOut, Menu, X, Bike } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
+import { GrAnalytics } from "react-icons/gr";
 
 const HeaderWrapper = styled.header`
   position: fixed;
@@ -347,6 +348,7 @@ const AdminNav = () => {
     { path: "/admin/dashboard", label: "Dashboard", icon: BarChart3 },
     { path: "/admin/cars", label: "Cars", icon: Car },
     { path: "/admin/bikes", label: "Bikes", icon: Bike },
+    { path: "/admin/events", label: "Events", icon: GrAnalytics },
   ];
 
   const rightNavItems = [

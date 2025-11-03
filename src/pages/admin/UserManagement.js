@@ -16,7 +16,6 @@ import {
   UserCheck,
   UserX,
 } from "lucide-react";
-import AdminNav from "../../components/admin/AdminNav";
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -502,9 +501,9 @@ const UserManagement = () => {
           return;
         }
 
-        const data = await response.json();
+        const result = await response.json();
 
-        const formattedUsers = data.map((user) => ({
+        const formattedUsers = result.data.map((user) => ({
           id: user.id,
           name: user.name,
           email: user.email,
@@ -556,7 +555,6 @@ const UserManagement = () => {
 
   return (
     <PageWrapper>
-      <AdminNav />
       <PageContainer>
         <PageHeader>
           <PageTitle>User Management</PageTitle>

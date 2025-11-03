@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Plus, Search, Trash2 } from "lucide-react";
 //import { Link } from "react-router-dom";
-import AdminNav from "../../components/admin/AdminNav";
 import CarDetailsForm from "../../components/forms/CarDetailsForm";
 import { Slide, toast, ToastContainer } from "react-toastify";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -93,7 +92,6 @@ const CarManagement = () => {
 
   return (
     <PageWrapper>
-      <AdminNav />
       <StyledToastContainer />
       <PageContainer>
         {showAddCarForm && (

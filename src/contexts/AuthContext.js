@@ -51,13 +51,17 @@ export const AuthProvider = ({ children }) => {
       throw new Error(errorData.message || "Failed to register");
     }
 
-    const data = await res.json();
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    const responseData = await res.json();
+    const { token, user } = responseData.data; // <-- Fix 1: Handle nested data
 
-    setUser(data.user);
+    // Fix 2: Use the correct keys for localStorage
+    localStorage.setItem("userToken", token);
+    localStorage.setItem("userData", JSON.stringify(user));
 
-    return data;
+    setUser(user);
+    setToken(token); // Also set the token in the state
+
+    return responseData;
   };
 
   const login = async (email, password) => {
@@ -72,16 +76,19 @@ export const AuthProvider = ({ children }) => {
       throw new Error(errorData.message || "Failed to log in");
     }
 
-    const data = await res.json(); // { token, user }
+    const responseData = await res.json();
+    const { token, user } = responseData.data; // <-- The main fix is here
 
-    localStorage.setItem("userToken", data.token);
-    localStorage.setItem("userData", JSON.stringify(data.user));
+    localStorage.setItem("userToken", token);
+
+    localStorage.setItem("userData", JSON.stringify(user));
     localStorage.removeItem("adminToken"); // Clear any admin session
     localStorage.removeItem("adminData");
 
     setIsAdmin(false);
-    setUser(data.user);
-    setToken(data.token);
+    setUser(user);
+    setToken(token);
+    console.log(user, "THis is user");
     return { success: true, isAdmin: false };
   };
 
@@ -97,7 +104,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/users/profile`,
+        `${process.env.REACT_APP_API_URL}/users/update-profile`,
         {
           method: "PUT",
           headers: {
@@ -113,14 +120,18 @@ export const AuthProvider = ({ children }) => {
       if (!response.ok) {
         throw new Error(result.message || "Failed to update user profile.");
       }
-      setUser((prevUser) => ({
-        ...prevUser,
-        ...result.user,
-      }));
-
-      localStorage.setItem("userData", JSON.stringify(result.user));
-
-      return result.user;
+      const updatedUser = result.data;
+      if (updatedUser) {
+        setUser((prevUser) => ({
+          ...prevUser,
+          ...updatedUser,
+        }));
+        localStorage.setItem("userData", JSON.stringify(updatedUser));
+        return updatedUser;
+      } else {
+        console.warn("API did not return the updated user data as expected.");
+        return result;
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
       throw error;
@@ -139,7 +150,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/users/change-password`,
+        `${process.env.REACT_APP_API_URL}/users/update-password`,
         {
           method: "PUT",
           headers: {
@@ -179,17 +190,18 @@ export const AuthProvider = ({ children }) => {
       throw new Error(errorData.message || "Admin login failed");
     }
 
-    const data = await res.json();
+    const responseData = await res.json();
+    const { user, token } = responseData.data;
 
-    if (data.user && data.user.role === "ADMIN") {
-      localStorage.setItem("adminToken", data.token);
-      localStorage.setItem("adminData", JSON.stringify(data.user));
+    if (user && user.role === "ADMIN") {
+      localStorage.setItem("adminToken", token);
+      localStorage.setItem("adminData", JSON.stringify(user));
       localStorage.removeItem("userToken");
       localStorage.removeItem("userData");
 
       setIsAdmin(true);
-      setUser(data.user);
-      setToken(data.token);
+      setUser(user);
+      setToken(token);
       return { success: true, isAdmin: true };
     } else {
       throw new Error("You do not have permission to access the admin panel.");

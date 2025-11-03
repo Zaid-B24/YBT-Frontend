@@ -11,6 +11,16 @@ export { default as CarDetailsPage } from "./CarDetailsPage";
 // export { default as SignupPage } from "./auth/SignupPage";
 export { default as AuthPage } from "./auth/authPage";
 
+//ModelsPage
+
+export { default as VehicleInfoPage } from "./models/VehicleInfoPage";
+export { default as CarReservePage } from "./CarReservePage";
+export { default as DesignerDetailPage } from "./collections/DesignerDetailsPage"; // Note: I corrected the name
+export { default as WorkshopCollectionPage } from "./collections/WorkshopCollectionPage";
+export { default as WorkshopDetailPage } from "./collections/WorkshopDetailPage";
+export { default as TicketSelectionPage } from "./events/TicketSelectionPage";
+export { default as BookingSummaryPage } from "./events/BookingSummaryPage";
+
 // Collections Pages
 export { default as CollectionsPage } from "./collections/CollectionsPage";
 export { default as DesignerCollectionPage } from "./collections/DesignerCollectionPage";

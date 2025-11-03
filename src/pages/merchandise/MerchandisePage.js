@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { ShoppingCart, Star, Filter, Grid, List, Heart } from 'lucide-react';
-import { useCart } from '../../contexts/CartContext';
-import { useWishlist } from '../../contexts/WishlistContext';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import { ShoppingCart, Star, Filter, Grid, List, Heart } from "lucide-react";
+import { useCart } from "../../contexts/CartContext";
+import { useWishlist } from "../../contexts/WishlistContext";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -19,11 +19,11 @@ const HeroSection = styled.section`
 `;
 
 const HeroTitle = styled.h1`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 4rem;
   font-weight: 400;
   margin-bottom: 1rem;
-  
+
   @media (max-width: 768px) {
     font-size: 2.5rem;
   }
@@ -38,8 +38,8 @@ const HeroSubtitle = styled.p`
 
 const FilterSection = styled.div`
   padding: 2rem;
-  background: rgba(255,255,255,0.02);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 const FilterContainer = styled.div`
@@ -60,8 +60,9 @@ const FilterTabs = styled.div`
 
 const FilterTab = styled.button`
   padding: 0.8rem 1.5rem;
-  background: ${props => props.active ? 'rgba(255,255,255,0.1)' : 'transparent'};
-  border: 1px solid rgba(255,255,255,0.2);
+  background: ${(props) =>
+    props.active ? "rgba(255,255,255,0.1)" : "transparent"};
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -70,7 +71,7 @@ const FilterTab = styled.button`
   letter-spacing: 1px;
 
   &:hover {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
   }
 `;
 
@@ -81,14 +82,15 @@ const ViewToggle = styled.div`
 
 const ViewButton = styled.button`
   padding: 0.8rem;
-  background: ${props => props.active ? 'rgba(255,255,255,0.1)' : 'transparent'};
-  border: 1px solid rgba(255,255,255,0.2);
+  background: ${(props) =>
+    props.active ? "rgba(255,255,255,0.1)" : "transparent"};
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   cursor: pointer;
   transition: all 0.3s ease;
 
   &:hover {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
   }
 `;
 
@@ -100,7 +102,8 @@ const ProductsGrid = styled.div`
 
 const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: ${props => props.listView ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))'};
+  grid-template-columns: ${(props) =>
+    props.listView ? "1fr" : "repeat(auto-fit, minmax(300px, 1fr))"};
   gap: 2rem;
 
   @media (max-width: 768px) {
@@ -109,23 +112,27 @@ const GridContainer = styled.div`
 `;
 
 const ProductCard = styled(motion.div)`
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: ${props => props.listView ? 'flex' : 'block'};
+  display: ${(props) => (props.listView ? "flex" : "block")};
 
   &:hover {
     transform: translateY(-5px);
-    border-color: rgba(255,255,255,0.2);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 `;
 
 const ProductImage = styled.div`
-  height: ${props => props.listView ? '200px' : '250px'};
-  width: ${props => props.listView ? '200px' : '100%'};
-  background: ${props => props.image ? `url(${props.image})` : 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)'} center center/cover no-repeat;
+  height: ${(props) => (props.listView ? "200px" : "250px")};
+  width: ${(props) => (props.listView ? "200px" : "100%")};
+  background: ${(props) =>
+      props.image
+        ? `url(${props.image})`
+        : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
+    center center/cover no-repeat;
   position: relative;
   flex-shrink: 0;
 `;
@@ -134,7 +141,7 @@ const ProductBadge = styled.div`
   position: absolute;
   top: 1rem;
   left: 1rem;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   color: #fff;
   padding: 0.5rem 1rem;
   font-size: 0.8rem;
@@ -148,7 +155,7 @@ const ProductContent = styled.div`
 `;
 
 const ProductTitle = styled.h3`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.3rem;
   font-weight: 400;
   margin-bottom: 0.5rem;
@@ -190,8 +197,8 @@ const AddToCartButton = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   padding: 0.8rem 1.5rem;
   font-size: 0.9rem;
@@ -203,7 +210,7 @@ const AddToCartButton = styled.button`
   flex: 1;
 
   &:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
   }
 `;
 
@@ -211,22 +218,26 @@ const WishlistButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${props => props.isInWishlist ? 'rgba(255, 99, 107, 0.2)' : 'rgba(255,255,255,0.1)'};
-  border: 1px solid ${props => props.isInWishlist ? 'rgba(255, 99, 107, 0.5)' : 'rgba(255,255,255,0.2)'};
-  color: ${props => props.isInWishlist ? '#ff636b' : '#fff'};
+  background: ${(props) =>
+    props.isInWishlist ? "rgba(255, 99, 107, 0.2)" : "rgba(255,255,255,0.1)"};
+  border: 1px solid
+    ${(props) =>
+      props.isInWishlist ? "rgba(255, 99, 107, 0.5)" : "rgba(255,255,255,0.2)"};
+  color: ${(props) => (props.isInWishlist ? "#ff636b" : "#fff")};
   padding: 0.8rem;
   cursor: pointer;
   transition: all 0.3s ease;
 
   &:hover {
-    background: ${props => props.isInWishlist ? 'rgba(255, 99, 107, 0.3)' : 'rgba(255,255,255,0.2)'};
+    background: ${(props) =>
+      props.isInWishlist ? "rgba(255, 99, 107, 0.3)" : "rgba(255,255,255,0.2)"};
   }
 `;
 
 const MerchandisePage = () => {
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState("all");
   const [listView, setListView] = useState(false);
-  
+
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
@@ -234,81 +245,93 @@ const MerchandisePage = () => {
     {
       id: 1,
       title: "YOUNG BOY TOYZ Premium Hoodie",
-      description: "Luxury cotton blend hoodie with embroidered logo and premium finish.",
-      image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      description:
+        "Luxury cotton blend hoodie with embroidered logo and premium finish.",
+      image:
+        "https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       price: "$89.99",
       rating: 4.8,
       reviews: 124,
       category: "apparel",
-      badge: "Bestseller"
+      badge: "Bestseller",
     },
     {
       id: 2,
       title: "Carbon Fiber Wallet",
-      description: "Sleek carbon fiber wallet with RFID protection and premium leather interior.",
-      image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      description:
+        "Sleek carbon fiber wallet with RFID protection and premium leather interior.",
+      image:
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       price: "$129.99",
       rating: 4.9,
       reviews: 89,
       category: "accessories",
-      badge: "New"
+      badge: "New",
     },
     {
       id: 3,
       title: "Limited Edition Watch",
-      description: "Swiss-made timepiece with carbon fiber case and YOUNG BOY TOYZ branding.",
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      description:
+        "Swiss-made timepiece with carbon fiber case and YOUNG BOY TOYZ branding.",
+      image:
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       price: "$599.99",
       rating: 5.0,
       reviews: 45,
       category: "accessories",
-      badge: "Limited"
+      badge: "Limited",
     },
     {
       id: 4,
       title: "Performance T-Shirt",
-      description: "Moisture-wicking performance fabric with subtle logo placement.",
-      image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      description:
+        "Moisture-wicking performance fabric with subtle logo placement.",
+      image:
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       price: "$39.99",
       rating: 4.6,
       reviews: 203,
       category: "apparel",
-      badge: null
+      badge: null,
     },
     {
       id: 5,
       title: "Leather Keychain",
       description: "Premium leather keychain with metal YOUNG BOY TOYZ emblem.",
-      image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      image:
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       price: "$29.99",
       rating: 4.7,
       reviews: 156,
       category: "accessories",
-      badge: null
+      badge: null,
     },
     {
       id: 6,
       title: "Racing Jacket",
-      description: "Professional racing jacket with team colors and sponsor logos.",
-      image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      description:
+        "Professional racing jacket with team colors and sponsor logos.",
+      image:
+        "https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
       price: "$199.99",
       rating: 4.9,
       reviews: 67,
       category: "apparel",
-      badge: "Premium"
-    }
+      badge: "Premium",
+    },
   ];
 
   const filters = [
-    { key: 'all', label: 'All Products' },
-    { key: 'apparel', label: 'Apparel' },
-    { key: 'accessories', label: 'Accessories' },
-    { key: 'premium', label: 'Premium' }
+    { key: "all", label: "All Products" },
+    { key: "apparel", label: "Apparel" },
+    { key: "accessories", label: "Accessories" },
+    { key: "premium", label: "Premium" },
   ];
 
-  const filteredProducts = products.filter(product => {
-    if (activeFilter === 'all') return true;
-    if (activeFilter === 'premium') return product.price.includes('199') || product.price.includes('599');
+  const filteredProducts = products.filter((product) => {
+    if (activeFilter === "all") return true;
+    if (activeFilter === "premium")
+      return product.price.includes("199") || product.price.includes("599");
     return product.category === activeFilter;
   });
 
@@ -319,8 +342,8 @@ const MerchandisePage = () => {
         <Star
           key={i}
           size={14}
-          fill={i <= rating ? '#fff' : 'none'}
-          color={i <= rating ? '#fff' : '#666'}
+          fill={i <= rating ? "#fff" : "none"}
+          color={i <= rating ? "#fff" : "#666"}
         />
       );
     }
@@ -331,8 +354,8 @@ const MerchandisePage = () => {
     addToCart({
       id: product.id,
       name: product.title,
-      price: parseFloat(product.price.replace('$', '')),
-      image: product.image
+      price: parseFloat(product.price.replace("$", "")),
+      image: product.image,
     });
   };
 
@@ -341,14 +364,17 @@ const MerchandisePage = () => {
       id: product.id,
       title: product.title,
       description: product.description,
-      price: parseFloat(product.price.replace('$', '')),
-      image: product.image
+      price: parseFloat(product.price.replace("$", "")),
+      image: product.image,
     });
   };
 
   return (
     <PageWrapper>
-      <HeroSection>
+      <p style={{ fontSize: "1.5rem", color: "#666" }}>
+        Oops, we're cooking something! 🍳 Please wait...
+      </p>
+      {/* <HeroSection>
         <HeroTitle>Merchandise</HeroTitle>
         <HeroSubtitle>
           Discover our exclusive collection of premium merchandise and accessories, 
@@ -427,9 +453,9 @@ const MerchandisePage = () => {
             </ProductCard>
           ))}
         </GridContainer>
-      </ProductsGrid>
+      </ProductsGrid> */}
     </PageWrapper>
   );
 };
 
-export default MerchandisePage; 
+export default MerchandisePage;

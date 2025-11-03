@@ -28,7 +28,7 @@ import {
 import { GiSteeringWheel } from "react-icons/gi";
 import { BsCarFront, BsSpeedometer } from "react-icons/bs";
 import { LuGitCommitHorizontal } from "react-icons/lu";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import carValidationSchema from "../../utils/zodValidation";
@@ -36,9 +36,18 @@ import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
 
 const fetchDealers = async () => {
-  const res = await fetch(`${process.env.REACT_APP_API_URL}/dealer`);
+  const token = localStorage.getItem("adminToken");
+  if (!token) throw new Error("No admin token found.");
+
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/dealer`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
   if (!res.ok) throw new Error("Failed to fetch dealers");
-  return res.json();
+  const responseData = await res.json();
+  return responseData.data;
 };
 const fetchDesigners = async () => {
   const res = await fetch(`${process.env.REACT_APP_API_URL}/designer`);
@@ -153,7 +162,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
       mileage: 0,
       peakPower: "",
       peakTorque: "",
-      driveType: "",
+      driveType: "FWD",
       exteriorColour: "",
       doors: 4,
       seatingCapacity: 5,
@@ -166,17 +175,13 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
       description: "",
       status: "AVAILABLE",
       vipNumber: false,
-      badges: [],
+      badges: "",
+      specs: "",
       carImages: [],
     },
   });
 
   console.log("Validation Errors:", errors);
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "badges",
-  });
 
   const carImages = watch("carImages");
 
@@ -187,16 +192,10 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
 
     Object.keys(data).forEach((key) => {
       const value = data[key];
-      // Skip null/undefined/empty string optional fields
       if (value === null || value === "" || value === undefined) return;
-
       if (key === "carImages") {
         Array.from(value).forEach((file) =>
           formDataApi.append("carImages", file)
-        );
-      } else if (key === "badges") {
-        value.forEach(
-          (badge) => badge && formDataApi.append("badges[]", badge)
         );
       } else {
         formDataApi.append(key, value);
@@ -209,8 +208,16 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
     }
 
     try {
+      const token = localStorage.getItem("adminToken"); // Or however you get your token
+      if (!token) {
+        toast.error("Authentication error. Please log in again.");
+        return;
+      }
       const response = await fetch(`${process.env.REACT_APP_API_URL}/cars`, {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formDataApi,
       });
 
@@ -448,6 +455,20 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         icon: Sparkles,
       },
       {
+        key: "specs",
+        label: "Modification Specs",
+        placeholder: "e.g., Custom Exhaust, Forged Wheels, Stage 2 Remap",
+        icon: Cog,
+        component: "textarea",
+      },
+      {
+        key: "badges",
+        label: "Badges",
+        placeholder: "e.g., V6, Limited Edition, Tuned",
+        icon: BadgeCheck,
+        component: "textarea",
+      },
+      {
         key: "description",
         label: "Full Description",
         placeholder: "A detailed description of the car's condition...",
@@ -470,7 +491,16 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         <Section key={sectionTitle}>
           <SectionTitle>{sectionTitle}</SectionTitle>
           <Grid>
-            {fields.map((field) => renderField(field, register, errors))}
+            {fields.map((field) => {
+              // Dynamically populate options for the dealer dropdown
+              if (field.key === "dealerId") {
+                field.options = dealers.map((d) => ({
+                  value: d.id,
+                  label: d.name,
+                }));
+              }
+              return renderField(field, register, errors);
+            })}
           </Grid>
         </Section>
       ))}
@@ -573,32 +603,6 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
                 VIP Registration Number
               </Label>
             </CheckboxWrapper>
-          </Field>
-
-          <Field style={{ gridColumn: "1 / -1" }}>
-            <Label>
-              Badges
-              <RequiredStar>*</RequiredStar>
-            </Label>
-            {fields.map((field, index) => (
-              <BadgeRow key={field.id}>
-                <Input
-                  placeholder="e.g., Premium"
-                  {...register(`badges.${index}`)}
-                />
-                {fields.length > 1 && (
-                  <RemoveButton type="button" onClick={() => remove(index)}>
-                    <X size={16} />
-                  </RemoveButton>
-                )}
-              </BadgeRow>
-            ))}
-            <AddBadgeButton type="button" onClick={() => append("")}>
-              + Add Badge
-            </AddBadgeButton>
-            {errors.badges && (
-              <ErrorMessage>{errors.badges.message}</ErrorMessage>
-            )}
           </Field>
         </Grid>
       </Section>
@@ -803,10 +807,11 @@ const FileInputWrapper = styled.label`
   cursor: pointer;
   transition: all 0.3s ease;
   &:hover {
-    border-color: rgba(255, 0, 0, 0.5);
+    border-color: #3b82f6;
+    color: #3b82f6;
   }
   &.has-file {
-    border-color: rgba(34, 197, 94, 0.5);
+    border-color: #22c55e;
   }
 `;
 const HiddenFileInput = styled.input`

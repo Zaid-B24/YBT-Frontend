@@ -9,7 +9,7 @@ import { ArrowRight, Award, Briefcase, Calendar } from "lucide-react";
 const PageWrapper = styled.div`
   padding-top: 100px;
   min-height: 100vh;
-  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+  background: black;
   color: #fff;
 `;
 
@@ -226,7 +226,8 @@ const fetchDesigners = async () => {
   if (!response.ok) {
     throw new Error("Failed to fetch designers");
   }
-  return response.json();
+  const responseData = await response.json();
+  return responseData.data;
 };
 
 const DesignerCollectionPage = () => {

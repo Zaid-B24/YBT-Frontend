@@ -1,10 +1,12 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Search, ChevronDown, ChevronUp, Zap } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { CarCardSkeleton } from "../../components/cards/CarCardSkeleton";
+import { useCars } from "../../hooks/useCars";
+import VehicleBadges from "../../components/common/VehicleBadges";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -320,29 +322,41 @@ const CarImage = styled.div`
   position: relative;
 `;
 
-const CarBadges = styled.div`
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
+// const CarBadges = styled.div`
+//   position: absolute;
+//   top: 1rem;
+//   left: 1rem;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 0.5rem;
+// `;
 
-const CarBadge = styled.span`
-  background: rgba(255, 69, 0, 0.9);
-  color: #fff;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.7rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  border-radius: 20px;
-`;
+// const VehicleBadges = styled.div`
+//   position: absolute;
+//   top: 1rem;
+//   left: 1rem;
+//   background: rgba(0, 0, 0, 0.8);
+//   color: #fff;
+//   padding: 0.3rem 0.8rem;
+//   border-radius: 20px;
+//   font-size: 0.8rem;
+//   font-weight: 600;
+//   text-transform: uppercase;
+//   letter-spacing: 0.5px;
+// `;
+// const CarBadge = styled.span`
+//   position: absolute;
+//   top: 1rem;
+//   left: 1rem;
+//   background: rgba(0, 0, 0, 0.8);
+//   color: #fff;
+//   padding: 0.3rem 0.8rem;
+//   border-radius: 20px;
+//   font-size: 0.8rem;
+//   font-weight: 600;
+//   text-transform: uppercase;
+//   letter-spacing: 0.5px;
+// `;
 
 const CarContent = styled.div`
   padding: 1.5rem;
@@ -378,40 +392,10 @@ const CarPrice = styled.div`
   margin-bottom: 1rem;
 `;
 
-const fetchTunerCars = async ({
-  searchTerm,
-  sortBy,
-  activeBrands,
-  activeStages,
-}) => {
-  const params = new URLSearchParams();
-
-  params.append("collectionType", "TORQUE_TUNER");
-
-  if (searchTerm) params.append("searchTerm", searchTerm);
-  if (sortBy) params.append("sortBy", sortBy);
-  if (activeBrands.length > 0) params.append("brands", activeBrands.join(","));
-  if (activeStages.length > 0) {
-    const apiStages = activeStages.map((s) => s.replace(" ", "").toUpperCase());
-    params.append("stages", apiStages.join(","));
-  }
-
-  const apiUrl = `${process.env.REACT_APP_API_URL}/cars?${params.toString()}`;
-  console.log("Fetching from:", apiUrl);
-
-  const response = await fetch(apiUrl);
-  if (!response.ok) throw new Error("Network response was not ok");
-
-  const data = await response.json();
-  return data;
-};
-
 const TorqueTunerEditionPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+  // const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [filtersVisible, setFiltersVisible] = useState(true);
-
-  // Filter states
   const [brandFilters, setBrandFilters] = useState({
     BMW: false,
     Audi: false,
@@ -439,20 +423,53 @@ const TorqueTunerEditionPage = () => {
     [stageFilters]
   );
 
+  const apiStages = useMemo(
+    () => activeStages.map((s) => s.replace(" ", "").toUpperCase()),
+    [activeStages]
+  );
+
   const {
-    data: responseData,
+    cars,
     isLoading,
     isError,
     error,
-  } = useQuery({
-    // The query key now includes all filters, so it refetches when any filter changes
-    queryKey: ["tunerCars", { searchTerm, sortBy, activeBrands, activeStages }],
-    queryFn: () =>
-      fetchTunerCars({ searchTerm, sortBy, activeBrands, activeStages }),
-    keepPreviousData: true,
-  });
-  const cars = responseData?.data || [];
+    fetchNextPage, // Get the function to fetch more data
+    hasNextPage, // Know if there is more data to fetch
+    isFetchingNextPage, // Know when the next page is being fetched
+  } = useCars(
+    "TORQUE_TUNER",
+    {
+      sortBy,
+      brands: activeBrands,
+      stages: apiStages,
+    },
+    { useInfinite: true } // Enable infinite scrolling!
+  );
 
+  // 3. ADD the infinite scroll logic using IntersectionObserver
+  const loadMoreRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
   const handleBrandFilterChange = (brand) => {
     setBrandFilters((prev) => ({
       ...prev,
@@ -480,7 +497,6 @@ const TorqueTunerEditionPage = () => {
         {}
       )
     );
-    setSearchTerm("");
   };
 
   return (
@@ -505,14 +521,14 @@ const TorqueTunerEditionPage = () => {
               </div>
             </FilterHeader>
 
-            <SearchContainer>
+            {/* <SearchContainer>
               <SearchIcon />
               <SearchInput
                 placeholder="Search performance vehicles"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-            </SearchContainer>
+            </SearchContainer> */}
 
             <FilterSection>
               <FilterSectionHeader
@@ -587,7 +603,7 @@ const TorqueTunerEditionPage = () => {
 
           <ContentHeader>
             <ResultsCount>
-              {isLoading
+              {isLoading && !isFetchingNextPage
                 ? "Searching..."
                 : `${cars.length} performance vehicles found`}
             </ResultsCount>
@@ -625,18 +641,16 @@ const TorqueTunerEditionPage = () => {
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
                   >
-                    <CarImage image={vehicle.thumbnail}>
-                      <CarBadges>
-                        {vehicle.badges?.map((badge, badgeIndex) => (
-                          <CarBadge key={badgeIndex}>
-                            {badge.includes("STAGE") && <Zap size={12} />}
-                            {badge}
-                          </CarBadge>
-                        ))}
-                      </CarBadges>
+                    <CarImage image={vehicle.image}>
+                      <VehicleBadges vehicle={vehicle} />
                     </CarImage>
                     <CarContent>
                       <CarTitle>{vehicle.title}</CarTitle>
+                      <CarSpecs>
+                        {vehicle.specs.map((spec, idx) => (
+                          <span key={idx}>{spec}</span>
+                        ))}
+                      </CarSpecs>
                       <CarDescription>{vehicle.description}</CarDescription>
                       <CarSpecs>
                         {vehicle.specs?.map((spec, idx) => (
@@ -644,7 +658,7 @@ const TorqueTunerEditionPage = () => {
                         ))}
                       </CarSpecs>
                       <CarPrice>
-                        ₹ {vehicle.ybtPrice.toLocaleString("en-IN")}
+                        ₹ {vehicle.price.toLocaleString("en-IN")}
                       </CarPrice>
                     </CarContent>
                   </CarCard>
@@ -652,6 +666,11 @@ const TorqueTunerEditionPage = () => {
               ))}
             </CarsGrid>
           )}
+
+          <div ref={loadMoreRef} style={{ height: "1px", margin: "1rem 0" }}>
+            {isFetchingNextPage && <p>Loading more...</p>}
+            {!hasNextPage && cars.length > 0 && <p>No more cars to load.</p>}
+          </div>
         </MainContent>
       </MainContainer>
     </PageWrapper>
@@ -659,78 +678,3 @@ const TorqueTunerEditionPage = () => {
 };
 
 export default TorqueTunerEditionPage;
-
-// const tunerVehicles = [
-//   {
-//     id: 1,
-//     title: "Torque Tuner BMW M3 Competition",
-//     description: "Ultimate performance sedan with carbon fiber aerodynamics and 650HP power upgrade through Stage 3 tuning.",
-//     brand: "BMW",
-//     year: "2023",
-//     price: "₹1,20,00,000",
-//     image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-//     specs: ["3.0L Twin-Turbo", "650 HP", "AWD"],
-//     badges: ["STAGE 3", "PERFORMANCE"],
-//     stage: "Stage 3"
-//   },
-//   {
-//     id: 2,
-//     title: "Torque Tuner Audi RS6 Avant",
-//     description: "High-performance wagon with enhanced turbocharging and ECU mapping delivering 750HP through Stage 2+ modifications.",
-//     brand: "Audi",
-//     year: "2023",
-//     price: "₹1,80,00,000",
-//     image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-//     specs: ["4.0L Twin-Turbo V8", "750 HP", "AWD"],
-//     badges: ["STAGE 2", "WAGON"],
-//     stage: "Stage 2"
-//   },
-//   {
-//     id: 3,
-//     title: "Torque Tuner Mercedes AMG GT 63S",
-//     description: "Track-focused grand tourer with aggressive Stage 3+ tuning package delivering 800HP and enhanced aerodynamics.",
-//     brand: "Mercedes",
-//     year: "2023",
-//     price: "₹2,50,00,000",
-//     image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-//     specs: ["4.0L Twin-Turbo V8", "800 HP", "AWD"],
-//     badges: ["STAGE 3", "AMG"],
-//     stage: "Stage 3"
-//   },
-//   {
-//     id: 4,
-//     title: "Torque Tuner Porsche 911 Turbo S",
-//     description: "Iconic sports car with precision Stage 2 tuning, delivering 750HP while maintaining legendary Porsche handling.",
-//     brand: "Porsche",
-//     year: "2023",
-//     price: "₹3,20,00,000",
-//     image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
-//     specs: ["3.8L Twin-Turbo H6", "750 HP", "AWD"],
-//     badges: ["STAGE 2", "TURBO S"],
-//     stage: "Stage 2"
-//   },
-//   {
-//     id: 5,
-//     title: "Torque Tuner Lamborghini Huracán",
-//     description: "Italian supercar with Stage 1+ naturally aspirated V10 enhancement, boosting power to 720HP with exotic exhaust note.",
-//     brand: "Lamborghini",
-//     year: "2023",
-//     price: "₹4,80,00,000",
-//     image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-//     specs: ["5.2L V10", "720 HP", "AWD"],
-//     badges: ["STAGE 1", "V10"],
-//     stage: "Stage 1"
-//   },
-//   {
-//     id: 6,
-//     title: "Torque Tuner McLaren 720S",
-//     description: "British engineering excellence with Stage 3 modifications, achieving 850HP through advanced turbocharger upgrades.",
-//     brand: "McLaren",
-//     year: "2023",
-//     price: "₹5,50,00,000",
-//     image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-//     specs: ["4.0L Twin-Turbo V8", "850 HP", "RWD"],
-//     badges: ["STAGE 3", "MCLAREN"],
-//     stage: "Stage 3"
-//   }
-// ];
