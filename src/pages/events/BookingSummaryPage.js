@@ -8,23 +8,35 @@ import { v4 as uuidv4 } from "uuid";
 // --- Styled Components (Matching your YBT Theme) ---
 
 const PageWrapper = styled.div`
-  max-width: 1000px; /* Wider to accommodate two columns */
+  max-width: 1200px; /* Widen the page */
   margin: 2rem auto;
   padding: 2rem;
   color: #fff;
   font-family: "Inter", sans-serif;
+
   display: flex;
+  flex-direction: column; /* Make this the main vertical container */
   gap: 2rem;
 
   @media (max-width: 768px) {
-    flex-direction: column;
     padding: 1rem;
     gap: 1rem;
   }
 `;
 
+// Add this new styled-component
+const ContentWrapper = styled.div`
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
 const MainContent = styled.div`
   flex: 2;
+  top: 2rem;
 `;
 
 const SidePanel = styled.div`
@@ -37,7 +49,9 @@ const SidePanel = styled.div`
   flex-direction: column;
   gap: 1.5rem;
   height: fit-content; /* Ensure it doesn't take full height if content is short */
-
+  position: sticky;
+  top: 2rem;
+  margin-top: 2rem;
   @media (max-width: 768px) {
     order: -1; /* Move side panel above main content on small screens */
   }
@@ -59,7 +73,7 @@ const Header = styled.div`
 
 const SectionTitle = styled.h2`
   font-family: "Playfair Display", serif;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   margin-top: 0;
   margin-bottom: 1.5rem;
 `;
@@ -201,6 +215,92 @@ const ProceedToPayButton = styled.button`
   }
 `;
 
+const PolicyCard = styled.div`
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin-top: 2rem; // Adds space below the event title
+`;
+
+const PolicySection = styled.div`
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+`;
+
+const PolicySectionTitle = styled.h3`
+  font-family: "Inter", sans-serif; // Using Inter for a more 'official' look
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 0.75rem 0;
+`;
+
+const PolicyText = styled.p`
+  font-size: 0.9rem;
+  color: #ccc;
+  line-height: 1.6;
+  margin: 0;
+`;
+
+const PolicyList = styled.ul`
+  font-size: 0.9rem;
+  color: #ccc;
+  line-height: 1.6;
+  padding-left: 20px;
+  margin: 0.75rem 0 0 0;
+`;
+
+const PolicyListItem = styled.li`
+  margin-bottom: 0.5rem;
+`;
+
+const indianStates = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Puducherry",
+  "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Lakshadweep",
+  "Andaman and Nicobar Islands",
+];
+
 // --- Utility Functions (if not already defined globally) ---
 
 const BookingSummaryPage = () => {
@@ -287,20 +387,70 @@ const BookingSummaryPage = () => {
 
       // b. Configure and open the Razorpay Checkout modal
       const options = {
-        key: "rzp_test_RPPDvF6yabnIXE", // ⚠️ Replace with your public Razorpay Test Key
+        key: "rzp_test_RPPDvF6yabnIXE", // Replace with your public Razorpay Test Key
         amount: razorpayOrder.amount,
         currency: "INR",
         name: "Young Boy Toyz",
         description: `Booking for ${event.title}`,
-        order_id: razorpayOrder.id,
-        handler: function (response) {
-          console.log(response);
-          // On success, redirect to a confirmation page
-          navigate("/events");
+        order_id: razorpayOrder.id, // This is the ID from your backend
+
+        // --- REPLACE your 'handler' with this ---
+        handler: async function (response) {
+          setIsProcessing(true); // Show a loader
+          setError(null);
+
+          try {
+            const token = localStorage.getItem("userToken");
+            const verifyResponse = await fetch(
+              `${process.env.REACT_APP_API_URL}/ticketbooking/verify`, // Your new verification endpoint
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              }
+            );
+
+            const result = await verifyResponse.json();
+
+            if (result.success && result.data.bookingId) {
+              // SUCCESS! Backend confirmed and created the booking
+              navigate(`/booking/success/${result.data.bookingId}`);
+            } else {
+              // Verification FAILED
+              throw new Error(result.message || "Payment verification failed.");
+            }
+          } catch (err) {
+            // Something went wrong with verification, send to failure page
+            setError(err.message);
+            navigate(
+              `/booking/failure?order_id=${razorpayOrder.id}&reason=verification_failed`
+            );
+          } finally {
+            setIsProcessing(false);
+          }
         },
         prefill: {
           name: "Test User",
           email: "test.user@example.com",
+        },
+        // --- ADD THIS 'modal' BLOCK ---
+        modal: {
+          ondismiss: function () {
+            // User closed the payment modal without paying
+            console.log("Payment modal dismissed");
+            // We use replace to prevent the user from clicking "back"
+            navigate(
+              `/booking/failure?order_id=${razorpayOrder.id}&reason=modal_dismissed`,
+              { replace: true }
+            );
+          },
         },
       };
 
@@ -316,103 +466,158 @@ const BookingSummaryPage = () => {
   if (!event) return null;
   return (
     <PageWrapper>
-      <MainContent>
-        <Header onClick={() => navigate(`/book/${event.slug}`)}>
-          <ChevronLeft />
-          <h1>Ticket Options</h1> {/* Matching image title */}
-        </Header>
+      <Header onClick={() => navigate(`/book/${event.slug}`)}>
+        <ChevronLeft />
+        <h1>Ticket Options</h1>
+      </Header>
+      <SectionTitle>{event.title}</SectionTitle>
+      <ContentWrapper>
+        <MainContent>
+          <PolicyCard>
+            <SectionTitle
+              style={{
+                fontSize: "1.2rem",
+                marginBottom: "1.5rem",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              YBT — Event Ticket Refund Policy
+            </SectionTitle>
 
-        <SectionTitle>{event.title}</SectionTitle>
-        {/* <InfoCard>
-          <p style={{ margin: 0, fontSize: "0.9rem", opacity: 0.8 }}>
-            <Ticket
-              size={16}
-              style={{ verticalAlign: "middle", marginRight: "0.5rem" }}
+            <PolicySection>
+              <PolicySectionTitle>1. Event Cancellation</PolicySectionTitle>
+              <PolicyList>
+                <PolicyListItem>
+                  If an event is cancelled by the organizer, guests are eligible
+                  for a full refund of the ticket amount.
+                </PolicyListItem>
+                <PolicyListItem>
+                  Refunds will be processed within 7–8 business days to the
+                  original payment method.
+                </PolicyListItem>
+              </PolicyList>
+            </PolicySection>
+
+            <PolicySection>
+              <PolicySectionTitle>2. Event Postponement</PolicySectionTitle>
+              <PolicyText>
+                If an event is postponed due to weather conditions, safety
+                concerns, venue issues, or any other operational reasons, no
+                refund will be issued.
+              </PolicyText>
+              <PolicyList>
+                <PolicyListItem>
+                  The ticket will remain valid for the rescheduled event date.
+                </PolicyListItem>
+                <PolicyListItem>
+                  We sincerely apologize for any inconvenience caused in
+                  advance. (Free Meal Applicable) T&c applied.
+                </PolicyListItem>
+              </PolicyList>
+            </PolicySection>
+
+            <PolicySection>
+              <PolicySectionTitle>
+                3. Non-Refundable Purchases
+              </PolicySectionTitle>
+              <PolicyText>
+                All confirmed ticket purchases are non-refundable, except in the
+                case of a full event cancellation initiated by the organizer.
+              </PolicyText>
+            </PolicySection>
+
+            <PolicySection>
+              <PolicySectionTitle>4. Transferability</PolicySectionTitle>
+              <PolicyText>
+                No transfer is required. Anyone holding a valid ticket (original
+                purchaser or bearer) will be granted entry on the rescheduled /
+                Scheduled Event date.
+              </PolicyText>
+            </PolicySection>
+
+            <PolicySection>
+              <PolicySectionTitle>5. Communication</PolicySectionTitle>
+              <PolicyText>In case of postponement or cancellation:</PolicyText>
+              <PolicyList>
+                <PolicyListItem>
+                  Customers will be notified via email, SMS, and/or platform
+                  announcements.
+                </PolicyListItem>
+                <PolicyListItem>
+                  Updates will include new event details or refund processing
+                  timelines.
+                </PolicyListItem>
+              </PolicyList>
+            </PolicySection>
+          </PolicyCard>
+        </MainContent>
+
+        <SidePanel>
+          <SectionTitle style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>
+            {event.title}
+          </SectionTitle>
+          {orderSummary.lineItems.map((item) => (
+            // Add the key prop here
+            <TicketTypeDisplay key={item.ticketTypeId}>
+              <span>
+                {item.name} ({item.quantity})
+              </span>
+              <span>₹{item.subtotal.toLocaleString()}</span>
+            </TicketTypeDisplay>
+          ))}
+
+          <CalculationRow>
+            <span>Sub-Total</span>
+            <span>₹{orderSummary.totalAmount.toLocaleString()}</span>
+          </CalculationRow>
+
+          {/* You can add a real booking fee later */}
+          <CalculationRow>
+            <span>Booking Fee</span>
+            <span>₹123.63</span>
+          </CalculationRow>
+
+          <CalculationRow className="total">
+            <span>Total Amount</span>
+            <span>₹{(orderSummary.totalAmount + 123.63).toLocaleString()}</span>
+          </CalculationRow>
+
+          <div style={{ marginTop: "1.5rem" }}>
+            <SelectField>
+              <option value="">Select State</option>
+              {indianStates.map((state) => (
+                <option key={state} value={state}>
+                  {state}
+                </option>
+              ))}
+            </SelectField>
+          </div>
+
+          <CheckboxContainer>
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
             />
-            Save the planet. Use your phone as a ticket.
-          </p>
-          <ul
-            style={{
-              fontSize: "0.9rem",
-              opacity: 0.7,
-              lineHeight: "1.5rem",
-              paddingLeft: "1.5rem",
-            }}
+            By proceeding, I express my consent to complete this transaction.
+          </CheckboxContainer>
+
+          {error && (
+            <p
+              style={{ color: "red", fontSize: "0.9rem", textAlign: "center" }}
+            >
+              Error: {error}
+            </p>
+          )}
+
+          <ProceedToPayButton
+            disabled={!agreedToTerms || isProcessing}
+            onClick={handleProceedToPay}
           >
-            <li>
-              Customer(s) can access their ticket(s) from the 'My Profile'
-              section on the app/mobile-web.
-            </li>
-            <li>
-              It is mandatory to present the ticket(s) in my profile section via
-              app/mobile-web at the venue.
-            </li>
-            <li>No physical ticket(s) are required to enter the venue.</li>
-          </ul>
-        </InfoCard> */}
-      </MainContent>
-
-      <SidePanel>
-        <SectionTitle style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>
-          {event.title}
-        </SectionTitle>
-        {orderSummary.lineItems.map((item) => (
-          // Add the key prop here
-          <TicketTypeDisplay key={item.ticketTypeId}>
-            <span>
-              {item.name} ({item.quantity})
-            </span>
-            <span>₹{item.subtotal.toLocaleString()}</span>
-          </TicketTypeDisplay>
-        ))}
-
-        <CalculationRow>
-          <span>Sub-Total</span>
-          <span>₹{orderSummary.totalAmount.toLocaleString()}</span>
-        </CalculationRow>
-
-        {/* You can add a real booking fee later */}
-        <CalculationRow>
-          <span>Booking Fee</span>
-          <span>₹123.63</span>
-        </CalculationRow>
-
-        <CalculationRow className="total">
-          <span>Total Amount</span>
-          <span>₹{(orderSummary.totalAmount + 123.63).toLocaleString()}</span>
-        </CalculationRow>
-
-        <div style={{ marginTop: "1.5rem" }}>
-          <SelectField>
-            <option>Select State</option>
-            <option value="Maharashtra">Maharashtra</option>
-            <option value="Karnataka">Karnataka</option>
-            {/* Add more states as needed */}
-          </SelectField>
-        </div>
-
-        <CheckboxContainer>
-          <input
-            type="checkbox"
-            checked={agreedToTerms}
-            onChange={(e) => setAgreedToTerms(e.target.checked)}
-          />
-          By proceeding, I express my consent to complete this transaction.
-        </CheckboxContainer>
-
-        {error && (
-          <p style={{ color: "red", fontSize: "0.9rem", textAlign: "center" }}>
-            Error: {error}
-          </p>
-        )}
-
-        <ProceedToPayButton
-          disabled={!agreedToTerms || isProcessing}
-          onClick={handleProceedToPay}
-        >
-          {isProcessing ? "Processing..." : "Proceed to Pay"}
-        </ProceedToPayButton>
-      </SidePanel>
+            {isProcessing ? "Processing..." : "Proceed to Pay"}
+          </ProceedToPayButton>
+        </SidePanel>
+      </ContentWrapper>
     </PageWrapper>
   );
 };

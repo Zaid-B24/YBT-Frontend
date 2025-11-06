@@ -67,6 +67,8 @@ const MainRoutes = (
       {/* Events Routes */}
       <Route path="events" element={<Pages.EventsPage />} />
       <Route path="events/:slug" element={<Pages.EventDetailsPage />} />
+      <Route path="/booking/success/:bookingId" element={<Pages.BookingSuccessPage />} />
+      <Route path="/booking/failure" element={<Pages.BookingFailurePage />} />
 
       {/* Merchandise Routes */}
       <Route path="merchandise" element={<Pages.MerchandisePage />} />

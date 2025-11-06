@@ -7,9 +7,9 @@ import { useQuery } from "@tanstack/react-query";
 // --- Styled Components ---
 
 const PageWrapper = styled.div`
-  max-width: 800px;
+  max-width: 900px;
   margin: 2rem auto;
-  padding: 2rem;
+  padding: 1.25rem;
   color: #fff;
   font-family: "Inter", sans-serif;
 `;
@@ -18,117 +18,163 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.25rem;
   cursor: pointer;
 
   h1 {
     font-family: "Playfair Display", serif;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     margin: 0;
   }
 `;
 
 const ContentCard = styled.div`
-  background: #1a1a1a;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
-  padding: 0.5rem 2rem 2rem 2rem;
+  padding: 1rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
 `;
 
 const TicketRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 0.7rem;
+  transition: all 0.18s ease;
+  background: transparent;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.03);
+    transform: translateY(-2px);
+  }
 
   &:last-child {
-    border-bottom: none;
+    margin-bottom: 0;
   }
 `;
-
 const TicketInfo = styled.div`
-  h3 {
-    margin: 0 0 0.25rem 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-  }
-  p {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 500;
-  }
+}
+p {
+margin: 0;
+font-size: 0.95rem;
+color: #cfcfcf;
+}
 `;
 
 const QuantitySelector = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
 
   button {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     color: #fff;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: all 0.18s ease;
+  }
 
-    &:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.2);
-    }
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+  button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
   }
 
   span {
-    font-size: 1.2rem;
-    font-weight: 600;
-    min-width: 20px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    min-width: 28px;
     text-align: center;
+    color: #fff;
   }
 `;
 
 const SummaryFooter = styled.div`
-  margin-top: 1.5rem;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  position: sticky;
+  bottom: 12px;
+  margin-top: 1.25rem;
+  padding: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(20, 20, 20, 0.65),
+    rgba(10, 10, 10, 0.6)
+  );
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  z-index: 50;
 `;
 
 const TotalAmount = styled.div`
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-size: 1.15rem;
+  font-weight: 800;
 `;
 
 const ProceedButton = styled.button`
-  background: #fff;
-  color: #111;
+  background: linear-gradient(90deg, #ff6b3d, #ff3a6b);
+  color: #fff;
   border: none;
-  padding: 0.75rem 2rem;
-  border-radius: 8px;
+  padding: 0.6rem 1.25rem;
+  border-radius: 10px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.18s ease;
+  min-width: 120px;
 
   &:hover:not(:disabled) {
-    background: #e6e6e6;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(255, 80, 80, 0.14);
   }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
+    filter: grayscale(0.2);
   }
+`;
+
+const SmallNote = styled.p`
+  margin: 0;
+  font-size: 0.85rem;
+  color: #bdbdbd;
+`;
+
+const Toast = styled.div`
+  position: fixed;
+  right: 16px;
+  bottom: 84px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  z-index: 9999;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
 `;
 
 // --- The Main Component ---

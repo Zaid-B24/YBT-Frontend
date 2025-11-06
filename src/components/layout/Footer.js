@@ -11,7 +11,7 @@ const FooterWrapper = styled.footer`
 const Container = styled.div`
   max-width: 1400px;
   margin: 0 auto;
-  padding: 4rem 2rem 2rem;
+  padding: 2.5rem 2rem 2rem;
 `;
 
 const TopSection = styled.div`
@@ -31,8 +31,20 @@ const TopSection = styled.div`
   }
 `;
 
-const Brand = styled.div``;
+const Brand = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align children to the left */
+  padding: 1rem 0; /* Add vertical spacing for mobile */
 
+  @media (min-width: 768px) {
+    padding: 0; /* Reset padding on desktop */
+  }
+`;
+
+/**
+ * Logo text styling.
+ */
 const Logo = styled.h3`
   font-family: "Playfair Display", serif;
   font-size: 2rem;
@@ -42,6 +54,9 @@ const Logo = styled.h3`
   margin-bottom: 1rem;
 `;
 
+/**
+ * Brand description paragraph.
+ */
 const BrandDescription = styled.p`
   color: #cccccc;
   line-height: 1.7;
@@ -49,16 +64,24 @@ const BrandDescription = styled.p`
   max-width: 400px;
 `;
 
+/**
+ * Container for the newsletter input and button.
+ * Stacks vertically on mobile.
+ */
 const NewsletterForm = styled.div`
   display: flex;
   gap: 0.5rem;
   max-width: 350px;
+  width: 100%; /* Ensure it takes available width */
 
   @media (max-width: 768px) {
     flex-direction: column;
   }
 `;
 
+/**
+ * Newsletter email input field.
+ */
 const NewsletterInput = styled.input`
   flex: 1;
   padding: 0.75rem 1rem;
@@ -67,6 +90,7 @@ const NewsletterInput = styled.input`
   border-radius: 4px;
   color: #ffffff;
   font-size: 0.9rem;
+  min-width: 150px; /* Prevent it from getting too squished */
 
   &::placeholder {
     color: #666;
@@ -78,6 +102,9 @@ const NewsletterInput = styled.input`
   }
 `;
 
+/**
+ * Newsletter submit button.
+ */
 const NewsletterButton = styled.button`
   padding: 0.75rem 1rem;
   background: rgba(255, 255, 255, 0.1);
@@ -87,12 +114,18 @@ const NewsletterButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
 
+  /* Added to center the icon */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   &:hover {
     background: rgba(255, 255, 255, 0.15);
   }
 
   @media (max-width: 768px) {
     width: 100%;
+    padding: 0.85rem; /* Make it a bit taller on mobile */
   }
 `;
 
@@ -201,9 +234,10 @@ const Footer = () => {
           <Brand>
             <Logo>YOUNG BOY TOYZ</Logo>
             <BrandDescription>
-              Since 2025, YOUNG BOY TOYZ has been synonymous with luxury
-              automotive customization, creating unique masterpieces that
-              redefine automotive excellence and performance.
+              From premium builds to community and culture, YBT is more than a
+              marketplace — it’s a lifestyle. More than a showroom — YBT is a
+              luxury lifestyle movement dedicated to bespoke performance
+              machines and the culture that surrounds them.
             </BrandDescription>
             <NewsletterForm>
               <NewsletterInput type="email" placeholder="Enter your email" />

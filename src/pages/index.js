@@ -43,6 +43,8 @@ export { default as AuctionLivePage } from "./auctions/AuctionLivePage";
 // Events Pages
 export { default as EventsPage } from "./events/EventsPage";
 export { default as EventDetailsPage } from "./events/EventDetailsPage";
+export {default as BookingSuccessPage} from "./events/BookingSuccessPage";
+export {default as BookingFailurePage} from "./events/BookingFailurePage";
 
 // Merchandise Pages
 export { default as MerchandisePage } from "./merchandise/MerchandisePage";

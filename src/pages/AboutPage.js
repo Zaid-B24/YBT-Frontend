@@ -1,120 +1,108 @@
-import React from 'react';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { Award, Users, Target, Heart } from 'lucide-react';
+import React from "react";
+import styled from "styled-components";
+import { motion } from "framer-motion";
+// Removed icon imports as they are no longer used
 
 const PageWrapper = styled.div`
-  padding-top: 100px;
+  padding-top: 80px;
   min-height: 100vh;
   background: #000;
   color: #fff;
 `;
 
-const HeroSection = styled.section`
-  padding: 4rem 2rem;
-  text-align: center;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-`;
-
-const HeroTitle = styled.h1`
-  font-family: 'Playfair Display', serif;
-  font-size: 4rem;
-  font-weight: 400;
-  margin-bottom: 1rem;
-  
-  @media (max-width: 768px) {
-    font-size: 2.5rem;
-  }
-`;
-
-const HeroSubtitle = styled.p`
-  font-size: 1.2rem;
-  color: #ccc;
-  max-width: 600px;
-  margin: 0 auto 2rem;
-`;
-
 const StorySection = styled.div`
-  padding: 4rem 2rem;
-  max-width: 1200px;
+  padding: 3rem 1.5rem;
+  max-width: 1100px;
   margin: 0 auto;
 `;
 
+// MODIFIED: Changed grid-template-columns to 1fr
 const StoryContent = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  grid-template-columns: 1fr; /* Was 1fr 1fr */
+  gap: 3rem;
   align-items: center;
 
   @media (max-width: 968px) {
-    grid-template-columns: 1fr;
     gap: 2rem;
   }
 `;
 
 const StoryText = styled.div`
   h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.5rem;
+    font-family: "Playfair Display", serif;
+    font-size: 2.3rem;
     font-weight: 400;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
   }
 
   p {
     color: #ccc;
     line-height: 1.8;
+    margin-bottom: 1rem;
+    font-size: 1.05rem;
+  }
+
+  ul {
+    list-style: disc;
+    padding-left: 1.5rem;
     margin-bottom: 1.5rem;
-    font-size: 1.1rem;
+
+    li {
+      color: #ccc;
+      margin-bottom: 0.3rem;
+      line-height: 1.7;
+    }
   }
 `;
 
-const StoryImage = styled.div`
-  height: 400px;
-  background: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80') center center/cover no-repeat;
-  border-radius: 8px;
-`;
+// REMOVED: StoryImage styled-component
 
 const ValuesSection = styled.div`
-  padding: 4rem 2rem;
-  background: rgba(255,255,255,0.02);
-  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 3rem 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 `;
 
 const ValuesContainer = styled.div`
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
   text-align: center;
 `;
 
 const ValuesTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
+  font-family: "Playfair Display", serif;
+  font-size: 2.3rem;
   font-weight: 400;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 `;
 
 const ValuesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+  gap: 1.8rem;
 `;
 
 const ValueCard = styled(motion.div)`
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 10px;
   text-align: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-6px);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.08);
+  }
 `;
 
-const ValueIcon = styled.div`
-  margin-bottom: 1.5rem;
-  color: #fff;
-`;
+// REMOVED: ValueIcon styled-component
 
 const ValueTitle = styled.h3`
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  margin-bottom: 0.8rem;
   color: #fff;
 `;
 
@@ -124,52 +112,55 @@ const ValueDescription = styled.p`
 `;
 
 const TeamSection = styled.div`
-  padding: 4rem 2rem;
-  max-width: 1200px;
+  padding: 3rem 1.5rem;
+  max-width: 1100px;
   margin: 0 auto;
 `;
 
 const TeamTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
+  font-family: "Playfair Display", serif;
+  font-size: 2.3rem;
   font-weight: 400;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
   text-align: center;
 `;
 
 const TeamGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.8rem;
 `;
 
 const TeamMember = styled(motion.div)`
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  }
 `;
 
-const MemberImage = styled.div`
-  height: 300px;
-  background: ${props => props.image ? `url(${props.image})` : 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)'} center center/cover no-repeat;
-`;
+// REMOVED: MemberImage styled-component
 
 const MemberInfo = styled.div`
-  padding: 2rem;
+  padding: 1.5rem;
   text-align: center;
 `;
 
 const MemberName = styled.h3`
-  font-size: 1.3rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  margin-bottom: 0.4rem;
   color: #fff;
 `;
 
 const MemberRole = styled.p`
-  color: #ccc;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 0.8rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 1px;
 `;
@@ -181,79 +172,92 @@ const MemberBio = styled.p`
 `;
 
 const AboutPage = () => {
+  // MODIFIED: Removed 'icon' property from objects
   const values = [
     {
-      icon: <Award size={48} />,
       title: "Excellence",
-      description: "We pursue perfection in every detail, from initial concept to final delivery, ensuring each project exceeds expectations."
+      description:
+        "We pursue perfection in every detail, ensuring each project exceeds expectations.",
     },
     {
-      icon: <Users size={48} />,
       title: "Collaboration",
-      description: "We work closely with our clients to understand their vision and bring their automotive dreams to life."
+      description:
+        "We work closely with our clients to bring their automotive dreams to life.",
     },
     {
-      icon: <Target size={48} />,
       title: "Innovation",
-      description: "We constantly push the boundaries of what's possible, integrating cutting-edge technology with timeless design."
+      description:
+        "We constantly push boundaries, merging cutting-edge tech with timeless design.",
     },
     {
-      icon: <Heart size={48} />,
       title: "Passion",
-      description: "Our love for automotive excellence drives everything we do, from the smallest detail to the grandest transformation."
-    }
+      description:
+        "Our love for automotive excellence drives everything we do.",
+    },
   ];
 
+  // MODIFIED: Removed 'image' property from objects
   const teamMembers = [
     {
       name: "Marcus Johnson",
       role: "Founder & CEO",
-      bio: "With over 15 years in luxury automotive, Marcus founded YOUNG BOY TOYZ with a vision to redefine vehicle customization.",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+      bio: "With over 15 years in luxury automotive, Marcus founded YOUNG BOY TOYZ to redefine vehicle customization.",
     },
     {
       name: "Elena Rodriguez",
       role: "Head of Design",
-      bio: "Elena's artistic vision and technical expertise have shaped some of our most iconic vehicle transformations.",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+      bio: "Elena’s vision and technical expertise have shaped some of our most iconic transformations.",
     },
     {
       name: "James Mitchell",
       role: "Chief Engineer",
-      bio: "James ensures every modification meets the highest standards of performance, safety, and reliability.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-    }
+      bio: "James ensures every modification meets the highest standards of performance and reliability.",
+    },
   ];
 
   return (
     <PageWrapper>
-      <HeroSection>
-        <HeroTitle>About Us</HeroTitle>
-        <HeroSubtitle>
-          Discover the story behind YOUNG BOY TOYZ and our commitment to 
-          automotive excellence and innovation.
-        </HeroSubtitle>
-      </HeroSection>
-
       <StorySection>
         <StoryContent>
           <StoryText>
             <h2>Our Story</h2>
             <p>
-              Founded in 2020 in Los Angeles, YOUNG BOY TOYZ emerged from a passion for 
-              automotive excellence and a vision to transform the luxury vehicle customization industry.
+              YOUNG BOY TOYZ (YBT) was founded by Mr. Hamdan Pathan — a serial
+              entrepreneur, humanitarian, cyber-security investigator, and
+              fitness model — driven by a bold vision: to make
+              aftermarket-upgraded and limited-edition vehicles accessible,
+              trustworthy, and thrilling for true automotive enthusiasts.
             </p>
             <p>
-              What started as a small workshop has grown into a premier destination for 
-              discerning clients seeking the ultimate in automotive personalization. Our team 
-              of skilled craftsmen and engineers work tirelessly to bring each client's vision to life.
+              What began as a passion has evolved into India’s first premium
+              aftermarket automobile brand, redefining how exclusive machines
+              are bought, experienced, and celebrated. YBT introduces a new era
+              of automotive shopping with its immersive Digital Showroom
+              Experience, allowing customers to explore extraordinary creations
+              with transparency and assurance.
+            </p>
+            <p>We specialize in purchase & sale of:</p>
+            <ul>
+              <li>Cars</li>
+              <li>Superbikes</li>
+              <li>Vanity Vans & Caravans</li>
+              <li>Motorhomes</li>
+              <li>Private Jets</li>
+              <li>Boats</li>
+            </ul>
+            <p>
+              Every machine is curated from top-tier automotive designers,
+              custom garages, and master workshops — representing the finest
+              craftsmanship of the aftermarket world.
             </p>
             <p>
-              Today, we've completed over 1,000 custom projects, each one a testament to our 
-              commitment to quality, innovation, and customer satisfaction.
+              YBT is also building a new cultural movement — IDM (Indian
+              Domestic Market Culture Association) — uniting enthusiasts
+              nationwide through events that celebrate the bond between humans
+              and machines.
             </p>
           </StoryText>
-          <StoryImage />
+          {/* REMOVED: <StoryImage /> */}
         </StoryContent>
       </StorySection>
 
@@ -264,12 +268,12 @@ const AboutPage = () => {
             {values.map((value, index) => (
               <ValueCard
                 key={index}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 25 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <ValueIcon>{value.icon}</ValueIcon>
+                {/* REMOVED: <ValueIcon> */}
                 <ValueTitle>{value.title}</ValueTitle>
                 <ValueDescription>{value.description}</ValueDescription>
               </ValueCard>
@@ -284,12 +288,12 @@ const AboutPage = () => {
           {teamMembers.map((member, index) => (
             <TeamMember
               key={index}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <MemberImage image={member.image} />
+              {/* REMOVED: <MemberImage /> */}
               <MemberInfo>
                 <MemberName>{member.name}</MemberName>
                 <MemberRole>{member.role}</MemberRole>
@@ -303,4 +307,4 @@ const AboutPage = () => {
   );
 };
 
-export default AboutPage; 
+export default AboutPage;

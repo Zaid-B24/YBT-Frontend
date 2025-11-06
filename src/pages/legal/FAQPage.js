@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Search, MessageCircle, Phone, Mail } from 'lucide-react';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, Search, MessageCircle, Phone, Mail } from "lucide-react";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -17,11 +17,11 @@ const HeroSection = styled.section`
 `;
 
 const HeroTitle = styled.h1`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 4rem;
   font-weight: 400;
   margin-bottom: 1rem;
-  
+
   @media (max-width: 768px) {
     font-size: 2.5rem;
   }
@@ -48,8 +48,8 @@ const SearchBox = styled.div`
 const SearchInput = styled.input`
   width: 100%;
   padding: 1rem 1rem 1rem 3rem;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   border-radius: 8px;
   font-size: 1rem;
@@ -60,7 +60,7 @@ const SearchInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: rgba(255,255,255,0.4);
+    border-color: rgba(255, 255, 255, 0.4);
   }
 `;
 
@@ -85,18 +85,18 @@ const CategorySection = styled.div`
 `;
 
 const CategoryTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 2rem;
   font-weight: 400;
   margin-bottom: 1.5rem;
   color: #fff;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 0.5rem;
 `;
 
 const FAQItem = styled(motion.div)`
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 1rem;
   border-radius: 8px;
   overflow: hidden;
@@ -118,12 +118,12 @@ const FAQQuestion = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    background: rgba(255,255,255,0.02);
+    background: rgba(255, 255, 255, 0.02);
   }
 `;
 
 const ChevronIcon = styled(ChevronDown)`
-  transform: ${props => props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
+  transform: ${(props) => (props.isOpen ? "rotate(180deg)" : "rotate(0deg)")};
   transition: transform 0.3s ease;
   flex-shrink: 0;
   margin-left: 1rem;
@@ -137,13 +137,13 @@ const FAQAnswer = styled(motion.div)`
 
 const ContactSection = styled.div`
   padding: 4rem 2rem;
-  background: rgba(255,255,255,0.02);
-  border-top: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
 `;
 
 const ContactTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 2.5rem;
   font-weight: 400;
   margin-bottom: 1rem;
@@ -164,8 +164,8 @@ const ContactMethods = styled.div`
 `;
 
 const ContactMethod = styled(motion.div)`
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 2rem;
   border-radius: 8px;
   text-align: center;
@@ -189,126 +189,96 @@ const ContactInfo = styled.p`
 
 const FAQPage = () => {
   const [openItems, setOpenItems] = useState({});
-  const [searchTerm, setSearchTerm] = useState('');
 
   const toggleItem = (id) => {
-    setOpenItems(prev => ({
+    setOpenItems((prev) => ({
       ...prev,
-      [id]: !prev[id]
+      [id]: !prev[id],
     }));
   };
 
   const faqData = [
     {
-      category: "General Information",
+      category: "Frequently Asked Questions",
       questions: [
         {
           id: 1,
-          question: "What is YOUNG BOY TOYZ?",
-          answer: "YOUNG BOY TOYZ is a luxury automotive customization company specializing in high-end vehicle modifications, performance upgrades, and bespoke automotive solutions. We transform ordinary vehicles into extraordinary masterpieces."
+          question: "What is YBT?",
+          answer:
+            "YBT is India’s first premium marketplace for aftermarket-upgraded & limited-edition mobility — from cars and superbikes to caravans, motorhomes, boats, and more.\nWe connect you directly with top designers, workshops, and rare vehicle owners.",
         },
         {
           id: 2,
-          question: "Where are you located?",
-          answer: "Our headquarters and main showroom are located in Los Angeles, California. We also have authorized dealers and service centers across the United States."
+          question: "What makes YBT special?",
+          answer:
+            "✔ Curated & verified vehicles\n✔ Exclusive designer builds\n✔ Digital showroom experience\n✔ Pan-India delivery support\n✔ Community events & culture (IDM)\n\nWe don’t list everything. Only the best, authentic, premium machines.",
         },
         {
           id: 3,
-          question: "How long have you been in business?",
-          answer: "YOUNG BOY TOYZ was founded in 2020 and has quickly established itself as a premier destination for luxury automotive customization, with over 1000 vehicles modified to date."
-        }
-      ]
-    },
-    {
-      category: "Services & Modifications",
-      questions: [
+          question: "What can I buy on YBT?",
+          answer:
+            "• Modified / upgraded cars\n• Superbikes & adventure bikes\n• Off-roaders & ATVs\n• Caravans & motorhomes\n• Vanity vans\n• Private jets & boats (on request)",
+        },
         {
           id: 4,
-          question: "What types of modifications do you offer?",
-          answer: "We offer a comprehensive range of modifications including performance upgrades, body kits, interior customization, exhaust systems, suspension upgrades, wheel and tire packages, and complete vehicle transformations."
+          question: "How does buying work?",
+          answer:
+            "Browse → Shortlist → Connect with our team →\nInspection & verification → Secure transaction → Delivery\n\nOur Concierge experts guide you throughout.",
         },
         {
           id: 5,
-          question: "Do you work on all vehicle brands?",
-          answer: "We specialize in luxury and high-performance vehicles including BMW, Mercedes-Benz, Audi, Porsche, Lamborghini, Ferrari, Tesla, and many other premium brands."
+          question: "How does selling work?",
+          answer:
+            "Share your vehicle details → 9619007705 ( WhatsApp) \nOur team verifies →\nWe shortlist pricing →\nYour machine gets listed to the right audience.",
         },
         {
           id: 6,
-          question: "How long does a typical modification take?",
-          answer: "Project timelines vary depending on the scope of work. Simple modifications may take 1-2 weeks, while complete transformations can take 2-6 months. We provide detailed timelines during consultation."
-        }
-      ]
-    },
-    {
-      category: "Pricing & Payment",
-      questions: [
+          question: "Who upgrades the vehicles?",
+          answer:
+            "India’s & International Level most skilled & trusted designers / workshops.\n\nYBT works only with verified talent ensuring safe, premium-grade builds.",
+        },
         {
           id: 7,
-          question: "How much do your modifications cost?",
-          answer: "Pricing varies significantly based on the vehicle, modifications requested, and materials used. We offer free consultations to provide accurate quotes tailored to your specific needs and budget."
+          question: "What is YBT Collection?",
+          answer:
+            "A curated set of premium machines personally sourced, verified, restored, and showcased as elite collectibles.",
         },
         {
           id: 8,
-          question: "Do you offer financing options?",
-          answer: "Yes, we partner with several financing companies to offer flexible payment plans for qualified customers. Contact us to discuss financing options that work for your situation."
+          question: "What is IDM?",
+          answer:
+            "IDM — Indian Domestic Market Culture\n\nWe celebrate automobile passion through:\n• Meetups\n• Auto shows\n• Rallies\n• Track events\n\nBuy tickets to your favorite events through YBT and be part of the culture Indian Domestic market I.D.M",
         },
         {
           id: 9,
-          question: "What payment methods do you accept?",
-          answer: "We accept cash, certified checks, wire transfers, and major credit cards. For larger projects, we typically require a deposit with the balance due upon completion."
-        }
-      ]
-    },
-    {
-      category: "Warranty & Support",
-      questions: [
+          question: "Is it safe to buy through YBT?",
+          answer:
+            "Yes.\n\nEvery listing goes through verification.\nVehicle health certificate Assurance No work Just Drive.\n\nYou get proper documentation, expert Concierge guidance & safe transaction support.",
+        },
         {
           id: 10,
-          question: "Do you provide warranties on your work?",
-          answer: "Yes, we provide comprehensive warranties on all our work. Parts and labor warranties vary by component and modification type, typically ranging from 1-3 years."
+          question: "Which locations do you serve?",
+          answer:
+            "Pan-India — We Introduced ourself as a [ Digital Showroom ]\n\nPlus cross-border trade via YBT Dubai, serving the UAE and expanding to Indonesia & USA.",
         },
         {
           id: 11,
-          question: "Do you offer maintenance services?",
-          answer: "Absolutely! We provide ongoing maintenance and support for all vehicles we modify. Our certified technicians are familiar with every modification we install."
+          question: "Do you offer custom builds?",
+          answer:
+            "Yes —\n\nShare your vision, and we connect you with the best designers to build your dream machine.",
         },
-        {
-          id: 12,
-          question: "What if I have issues after the modification?",
-          answer: "We stand behind our work 100%. If you experience any issues, contact us immediately and we'll resolve them promptly under our warranty program."
-        }
-      ]
-    }
+      ],
+    },
   ];
 
-  const filteredFAQs = faqData.map(category => ({
-    ...category,
-    questions: category.questions.filter(
-      q => q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           q.answer.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  })).filter(category => category.questions.length > 0);
+  const filteredFAQs = faqData
+    .map((category) => ({
+      ...category,
+    }))
+    .filter((category) => category.questions.length > 0);
 
   return (
     <PageWrapper>
-      <HeroSection>
-        <HeroTitle>Frequently Asked Questions</HeroTitle>
-        <HeroSubtitle>
-          Find answers to common questions about our services, processes, and policies.
-        </HeroSubtitle>
-      </HeroSection>
-
-      <SearchSection>
-        <SearchBox>
-          <SearchIcon />
-          <SearchInput
-            placeholder="Search for answers..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </SearchBox>
-      </SearchSection>
-
       <FAQContainer>
         {filteredFAQs.map((category) => (
           <CategorySection key={category.category}>
@@ -329,7 +299,7 @@ const FAQPage = () => {
                   {openItems[faq.id] && (
                     <FAQAnswer
                       initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
+                      animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
@@ -373,22 +343,10 @@ const FAQPage = () => {
             <ContactLabel>Email</ContactLabel>
             <ContactInfo>info@youngboytoyz.com</ContactInfo>
           </ContactMethod>
-          <ContactMethod
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <ContactIcon>
-              <MessageCircle size={32} />
-            </ContactIcon>
-            <ContactLabel>Live Chat</ContactLabel>
-            <ContactInfo>Available 9 AM - 6 PM PST</ContactInfo>
-          </ContactMethod>
         </ContactMethods>
       </ContactSection>
     </PageWrapper>
   );
 };
 
-export default FAQPage; 
+export default FAQPage;
