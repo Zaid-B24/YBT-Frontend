@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Search, MessageCircle, Phone, Mail } from "lucide-react";
+import { ChevronDown, Phone, Mail } from "lucide-react";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -16,62 +16,11 @@ const HeroSection = styled.section`
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
 `;
 
-const HeroTitle = styled.h1`
-  font-family: "Playfair Display", serif;
-  font-size: 4rem;
-  font-weight: 400;
-  margin-bottom: 1rem;
-
-  @media (max-width: 768px) {
-    font-size: 2.5rem;
-  }
-`;
-
 const HeroSubtitle = styled.p`
   font-size: 1.2rem;
   color: #ccc;
   max-width: 600px;
   margin: 0 auto 2rem;
-`;
-
-const SearchSection = styled.div`
-  padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
-`;
-
-const SearchBox = styled.div`
-  position: relative;
-  margin-bottom: 2rem;
-`;
-
-const SearchInput = styled.input`
-  width: 100%;
-  padding: 1rem 1rem 1rem 3rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  border-radius: 8px;
-  font-size: 1rem;
-
-  &::placeholder {
-    color: #666;
-  }
-
-  &:focus {
-    outline: none;
-    border-color: rgba(255, 255, 255, 0.4);
-  }
-`;
-
-const SearchIcon = styled(Search)`
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-  color: #666;
 `;
 
 const FAQContainer = styled.div`
@@ -279,6 +228,12 @@ const FAQPage = () => {
 
   return (
     <PageWrapper>
+      <HeroSection>
+        <HeroSubtitle>
+          Find answers to common questions about our services, processes, and
+          policies.
+        </HeroSubtitle>
+      </HeroSection>
       <FAQContainer>
         {filteredFAQs.map((category) => (
           <CategorySection key={category.category}>

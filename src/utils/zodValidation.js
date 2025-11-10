@@ -56,8 +56,8 @@ export const carValidationSchema = z
     // --- Car Specifications ---
     // MODIFIED: Changed from array to string to match backend expectation for multipart/form-data
     badges: z.string().optional(),
-    // ADDED: The 'specs' field was missing
     specs: z.string().optional(),
+    features: z.string().optional(),
     vipNumber: z.boolean().optional(),
     city: z.string().optional(),
     state: z.string().optional(),

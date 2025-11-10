@@ -255,7 +255,7 @@ const VehicleInfoPage = () => {
             <DetailsSection>
               <SectionTitle>Features & Amenities</SectionTitle>
               <FeatureList>
-                {dummyVehicle.features?.map((feature, index) => (
+                {vehicle.features?.map((feature, index) => (
                   <FeatureItem key={index}>
                     <CheckCircle size={16} color="#e1c841" />
                     {feature}

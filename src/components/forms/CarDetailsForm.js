@@ -177,6 +177,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
       vipNumber: false,
       badges: "",
       specs: "",
+      features: "",
       carImages: [],
     },
   });
@@ -387,6 +388,12 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         placeholder: "e.g., 5",
         type: "number",
         icon: Armchair,
+      },
+      {
+        key: "features",
+        label: "Features & Amenities",
+        placeholder: "Leather interior",
+        icon: Sparkles,
       },
     ],
     "💰 Listing & Price": [
