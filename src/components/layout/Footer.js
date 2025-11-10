@@ -204,9 +204,14 @@ const BottomLink = styled(Link)`
 const Footer = () => {
   const mainLinks = [
     // { to: "/models", label: "Models" },
-    // { to: "/rims", label: "Rims" },
+    //{ to: "/faq", label: "FAQ" },
+    { to: "/rentals", label: "Rentals" },
+
+    { to: "/auctions", label: "Auctions" },
+    { to: "/rims", label: "Rims" },
     { to: "/cars", label: "Cars for sale" },
-    // { to: "/atelier", label: "Atelier" },
+    { to: "/atelier", label: "Atelier" },
+    { to: "/contact", label: "Contact Us" },
     // { to: "/boutique", label: "Boutique" },
   ];
 
@@ -248,7 +253,6 @@ const Footer = () => {
           </Brand>
 
           <FooterColumn>
-            <ColumnTitle>Models</ColumnTitle>
             <FooterLinks>
               {mainLinks.map((link) => (
                 <FooterLink key={link.to}>
@@ -259,7 +263,6 @@ const Footer = () => {
           </FooterColumn>
 
           <FooterColumn>
-            <ColumnTitle>Company</ColumnTitle>
             <FooterLinks>
               {companyLinks.map((link) => (
                 <FooterLink key={link.to}>
@@ -270,7 +273,6 @@ const Footer = () => {
           </FooterColumn>
 
           <FooterColumn>
-            <ColumnTitle>Services</ColumnTitle>
             <FooterLinks>
               {servicesLinks.map((link) => (
                 <FooterLink key={link.to}>

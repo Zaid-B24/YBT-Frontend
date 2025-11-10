@@ -1,28 +1,31 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import React from "react";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
 
 const auctions = [
   {
     id: 1,
-    title: '2022 Lamborghini Aventador SVJ',
-    status: 'Live',
-    image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=800&q=80',
-    endsIn: '2h 15m',
+    title: "2022 Lamborghini Aventador SVJ",
+    status: "Live",
+    image:
+      "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=800&q=80",
+    endsIn: "2h 15m",
   },
   {
     id: 2,
-    title: '2021 Rolls Royce Ghost',
-    status: 'Upcoming',
-    image: 'https://images.unsplash.com/photo-1511918984145-48de785d4c4e?auto=format&fit=crop&w=800&q=80',
-    startsIn: 'Tomorrow, 5pm',
+    title: "2021 Rolls Royce Ghost",
+    status: "Upcoming",
+    image:
+      "https://images.unsplash.com/photo-1511918984145-48de785d4c4e?auto=format&fit=crop&w=800&q=80",
+    startsIn: "Tomorrow, 5pm",
   },
   {
     id: 3,
-    title: '2020 Bugatti Chiron',
-    status: 'Live',
-    image: 'https://images.unsplash.com/photo-1462392246754-28dfa2df8e6b?auto=format&fit=crop&w=800&q=80',
-    endsIn: '45m',
+    title: "2020 Bugatti Chiron",
+    status: "Live",
+    image:
+      "https://images.unsplash.com/photo-1462392246754-28dfa2df8e6b?auto=format&fit=crop&w=800&q=80",
+    endsIn: "45m",
   },
 ];
 
@@ -40,13 +43,13 @@ const HeroSection = styled.section`
 `;
 
 const AuctionsHeading = styled.h1`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 3rem;
   font-weight: 400;
   margin-bottom: 1rem;
   letter-spacing: 1px;
   color: #fff;
-  
+
   @media (max-width: 768px) {
     font-size: 2.5rem;
   }
@@ -71,7 +74,7 @@ const AuctionsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 2rem;
-  
+
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
@@ -86,7 +89,7 @@ const AuctionCard = styled(Link)`
   text-decoration: none;
   color: inherit;
   transition: all 0.3s ease;
-  
+
   &:hover {
     border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-5px);
@@ -104,7 +107,7 @@ const AuctionInfo = styled.div`
 `;
 
 const AuctionTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.3rem;
   font-weight: 400;
   margin: 0 0 0.5rem 0;
@@ -116,7 +119,10 @@ const AuctionStatus = styled.span`
   font-size: 0.7rem;
   font-weight: 500;
   color: #fff;
-  background: ${props => props.status === 'Live' ? 'rgba(230, 57, 70, 0.8)' : 'rgba(69, 123, 157, 0.8)'};
+  background: ${(props) =>
+    props.status === "Live"
+      ? "rgba(230, 57, 70, 0.8)"
+      : "rgba(69, 123, 157, 0.8)"};
   border-radius: 0;
   padding: 0.3rem 0.8rem;
   margin-bottom: 1rem;
@@ -133,7 +139,10 @@ const AuctionTime = styled.div`
 const AuctionsPage = () => {
   return (
     <AuctionsPageWrapper>
-      <HeroSection>
+      <p style={{ fontSize: "1.5rem", color: "#666" }}>
+        Oops, we're cooking something! 🍳 Please wait...
+      </p>
+      {/* <HeroSection>
         <AuctionsHeading>Live & Upcoming Auctions</AuctionsHeading>
         <AuctionsSubtitle>
           Participate in exclusive auctions for the world's most coveted luxury vehicles. 
@@ -158,9 +167,9 @@ const AuctionsPage = () => {
             </AuctionCard>
           ))}
         </AuctionsGrid>
-      </AuctionsContainer>
+      </AuctionsContainer> */}
     </AuctionsPageWrapper>
   );
 };
 
-export default AuctionsPage; 
+export default AuctionsPage;

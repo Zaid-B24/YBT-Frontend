@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { User, Mail, Phone, MapPin, Lock, Bell, Shield } from "lucide-react";
-import MyBookingsTab from "./MyBookingsTab";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -298,7 +297,6 @@ const ProfilePage = () => {
 
   const tabs = [
     { id: "personal", label: "Personal Info" },
-    { id: "bookings", label: "Bookings" },
     { id: "password", label: "Password" },
     { id: "preferences", label: "Preferences" },
   ];
@@ -553,9 +551,6 @@ const ProfilePage = () => {
             </form>
           </TabContent>
         );
-
-      case "bookings":
-        return <MyBookingsTab />;
 
       case "password":
         return (

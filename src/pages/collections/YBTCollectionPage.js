@@ -52,7 +52,7 @@ const VehicleGrid = styled.div`
   }
 `;
 
-const VehicleLinkCard = styled(motion.div)`
+const VehicleLinkCard = styled(motion(Link))`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
@@ -261,10 +261,6 @@ const YBTCollectionPage = () => {
                   <VehicleTitle>{type.title}</VehicleTitle>
                   <VehicleDescription>{type.description}</VehicleDescription>
                 </div>
-                <ExploreButton to={type.link}>
-                  Explore {type.title}
-                  <ArrowRight size={16} />
-                </ExploreButton>
               </VehicleContent>
             </VehicleLinkCard>
           ))}

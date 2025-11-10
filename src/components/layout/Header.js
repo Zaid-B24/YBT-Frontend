@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { X, ShoppingCart, Heart, User, LogOut } from "lucide-react";
+import { ShoppingCart, User, LogOut } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
-import { useCart } from "../../contexts/CartContext";
-import { useWishlist } from "../../contexts/WishlistContext";
 
 const HeaderWrapper = styled.header`
   position: fixed;
@@ -35,7 +33,7 @@ const Nav = styled.nav`
     padding: 1.25rem 2rem;
   }
 
-  @media (max-width: 968px) {
+  @media (max-width: 1024px) {
     display: flex;
     justify-content: space-between;
     padding: 1rem 2rem;
@@ -52,7 +50,7 @@ const LeftMenu = styled.ul`
   padding: 0;
   justify-self: start;
 
-  @media (max-width: 968px) {
+  @media (max-width: 1024px) {
     display: none;
   }
 `;
@@ -141,7 +139,7 @@ const Logo = styled(Link)`
     }
   }
 
-  @media (max-width: 968px) {
+  @media (max-width: 1024px) {
     position: static;
     grid-column: unset;
     justify-self: unset;
@@ -157,7 +155,7 @@ const RightMenuContainer = styled.div`
   align-items: center;
   gap: 1rem;
 
-  @media (max-width: 968px) {
+  @media (max-width: 1024px) {
     grid-column: unset;
     justify-self: unset;
   }
@@ -171,7 +169,7 @@ const RightMenu = styled.ul`
   margin: 0;
   padding: 0;
 
-  @media (max-width: 968px) {
+  @media (max-width: 1024px) {
     display: none;
   }
 `;
@@ -182,7 +180,7 @@ const UserActions = styled.div`
   gap: 0.25rem;
   margin-left: 1rem;
 
-  @media (max-width: 968px) {
+  @media (max-width: 1024px) {
     display: none;
   }
 `;
@@ -208,37 +206,6 @@ const ActionButton = styled.button`
 
   &:active {
     transform: translateY(0);
-  }
-`;
-
-const Badge = styled.span`
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: linear-gradient(135deg, #ff4444, #ff6b6b);
-  color: #fff;
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  font-size: 0.7rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  border: 2px solid #000;
-  box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
-  animation: ${(props) => (props.pulse ? "pulse 2s infinite" : "none")};
-
-  @keyframes pulse {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.1);
-    }
-    100% {
-      transform: scale(1);
-    }
   }
 `;
 
@@ -414,31 +381,31 @@ const MobileMenuButton = styled.button`
   cursor: pointer;
   margin-left: auto;
 
-  @media (max-width: 968px) {
+  @media (max-width: 1024px) {
     display: block;
   }
 `;
 
 const MobileMenu = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.98);
-  backdrop-filter: blur(20px);
+  position: absolute; /* dropdown below the header */
+  top: 100%; /* right below the header */
+  right: 1rem; /* align to right edge */
+  background: #000; /* solid black background */
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  padding: 0.5rem 0; /* space inside menu */
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 2rem;
+  gap: 0.25rem;
   z-index: 1001;
-  transform: ${(props) =>
-    props.isOpen ? "translateX(0)" : "translateX(100%)"};
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 200px; /* dropdown width */
+
+  transform: scaleY(${(props) => (props.isOpen ? 1 : 0)});
+  transform-origin: top;
+  transition: transform 0.25s ease, opacity 0.25s ease;
   opacity: ${(props) => (props.isOpen ? 1 : 0)};
 
-  @media (min-width: 969px) {
+  @media (min-width: 1025px) {
     display: none;
   }
 `;
@@ -446,68 +413,56 @@ const MobileMenu = styled.div`
 const MobileMenuActions = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  align-items: center;
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 0.25rem;
+  padding: 0.25rem 0;
+`;
+
+const MobileNavLink = styled(Link)`
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &.active {
+    background: rgba(255, 255, 255, 0.15);
+    font-weight: 600;
+  }
 `;
 
 const MobileActionButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-width: 200px;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  width: 100%;
   justify-content: center;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-  }
-`;
-
-const MobileNavLink = styled(Link)`
-  font-size: 1.2rem;
-  font-weight: 300;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #ffffff;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  text-align: center;
-  min-width: 200px;
-
-  &:hover {
-    opacity: 0.8;
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-2px);
-  }
-
-  &.active {
-    background: rgba(255, 255, 255, 0.1);
-    opacity: 1;
-  }
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  background: none;
+  background: rgba(255, 255, 255, 0.05);
   border: none;
-  color: #ffffff;
-  font-size: 1.5rem;
+  color: #fff;
   cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+`;
+
+const MobileGreeting = styled.div`
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 0 0.25rem 0.25rem 0.25rem; /* Aligns with link padding */
 `;
 
 const HamburgerIcon = styled.div`
@@ -551,36 +506,40 @@ const Header = () => {
   const location = useLocation();
 
   const { user, logout } = useAuth();
-  const { getCartItemsCount, toggleCart } = useCart();
-  const { wishlistItems } = useWishlist();
+  const mobileMenuRef = useRef(null);
+  const mobileMenuButtonRef = useRef(null);
 
   useEffect(() => {
-    let ticking = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 50);
-          ticking = false;
-        });
-        ticking = true;
+    const handleClickOutside = (event) => {
+      if (
+        mobileMenuOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target) &&
+        mobileMenuButtonRef.current &&
+        !mobileMenuButtonRef.current.contains(event.target) // <-- ignore button clicks
+      ) {
+        setMobileMenuOpen(false);
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [mobileMenuOpen]);
 
-  // Close user menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (userMenuOpen && !event.target.closest("[data-user-menu]")) {
+    const handleUserMenuClickOutside = (event) => {
+      // If user menu is open, and the click happened outside of it
+      if (
+        userMenuOpen &&
+        !event.target.closest("[data-user-menu]") // check that click didn't happen inside user menu
+      ) {
         setUserMenuOpen(false);
       }
     };
 
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    document.addEventListener("mousedown", handleUserMenuClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleUserMenuClickOutside);
   }, [userMenuOpen]);
 
   // Close mobile menu on route change
@@ -598,9 +557,9 @@ const Header = () => {
     { to: "/faq", label: "FAQ" },
     // { to: '/blog', label: 'Blog' },
     // { to: "/auctions", label: "Auctions" },
-    { to: "/rentals", label: "Rentals" },
+    //{ to: "/rentals", label: "Rentals" },
     { to: "/about", label: "About Us" },
-    { to: "/contact", label: "Contact Us" },
+    // { to: "/contact", label: "Contact Us" },
   ];
 
   return (
@@ -636,27 +595,14 @@ const Header = () => {
           </RightMenu>
 
           <UserActions>
-            {/* <ActionButton onClick={toggleCart} title="Shopping Cart">
-              <ShoppingCart size={20} />
-              {getCartItemsCount() > 0 && (
-                <Badge pulse={getCartItemsCount() > 0}>
-                  {getCartItemsCount() > 99 ? "99+" : getCartItemsCount()}
-                </Badge>
-              )}
-            </ActionButton>
-
-            <ActionButton as={Link} to="/wishlist" title="Wishlist">
-              <Heart size={20} />
-              {wishlistItems.length > 0 && (
-                <Badge>
-                  {wishlistItems.length > 99 ? "99+" : wishlistItems.length}
-                </Badge>
-              )}
-            </ActionButton> */}
-
             {user ? (
               <UserMenu data-user-menu>
-                <UserButton onClick={() => setUserMenuOpen(!userMenuOpen)}>
+                <UserButton
+                  onClick={() => {
+                    setUserMenuOpen((prev) => !prev);
+                    setMobileMenuOpen(false);
+                  }}
+                >
                   <User size={20} />
                   <GreetingText>
                     <span>Hii</span>
@@ -666,11 +612,11 @@ const Header = () => {
                 <UserDropdown isOpen={userMenuOpen}>
                   <DropdownItem to="/profile">
                     <User size={16} />
-                    Profile
+                    Account
                   </DropdownItem>
-                  <DropdownItem to="/orders">
+                  <DropdownItem to="/my-bookings">
                     <ShoppingCart size={16} />
-                    Orders
+                    Bookings
                   </DropdownItem>
                   <DropdownButton onClick={logout}>
                     <LogOut size={16} />
@@ -686,7 +632,10 @@ const Header = () => {
           </UserActions>
         </RightMenuContainer>
 
-        <MobileMenuButton onClick={() => setMobileMenuOpen(true)}>
+        <MobileMenuButton
+          ref={mobileMenuButtonRef}
+          onClick={() => setMobileMenuOpen((prev) => !prev)}
+        >
           <HamburgerIcon>
             <span></span>
             <span></span>
@@ -695,10 +644,28 @@ const Header = () => {
         </MobileMenuButton>
       </Nav>
 
-      <MobileMenu isOpen={mobileMenuOpen}>
-        <CloseButton onClick={() => setMobileMenuOpen(false)}>
-          <X size={24} />
-        </CloseButton>
+      <MobileMenu ref={mobileMenuRef} isOpen={mobileMenuOpen}>
+        {user ? (
+          <>
+            <MobileGreeting>HII {user.name.toUpperCase()}</MobileGreeting>
+            <MobileNavLink
+              to="/profile"
+              onClick={() => setMobileMenuOpen(false)}
+              className={location.pathname === "/profile" ? "active" : ""}
+            >
+              Account
+            </MobileNavLink>
+            <MobileNavLink
+              to="/my-bookings"
+              onClick={() => setMobileMenuOpen(false)}
+              className={location.pathname === "/my-bookings" ? "active" : ""}
+            >
+              Bookings
+            </MobileNavLink>
+          </>
+        ) : (
+          <MobileGreeting>PLEASE LOG IN..🥺</MobileGreeting>
+        )}
         {[...leftNavItems, ...rightNavItems].map((item) => (
           <MobileNavLink
             key={item.to}
@@ -711,25 +678,6 @@ const Header = () => {
         ))}
 
         <MobileMenuActions>
-          <MobileActionButton
-            onClick={() => {
-              toggleCart();
-              setMobileMenuOpen(false);
-            }}
-          >
-            <ShoppingCart size={20} />
-            Cart ({getCartItemsCount()})
-          </MobileActionButton>
-
-          <MobileActionButton
-            as={Link}
-            to="/wishlist"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <Heart size={20} />
-            Wishlist ({wishlistItems.length})
-          </MobileActionButton>
-
           {user ? (
             <MobileActionButton
               onClick={() => {
@@ -743,7 +691,7 @@ const Header = () => {
           ) : (
             <MobileActionButton
               as={Link}
-              to="/login"
+              to="/auth"
               onClick={() => setMobileMenuOpen(false)}
             >
               <User size={20} />

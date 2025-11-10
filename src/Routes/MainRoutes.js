@@ -6,6 +6,7 @@ import MainLayout from "../components/layout/MainLayout";
 import * as Pages from "../pages";
 import ContactSection from "../components/common/ContactSection";
 import BookingConfirmationPage from "../pages/events/BookingConfirmationPage";
+import BookingsPage from "../pages/user/MyBookingsPage";
 
 const Homepage = lazy(() => import("../pages/Homepage"));
 const AboutPage = lazy(() => import("../pages/AboutPage"));
@@ -67,7 +68,10 @@ const MainRoutes = (
       {/* Events Routes */}
       <Route path="events" element={<Pages.EventsPage />} />
       <Route path="events/:slug" element={<Pages.EventDetailsPage />} />
-      <Route path="/booking/success/:bookingId" element={<Pages.BookingSuccessPage />} />
+      <Route
+        path="/booking/success/:bookingId"
+        element={<Pages.BookingSuccessPage />}
+      />
       <Route path="/booking/failure" element={<Pages.BookingFailurePage />} />
 
       {/* Merchandise Routes */}
@@ -83,6 +87,7 @@ const MainRoutes = (
       <Route path="faq" element={<Pages.FAQPage />} />
       <Route path="privacy" element={<Pages.PrivacyPage />} />
       <Route path="imprint" element={<Pages.ImprintPage />} />
+      <Route path="/my-bookings" element={<BookingsPage />} />
     </Route>
 
     {/* Standalone routes without the MainLayout (e.g., booking process) */}
