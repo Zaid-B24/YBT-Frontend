@@ -9,7 +9,7 @@ import {
   FaBuilding,
   FaCheckCircle,
 } from "react-icons/fa";
-import VehicleBookingForm from "../components/forms/BookingForm";
+//import VehicleBookingForm from "../components/forms/BookingForm";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
@@ -17,7 +17,7 @@ const CarReservePage = () => {
   const [selectedOptionId, setSelectedOptionId] = useState(1);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
   const [overlayContent, setOverlayContent] = useState({});
-  const [showForm, setShowForm] = useState(false);
+  //const [showForm, setShowForm] = useState(false);
 
   const { vehicleId, category } = useParams();
 
@@ -52,38 +52,38 @@ const CarReservePage = () => {
     },
   });
 
-  const bookingMutation = useMutation({
-    mutationFn: async (formData) => {
-      const response = await fetch(`${API_BASE_URL}/bookings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to submit booking.");
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      alert("Booking submitted successfully! 🎉");
-      setIsOverlayVisible(false);
-      setShowForm(false);
-    },
-    onError: (error) => {
-      alert(error.message);
-    },
-  });
+  // const bookingMutation = useMutation({
+  //   mutationFn: async (formData) => {
+  //     const response = await fetch(`${API_BASE_URL}/bookings`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(formData),
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("Failed to submit booking.");
+  //     }
+  //     return response.json();
+  //   },
+  //   onSuccess: () => {
+  //     alert("Booking submitted successfully! 🎉");
+  //     setIsOverlayVisible(false);
+  //     setShowForm(false);
+  //   },
+  //   onError: (error) => {
+  //     alert(error.message);
+  //   },
+  // });
 
-  const handleFormSubmit = (formData) => {
-    const selectedOption = reservationOptions.find(
-      (opt) => opt.id === selectedOptionId
-    );
-    bookingMutation.mutate({
-      ...formData,
-      reservationType: selectedOption.id,
-      vehicleId: vehicleId,
-    });
-  };
+  // const handleFormSubmit = (formData) => {
+  //   const selectedOption = reservationOptions.find(
+  //     (opt) => opt.id === selectedOptionId
+  //   );
+  //   bookingMutation.mutate({
+  //     ...formData,
+  //     reservationType: selectedOption.id,
+  //     vehicleId: vehicleId,
+  //   });
+  // };
 
   if (!vehicleId) {
     return (
@@ -161,21 +161,36 @@ const CarReservePage = () => {
     setIsOverlayVisible(true);
   };
 
+  // const handleOkClick = () => {
+  //   const selectedOption = reservationOptions.find(
+  //     (opt) => opt.id === selectedOptionId
+  //   );
+  //   setOverlayContent(selectedOption.formIntro);
+  //   setShowForm(true);
+  // };
   const handleOkClick = () => {
-    const selectedOption = reservationOptions.find(
-      (opt) => opt.id === selectedOptionId
-    );
-    setOverlayContent(selectedOption.formIntro);
-    setShowForm(true);
+    setIsOverlayVisible(false);
   };
 
   const handleReserveClick = () => {
+    const yourWhatsAppNumber = "919619007705";
+    const carName = `${carDetails.brand} ${carDetails.title}`;
     const selectedOption = reservationOptions.find(
       (opt) => opt.id === selectedOptionId
     );
-    setOverlayContent(selectedOption.info);
-    setIsOverlayVisible(true);
-    setShowForm(false);
+    const optionText = selectedOption.text;
+    const optionPrice = selectedOption.price;
+
+    const message = `Hello, I'm interested in reserving the ${carName} (${carDetails.registrationYear}).
+    
+My chosen plan is: ${optionText} (${optionPrice}).
+    
+Please contact me to proceed.`;
+
+    const encodedMessage = encodeURIComponent(message);
+
+    const whatsappURL = `https://wa.me/${yourWhatsAppNumber}?text=${encodedMessage}`;
+    window.open(whatsappURL, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -331,36 +346,17 @@ const CarReservePage = () => {
         <Overlay
           onClick={() => {
             setIsOverlayVisible(false);
-            setShowForm(false);
+            //setShowForm(false);
           }}
         >
           <OverlayContent onClick={(e) => e.stopPropagation()}>
-            {!showForm ? (
-              <>
-                <OverlayTitle>{overlayContent.title}</OverlayTitle>
-                <OverlayDescription>
-                  {overlayContent.description}
-                </OverlayDescription>
-                <OverlayButton onClick={handleOkClick}>
-                  Ok, Got It
-                </OverlayButton>
-              </>
-            ) : (
-              <>
-                {/* Now, `overlayContent` holds the formIntro data */}
-                <OverlayTitle>{overlayContent.title}</OverlayTitle>
-                <OverlayDescription>
-                  {overlayContent.description}
-                </OverlayDescription>
-                <VehicleBookingForm
-                  onClose={() => {
-                    setIsOverlayVisible(false);
-                    setShowForm(false);
-                  }}
-                  onSubmit={handleFormSubmit}
-                />
-              </>
-            )}
+            <>
+              <OverlayTitle>{overlayContent.title}</OverlayTitle>
+              <OverlayDescription>
+                {overlayContent.description}
+              </OverlayDescription>
+              <OverlayButton onClick={handleOkClick}>Ok, Got It</OverlayButton>
+            </>
           </OverlayContent>
         </Overlay>
       )}
@@ -962,6 +958,33 @@ const OverlayButton = styled.button`
 `;
 
 /* --- UNUSED CODE --- */
+
+// {!showForm ? (
+//               <>
+//                 <OverlayTitle>{overlayContent.title}</OverlayTitle>
+//                 <OverlayDescription>
+//                   {overlayContent.description}
+//                 </OverlayDescription>
+//                 <OverlayButton onClick={handleOkClick}>
+//                   Ok, Got It
+//                 </OverlayButton>
+//               </>
+//             ) : (
+//               <>
+//                 {/* Now, `overlayContent` holds the formIntro data */}
+//                 <OverlayTitle>{overlayContent.title}</OverlayTitle>
+//                 <OverlayDescription>
+//                   {overlayContent.description}
+//                 </OverlayDescription>
+//                 <VehicleBookingForm
+//                   onClose={() => {
+//                     setIsOverlayVisible(false);
+//                     setShowForm(false);
+//                   }}
+//                   onSubmit={handleFormSubmit}
+//                 />
+//               </>
+//             )}
 
 /**
  * The following code blocks and components are commented out because they represent an
