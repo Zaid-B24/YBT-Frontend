@@ -22,7 +22,7 @@ const AuthContainer = styled(motion.div)`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  padding: 3rem;
+  padding: 1.5rem;
   width: 100%;
   max-width: 400px;
   backdrop-filter: blur(10px);
@@ -38,9 +38,17 @@ const Title = styled.h1`
 `;
 
 const Subtitle = styled.p`
+  font-family: "Courier New", monospace;
   text-align: center;
   color: #ccc;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-line;
+  line-height: 1.5;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 const Form = styled.form`
@@ -113,7 +121,6 @@ const SubmitButton = styled(motion.button)`
 const ErrorMessage = styled.p`
   color: #ff6b6b;
   text-align: center;
-  margin-top: 1rem;
   font-size: 0.9rem;
   min-height: 1.2rem;
 `;
@@ -180,12 +187,6 @@ const AuthPage = () => {
     }
   };
 
-  const formAnimation = {
-    hidden: { opacity: 0, x: isLoginView ? -20 : 20 },
-    visible: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: isLoginView ? 20 : -20 },
-  };
-
   return (
     <PageWrapper>
       <AuthContainer
@@ -195,23 +196,32 @@ const AuthPage = () => {
       >
         <Title>{isLoginView ? "Welcome Back" : "Create Account"}</Title>
         <Subtitle>
-          {isLoginView
-            ? "Sign in to access your account"
-            : "Join the YOUNG BOY TOYZ community"}
+          {isLoginView ? (
+            "Sign in to access your account"
+          ) : (
+            <>
+              Join the YOUNG BOY TOYZ community
+              <br />
+              <span style={{ fontSize: "0.9rem", color: "#bbb" }}>
+                Signup & Register as an IDM member (Indian Domestic Market
+                Culture association)
+              </span>
+            </>
+          )}
         </Subtitle>
 
         <Form onSubmit={handleSubmit(onSubmit)}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={isLoginView ? "login" : "signup"}
-              variants={formAnimation}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-            >
-              {!isLoginView && (
-                <InputGroup style={{ marginBottom: "1.5rem" }}>
+          <AnimatePresence>
+            {!isLoginView && (
+              <motion.div
+                key="name-input"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ overflow: "hidden" }} // Keeps content from spilling during animation
+              >
+                <InputGroup>
                   <InputIcon>
                     <User size={20} />
                   </InputIcon>
@@ -221,8 +231,8 @@ const AuthPage = () => {
                     {...register("name", { required: !isLoginView })}
                   />
                 </InputGroup>
-              )}
-            </motion.div>
+              </motion.div>
+            )}
           </AnimatePresence>
 
           <InputGroup>
@@ -256,18 +266,31 @@ const AuthPage = () => {
             </PasswordToggle>
           </InputGroup>
 
-          {!isLoginView && (
-            <InputGroup>
-              <InputIcon>
-                <Lock size={20} />
-              </InputIcon>
-              <Input
-                type={showPassword ? "text" : "password"}
-                placeholder="Confirm password"
-                {...register("confirmPassword", { required: !isLoginView })}
-              />
-            </InputGroup>
-          )}
+          <AnimatePresence>
+            {!isLoginView && (
+              <motion.div
+                key="confirm-password-input"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ overflow: "hidden" }} // Keeps content from spilling during animation
+              >
+                <InputGroup>
+                  <InputIcon>
+                    <Lock size={20} />
+                  </InputIcon>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Confirm password"
+                    {...register("confirmPassword", {
+                      required: !isLoginView,
+                    })}
+                  />
+                </InputGroup>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <ErrorMessage>{error}</ErrorMessage>
 

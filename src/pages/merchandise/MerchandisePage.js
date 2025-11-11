@@ -372,7 +372,7 @@ const MerchandisePage = () => {
   return (
     <PageWrapper>
       <p style={{ fontSize: "1.5rem", color: "#666" }}>
-        Oops, we're cooking something! 🍳 Please wait...
+        Oops we are cooking something! We'll get back soon 😉
       </p>
       {/* <HeroSection>
         <HeroTitle>Merchandise</HeroTitle>

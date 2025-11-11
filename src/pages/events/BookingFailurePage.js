@@ -6,7 +6,6 @@ import styled from "styled-components";
 // import { PageWrapper } from "./styles/CommonStyles";
 // import { PrimaryButton, SecondaryLink } from "./styles/ButtonStyles";
 
-
 const PageWrapper = styled.div`
   max-width: 1000px; /* Wider to accommodate two columns */
   margin: 2rem auto;
@@ -84,7 +83,7 @@ const BookingFailurePage = () => {
   const reason = searchParams.get("reason");
   const orderId = searchParams.get("order_id"); // This is the razorpay order_id
 
-  let message = "Your booking could not be completed.";
+  let message = "Your order could not be completed.";
   if (reason === "modal_dismissed") {
     message = "You cancelled the payment.";
   } else if (reason === "verification_failed") {
@@ -104,23 +103,24 @@ const BookingFailurePage = () => {
 
   return (
     <PageWrapper>
-    <div style={FailureContainer}>
-      <XCircle size={80} color="#dc3545" />
-      <h1 style={FailureTitle}>Payment Failed</h1>
-      <p style={FailureText}>{message}</p>
-      {orderId && <p style={OrderId}>Order ID: {orderId}</p>}
-      <p style={FailureText}>
-        Your payment was not successful, and your tickets have not been booked.
-      </p>
+      <div style={FailureContainer}>
+        <XCircle size={80} color="#dc3545" />
+        <h1 style={FailureTitle}>Payment Failed</h1>
+        <p style={FailureText}>{message}</p>
+        {orderId && <p style={OrderId}>Order ID: {orderId}</p>}
+        <p style={FailureText}>
+          Your payment was not successful, and your tickets have not been
+          booked.
+        </p>
 
-      <div style={ButtonContainer}>
-        {/* The "to" is a fallback, onClick is better here */}
-        <Button to="#" onClick={handleTryAgain} primary>
-          Try Again
-        </Button>
-        <Button to="/events">Back to Events</Button>
+        <div style={ButtonContainer}>
+          {/* The "to" is a fallback, onClick is better here */}
+          <Button to="#" onClick={handleTryAgain} primary>
+            Try Again
+          </Button>
+          <Button to="/events">Back to Events</Button>
+        </div>
       </div>
-    </div>
     </PageWrapper>
   );
 };

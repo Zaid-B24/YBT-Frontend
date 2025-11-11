@@ -28,6 +28,8 @@ export { default as YBTCollectionPage } from "./collections/YBTCollectionPage";
 export { default as TorqueTunerEditionPage } from "./collections/TorqueTunerEditionPage";
 export { default as YBTCarsPage } from "./collections/YBTCarsPage";
 export { default as YBTBikesPage } from "./collections/YBTBikesPage";
+export { default as YBTCaravansPage } from "./collections/YBTCaravansPage";
+export { default as YBTJetsPage } from "./collections/YBTJetsPage";
 
 // Rentals Pages
 export { default as RentalsPage } from "./rentals/RentalsPage";
@@ -43,8 +45,8 @@ export { default as AuctionLivePage } from "./auctions/AuctionLivePage";
 // Events Pages
 export { default as EventsPage } from "./events/EventsPage";
 export { default as EventDetailsPage } from "./events/EventDetailsPage";
-export {default as BookingSuccessPage} from "./events/BookingSuccessPage";
-export {default as BookingFailurePage} from "./events/BookingFailurePage";
+export { default as BookingSuccessPage } from "./events/BookingSuccessPage";
+export { default as BookingFailurePage } from "./events/BookingFailurePage";
 
 // Merchandise Pages
 export { default as MerchandisePage } from "./merchandise/MerchandisePage";

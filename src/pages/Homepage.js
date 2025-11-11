@@ -715,7 +715,7 @@ const Homepage = () => {
       </CarsForSaleSection>
 
       {/* Split Sections */}
-      <SplitSection>
+      {/* <SplitSection>
         <SplitPanel image="https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80">
           <SplitContent>
             <SplitTitle>ALL CARS</SplitTitle>
@@ -738,7 +738,7 @@ const Homepage = () => {
             </SplitButton>
           </SplitContent>
         </SplitPanel>
-      </SplitSection>
+      </SplitSection> */}
 
       {/* Mission Statement */}
       <MissionSection>
@@ -759,7 +759,6 @@ const Homepage = () => {
 
       {/* Join YOUNG BOY TOYZ */}
       <JoinSection>
-        <JoinTitle>JOIN YOUNG BOY TOYZ</JoinTitle>
         <JoinSubtitle>Get in touch to make your dream car true.</JoinSubtitle>
         <ContactButton to="/contact">CONTACT US</ContactButton>
       </JoinSection>

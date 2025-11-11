@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { User, Mail, Phone, MapPin, Lock, Bell, Shield } from "lucide-react";
+import MyBookingsTab from "./MyBookingsTab";
+import { useLocation } from "react-router-dom";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -13,7 +15,7 @@ const PageWrapper = styled.div`
 const ProfileContainer = styled.div`
   max-width: 1000px;
   margin: 0 auto;
-  padding: 4rem 2rem;
+  padding: 4rem 1rem;
 `;
 
 const ProfileHeader = styled.div`
@@ -87,12 +89,12 @@ const Tab = styled.button`
 const TabContent = styled.div`
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 2rem;
+  padding: 1.5rem;
 `;
 
 const FormGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: 1.5rem;
 `;
 
@@ -165,6 +167,19 @@ const SaveButton = styled.button`
   transition: all 0.3s ease;
   margin-top: 1rem;
 
+  /* --- ADD THIS FIX --- */
+  /* By default (on mobile), make it full-width */
+  display: block;
+  width: 100%;
+  text-align: center;
+
+  /* On larger screens, let it shrink to fit its content */
+  @media (min-width: 768px) {
+    display: inline-block; /* Or 'block' if it's on its own line */
+    width: auto;
+  }
+  /* --- END FIX --- */
+
   &:hover {
     background: #f0f0f0;
   }
@@ -181,7 +196,8 @@ const SettingsGroup = styled.div`
   justify-content: space-between;
   padding: 1rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-
+  flex-wrap: wrap;
+  gap: 1rem;
   &:last-child {
     border-bottom: none;
   }
@@ -191,6 +207,8 @@ const SettingsLabel = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
 `;
 
 const SettingsTitle = styled.div`
@@ -198,11 +216,17 @@ const SettingsTitle = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
+  /* --- ADD THIS LINE --- */
+  overflow-wrap: break-word;
 `;
 
 const SettingsDescription = styled.div`
   font-size: 0.8rem;
   color: #ccc;
+
+  /* --- ADD THIS LINE --- */
+  overflow-wrap: break-word;
 `;
 
 const Toggle = styled.input`
@@ -213,6 +237,7 @@ const Toggle = styled.input`
   border-radius: 12px;
   position: relative;
   cursor: pointer;
+  flex-shrink: 0;
   transition: background 0.3s ease;
 
   &:checked {
@@ -237,9 +262,23 @@ const Toggle = styled.input`
   }
 `;
 
+const tabs = [
+  { id: "personal", label: "Personal Info" },
+  { id: "orders", label: "Orders" },
+  { id: "password", label: "Password" },
+  { id: "preferences", label: "Preferences" },
+];
+
 const ProfilePage = () => {
   const { user, updateUserProfile, updatePassword } = useAuth();
-  const [activeTab, setActiveTab] = useState("personal");
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(() => {
+    const hashTab = location.hash.substring(1);
+    if (tabs.some((tab) => tab.id === hashTab)) {
+      return hashTab;
+    }
+    return "personal";
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   const [personalInfo, setPersonalInfo] = useState({
@@ -280,6 +319,13 @@ const ProfilePage = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    const hashTab = location.hash.substring(1);
+    if (tabs.some((tab) => tab.id === hashTab)) {
+      setActiveTab(hashTab);
+    }
+  }, [location.hash]);
+
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -294,12 +340,6 @@ const ProfilePage = () => {
     securityAlerts: true,
     twoFactorAuth: false,
   });
-
-  const tabs = [
-    { id: "personal", label: "Personal Info" },
-    { id: "password", label: "Password" },
-    { id: "preferences", label: "Preferences" },
-  ];
 
   const handlePersonalInfoChange = (e) => {
     setPersonalInfo((prev) => ({
@@ -544,13 +584,15 @@ const ProfilePage = () => {
                   </FormSelect>
                 </FormGroup>
               </FormGrid>
-
               <SaveButton type="submit" disabled={isLoading}>
                 {isLoading ? "Saving..." : "Save Changes"}
               </SaveButton>
             </form>
           </TabContent>
         );
+
+      case "orders":
+        return <MyBookingsTab />;
 
       case "password":
         return (
@@ -731,9 +773,6 @@ const ProfilePage = () => {
       <ProfileContainer>
         <ProfileHeader>
           <ProfileTitle>My Profile</ProfileTitle>
-          <ProfileSubtitle>
-            Manage your account settings and preferences
-          </ProfileSubtitle>
         </ProfileHeader>
 
         <TabsContainer>

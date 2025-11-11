@@ -391,7 +391,7 @@ const BookingSummaryPage = () => {
         amount: razorpayOrder.amount,
         currency: "INR",
         name: "Young Boy Toyz",
-        description: `Booking for ${event.title}`,
+        description: `Order for ${event.title}`,
         order_id: razorpayOrder.id, // This is the ID from your backend
 
         // --- REPLACE your 'handler' with this ---
@@ -573,7 +573,7 @@ const BookingSummaryPage = () => {
 
           {/* You can add a real booking fee later */}
           <CalculationRow>
-            <span>Booking Fee</span>
+            <span>Order Fee</span>
             <span>₹123.63</span>
           </CalculationRow>
 

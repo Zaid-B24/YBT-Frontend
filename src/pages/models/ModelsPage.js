@@ -666,7 +666,7 @@ const ModelsPage = () => {
           {!isLoading && items.length === 0 ? (
             <div style={{ textAlign: "center", padding: "4rem 0" }}>
               <p style={{ fontSize: "1.5rem", color: "#666" }}>
-                Oops, we're cooking something! 🍳 Please wait...
+                Oops we are cooking something! We'll get back soon 😉
               </p>
               <p style={{ fontSize: "1rem", color: "#999", marginTop: "1rem" }}>
                 No {activeCategory} available at the moment.

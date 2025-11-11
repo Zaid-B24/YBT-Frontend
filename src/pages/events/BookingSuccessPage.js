@@ -81,23 +81,23 @@ const BookingSuccessPage = () => {
 
   return (
     <PageWrapper>
-    <div style={SuccessContainer}>
-      <CheckCircle size={80} color="#28a745" />
-      <h1 style={SuccessTitle}>Booking Confirmed!</h1>
-      <p style={SuccessText}>Your tickets are booked and confirmed.</p>
-      <p style={SuccessText}>A confirmation email has been sent to you.</p>
+      <div style={SuccessContainer}>
+        <CheckCircle size={80} color="#28a745" />
+        <h1 style={SuccessTitle}>Order Confirmed!</h1>
+        <p style={SuccessText}>Your tickets are booked and confirmed.</p>
+        <p style={SuccessText}>A confirmation email has been sent to you.</p>
 
-      <div style={BookingId}>
-        Your Booking ID is: <strong>{bookingId}</strong>
-      </div>
+        <div style={BookingId}>
+          Your Order ID is: <strong>{bookingId}</strong>
+        </div>
 
-      <div style={ButtonContainer}>
-        <Button to="/my-bookings" primary>
-          View My Bookings
-        </Button>
-        <Button to="/events">Browse More Events</Button>
+        <div style={ButtonContainer}>
+          <Button to="/profile#orders" primary>
+            View My Bookings
+          </Button>
+          <Button to="/events">Browse More Events</Button>
+        </div>
       </div>
-    </div>
     </PageWrapper>
   );
 };

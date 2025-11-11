@@ -7,6 +7,8 @@ import * as Pages from "../pages";
 import ContactSection from "../components/common/ContactSection";
 import BookingConfirmationPage from "../pages/events/BookingConfirmationPage";
 import BookingsPage from "../pages/user/MyBookingsPage";
+import YBTCaravansPage from "../pages/collections/YBTCaravansPage";
+import YBTJetsPage from "../pages/collections/YBTJetsPage";
 
 const Homepage = lazy(() => import("../pages/Homepage"));
 const AboutPage = lazy(() => import("../pages/AboutPage"));
@@ -33,6 +35,12 @@ const MainRoutes = (
       <Route path="collections/ybt" element={<Pages.YBTCollectionPage />} />
       <Route path="collections/ybt-cars" element={<Pages.YBTCarsPage />} />
       <Route path="collections/ybt-bikes" element={<Pages.YBTBikesPage />} />
+      <Route
+        path="collections/ybt-caravans"
+        element={<Pages.YBTCaravansPage />}
+      />
+      <Route path="collections/ybt-jets" element={<Pages.YBTJetsPage />} />
+      {/* <YBTCaravansPage></YBTCaravansPage> */}
       <Route
         path="collections/designer"
         element={<Pages.DesignerCollectionPage />}

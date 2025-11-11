@@ -83,11 +83,11 @@ const BookingConfirmationPage = () => {
           {isSuccess ? <CheckCircle size={48} /> : <XCircle size={48} />}
         </IconWrapper>
 
-        <Title>{isSuccess ? "Booking Confirmed!" : "Payment Failed"}</Title>
+        <Title>{isSuccess ? "Order Confirmed!" : "Payment Failed"}</Title>
 
         <Message>
           {isSuccess
-            ? "Your booking is complete. You will be able to see your tickets in your profile."
+            ? "Your Order is complete. You will be able to see your tickets in your profile."
             : "Unfortunately, your payment could not be processed."}
         </Message>
 

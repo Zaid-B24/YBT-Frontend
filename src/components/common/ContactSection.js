@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { Send, Mail, Phone, MapPin } from 'lucide-react';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import { Send, Mail, Phone, MapPin } from "lucide-react";
 
 const Section = styled.section`
   padding: 6rem 2rem;
@@ -19,7 +19,7 @@ const Header = styled.div`
 `;
 
 const Title = styled.h2`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 3rem;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -189,9 +189,19 @@ const ContactDetail = styled.p`
   color: #cccccc;
   line-height: 1.6;
 `;
+const AddressLink = styled.a`
+  color: #cccccc;
+  text-decoration: none;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+`;
 
 const InfoTitle = styled.h3`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 2rem;
   font-weight: 600;
   color: #ffffff;
@@ -216,11 +226,11 @@ const SuccessMessage = styled(motion.div)`
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -228,26 +238,26 @@ const ContactSection = () => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate form submission
     setTimeout(() => {
       setIsSubmitting(false);
       setShowSuccess(true);
       setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
       });
-      
+
       setTimeout(() => setShowSuccess(false), 5000);
     }, 1000);
   };
@@ -258,8 +268,8 @@ const ContactSection = () => {
         <Header>
           <Title>Join YOUNG BOY TOYZ</Title>
           <Subtitle>
-            Get in touch with us to discuss your luxury automotive project. 
-            Our team of experts is ready to transform your vision into reality.
+            Get in touch with us to discuss your luxury automotive project. Our
+            team of experts is ready to transform your vision into reality.
           </Subtitle>
         </Header>
 
@@ -346,7 +356,7 @@ const ContactSection = () => {
                 whileTap={{ scale: 0.98 }}
               >
                 {isSubmitting ? (
-                  'Sending...'
+                  "Sending..."
                 ) : (
                   <>
                     Send Message
@@ -360,9 +370,9 @@ const ContactSection = () => {
           <ContactInfo>
             <InfoTitle>Get in Touch</InfoTitle>
             <Description>
-              Ready to transform your vehicle into a masterpiece? Contact our team 
-              of experts who will guide you through every step of your luxury 
-              automotive journey.
+              Ready to transform your vehicle into a masterpiece? Contact our
+              team of experts who will guide you through every step of your
+              luxury automotive journey.
             </Description>
 
             <ContactCard
@@ -377,7 +387,7 @@ const ContactSection = () => {
                 </ContactIcon>
                 <ContactText>
                   <ContactTitle>Email</ContactTitle>
-                  <ContactDetail>info@youngboytoyz.com</ContactDetail>
+                  <ContactDetail>Nidhisingh@youngboyztoyz.com</ContactDetail>
                 </ContactText>
               </ContactItem>
 
@@ -387,7 +397,7 @@ const ContactSection = () => {
                 </ContactIcon>
                 <ContactText>
                   <ContactTitle>Phone</ContactTitle>
-                  <ContactDetail>+49 (0) 8784 / 24-0</ContactDetail>
+                  <ContactDetail>+91 9619007705</ContactDetail>
                 </ContactText>
               </ContactItem>
 
@@ -397,10 +407,16 @@ const ContactSection = () => {
                 </ContactIcon>
                 <ContactText>
                   <ContactTitle>Address</ContactTitle>
-                                      <ContactDetail>
-                      Los Angeles, California<br />
-                      Premium Automotive Excellence
-                    </ContactDetail>
+                  <ContactDetail>
+                    <AddressLink
+                      href="https://www.google.com/maps?q=Plot+no+C-433,+T.T.C,+M.I.D.C,+near+Indira+Nagar,+opp.+BASF,+Turbhe,+Navi+Mumbai,+Maharashtra+400705"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Plot no C-433, T.T.C, M.I.D.C, near Indira Nagar, opp.
+                      BASF, Turbhe, Navi Mumbai, Maharashtra 400705
+                    </AddressLink>
+                  </ContactDetail>
                 </ContactText>
               </ContactItem>
             </ContactCard>
@@ -411,4 +427,4 @@ const ContactSection = () => {
   );
 };
 
-export default ContactSection; 
+export default ContactSection;

@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { Car, Bike, ArrowRight } from "lucide-react";
+import { Car, Bike, ArrowRight, Bus, Plane } from "lucide-react";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -212,6 +212,26 @@ const YBTCollectionPage = () => {
         "https://images.unsplash.com/photo-1607091083645-31f4e28dc9af?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       icon: <Bike size={32} />,
       link: "/collections/ybt-bikes",
+    },
+    {
+      id: "caravans",
+      title: "Caravan",
+      description:
+        "Discover our premium Caravan collection with custom modifications, performance enhancements, and unique design elements.",
+      image:
+        "https://images.unsplash.com/photo-1513311068348-19c8fbdc0bb6?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470",
+      icon: <Bus size={32} />,
+      link: "/collections/ybt-caravans",
+    },
+    {
+      id: "jets",
+      title: "Jets",
+      description:
+        "Discover our premium Jet collection with custom modifications, performance enhancements, and unique design elements.",
+      image:
+        "https://images.unsplash.com/photo-1474302770737-173ee21bab63?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1508",
+      icon: <Plane size={32} />,
+      link: "/collections/ybt-jets",
     },
   ];
 

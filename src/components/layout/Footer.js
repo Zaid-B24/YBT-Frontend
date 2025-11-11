@@ -209,8 +209,6 @@ const Footer = () => {
 
     { to: "/auctions", label: "Auctions" },
     { to: "/rims", label: "Rims" },
-    { to: "/cars", label: "Cars for sale" },
-    { to: "/atelier", label: "Atelier" },
     { to: "/contact", label: "Contact Us" },
     // { to: "/boutique", label: "Boutique" },
   ];
@@ -218,19 +216,16 @@ const Footer = () => {
   const companyLinks = [
     // { to: "/armoring", label: "Armoring" },
     { to: "/dealers", label: "Dealers" },
-    { to: "/company", label: "Company" },
-    { to: "/careers", label: "Careers" },
     // { to: "/press", label: "Press room" },
     { to: "/blog", label: "Blog" },
-    { to: "/contact", label: "Contact" },
   ];
 
-  const servicesLinks = [
-    { to: "/luxury-aviation", label: "Luxury aviation" },
-    { to: "/marine", label: "Marine" },
-    { to: "/past-models", label: "Past models" },
-    { to: "/residences", label: "Residences" },
-  ];
+  // const servicesLinks = [
+  //   { to: "/luxury-aviation", label: "Luxury aviation" },
+  //   { to: "/marine", label: "Marine" },
+  //   { to: "/past-models", label: "Past models" },
+  //   { to: "/residences", label: "Residences" },
+  // ];
 
   return (
     <FooterWrapper>
@@ -272,7 +267,7 @@ const Footer = () => {
             </FooterLinks>
           </FooterColumn>
 
-          <FooterColumn>
+          {/* <FooterColumn>
             <FooterLinks>
               {servicesLinks.map((link) => (
                 <FooterLink key={link.to}>
@@ -280,7 +275,7 @@ const Footer = () => {
                 </FooterLink>
               ))}
             </FooterLinks>
-          </FooterColumn>
+          </FooterColumn> */}
         </TopSection>
 
         <BottomSection>

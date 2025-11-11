@@ -549,7 +549,7 @@ const Header = () => {
 
   const leftNavItems = [
     { to: "/collections", label: "Collections" },
-    { to: "/events", label: "Events" },
+    { to: "/events", label: "Tickets" },
     { to: "/merchandise", label: "Merchandise" },
   ];
 
@@ -559,7 +559,7 @@ const Header = () => {
     // { to: "/auctions", label: "Auctions" },
     //{ to: "/rentals", label: "Rentals" },
     { to: "/about", label: "About Us" },
-    // { to: "/contact", label: "Contact Us" },
+    //{ to: "/contact", label: "Contact Us" },
   ];
 
   return (
@@ -614,9 +614,9 @@ const Header = () => {
                     <User size={16} />
                     Account
                   </DropdownItem>
-                  <DropdownItem to="/my-bookings">
+                  <DropdownItem to="/profile#orders">
                     <ShoppingCart size={16} />
-                    Bookings
+                    Orders
                   </DropdownItem>
                   <DropdownButton onClick={logout}>
                     <LogOut size={16} />
@@ -655,13 +655,13 @@ const Header = () => {
             >
               Account
             </MobileNavLink>
-            <MobileNavLink
+            {/* <MobileNavLink
               to="/my-bookings"
               onClick={() => setMobileMenuOpen(false)}
               className={location.pathname === "/my-bookings" ? "active" : ""}
             >
-              Bookings
-            </MobileNavLink>
+              Orders
+            </MobileNavLink> */}
           </>
         ) : (
           <MobileGreeting>PLEASE LOG IN..🥺</MobileGreeting>
