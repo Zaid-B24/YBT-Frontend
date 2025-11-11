@@ -42,6 +42,8 @@ export { default as AuctionsPage } from "./auctions/AuctionsPage";
 export { default as AuctionDetailsPage } from "./auctions/AuctionDetailsPage";
 export { default as AuctionLivePage } from "./auctions/AuctionLivePage";
 
+//
+
 // Events Pages
 export { default as EventsPage } from "./events/EventsPage";
 export { default as EventDetailsPage } from "./events/EventDetailsPage";
@@ -61,6 +63,8 @@ export { default as CheckoutPage } from "./user/CheckoutPage";
 export { default as PrivacyPage } from "./legal/PrivacyPage";
 export { default as ImprintPage } from "./legal/ImprintPage";
 export { default as FAQPage } from "./legal/FAQPage";
+export { default as RimsPage } from "./RimsPage";
+export { default as DealersPage } from "./DealersPage";
 
 // Admin Pages - REMOVED to prevent circular import
 // export { AdminDashboard, CarManagement, UserManagement, AdminLogin, AnalyticsPage } from './admin';

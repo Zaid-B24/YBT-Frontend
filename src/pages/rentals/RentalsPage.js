@@ -7,8 +7,11 @@ import { Search, ChevronDown, ChevronUp, MapPin, Star } from "lucide-react";
 const PageWrapper = styled.div`
   padding-top: 100px;
   min-height: 100vh;
-  background: #000;
+  background: black;
   color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const MainContainer = styled.div`

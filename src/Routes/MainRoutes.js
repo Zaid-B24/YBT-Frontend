@@ -23,6 +23,7 @@ const MainRoutes = (
       <Route path="cars" element={<Pages.CarsPage />} />
       <Route path="models" element={<Pages.ModelsPage />} />
       <Route path="blog" element={<Pages.BlogPage />} />
+      <Route path="/dealers" element={<Pages.DealersPage />} />
       <Route path=":category/:idAndSlug" element={<Pages.VehicleInfoPage />} />
       <Route
         path="reserve/:category/:vehicleId"
@@ -61,6 +62,7 @@ const MainRoutes = (
         path="collections/workshop/:slug"
         element={<Pages.WorkshopDetailPage />}
       />
+      <Route path="/rims" element={<Pages.RimsPage />} />
 
       {/* Rentals Routes */}
       <Route path="rentals" element={<Pages.RentalsPage />} />

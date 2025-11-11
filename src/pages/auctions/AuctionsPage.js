@@ -32,8 +32,11 @@ const auctions = [
 const AuctionsPageWrapper = styled.div`
   padding-top: 100px;
   min-height: 100vh;
-  background: #000;
+  background: black;
   color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const HeroSection = styled.section`
