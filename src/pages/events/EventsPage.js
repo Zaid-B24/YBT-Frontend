@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar } from "lucide-react";
@@ -188,6 +188,84 @@ const EventPrice = styled.div`
   font-weight: 500;
 `;
 
+const shimmer = keyframes`
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+`;
+
+// 2. Create a base Skeleton element with the animation
+const SkeletonElement = styled.div`
+  animation: ${shimmer} 1.5s infinite linear;
+  background: linear-gradient(to right, #1a1a1a 8%, #2a2a2a 18%, #1a1a1a 33%);
+  background-size: 800px 104px;
+  border-radius: 4px;
+`;
+
+// 3. Create the skeleton card structure
+const SkeletonCardWrapper = styled.div`
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+`;
+
+const SkeletonImage = styled(SkeletonElement)`
+  height: 250px;
+  border-radius: 0;
+`;
+
+const SkeletonContent = styled.div`
+  padding: 2rem;
+`;
+
+const SkeletonTitle = styled(SkeletonElement)`
+  height: 1.5rem;
+  width: 70%;
+  margin-bottom: 1rem;
+`;
+
+const SkeletonDescription = styled(SkeletonElement)`
+  height: 1rem;
+  width: 100%;
+  margin-bottom: 0.5rem;
+`;
+
+const SkeletonDescriptionShort = styled(SkeletonElement)`
+  height: 1rem;
+  width: 80%;
+  margin-bottom: 1.5rem;
+`;
+
+const SkeletonPrice = styled(SkeletonElement)`
+  height: 0.875rem;
+  width: 40%;
+  margin-top: 1rem;
+`;
+
+const SkeletonDate = styled(SkeletonElement)`
+  height: 0.875rem;
+  width: 50%;
+  margin-top: 1rem;
+`;
+
+// 4. Assemble the final Skeleton Card Component
+const EventCardSkeleton = () => (
+  <SkeletonCardWrapper>
+    <SkeletonImage />
+    <SkeletonContent>
+      <SkeletonTitle />
+      <SkeletonDescription />
+      <SkeletonDescriptionShort />
+      <SkeletonPrice />
+      <SkeletonDate />
+    </SkeletonContent>
+  </SkeletonCardWrapper>
+);
+
 const fetchEvents = async () => {
   const response = await fetch(`${process.env.REACT_APP_API_URL}/events/user`);
   console.log("raw response", response);
@@ -277,22 +355,6 @@ const EventsPage = () => {
       });
   }, [data, activeFilter]);
 
-  if (isLoading) {
-    return (
-      <PageWrapper>
-        <p>Loading events...</p>
-      </PageWrapper>
-    );
-  }
-
-  if (isError) {
-    return (
-      <PageWrapper>
-        <p>Error: {error.message}</p>
-      </PageWrapper>
-    );
-  }
-
   return (
     <PageWrapper>
       <HeroSection>
@@ -316,65 +378,83 @@ const EventsPage = () => {
       </HeroSection>
 
       <EventsGrid>
-        {filteredEvents.length === 0 ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "40px",
-              minHeight: "30vh",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "1.5rem",
-                fontWeight: "bold",
-                color: "#6c757d",
-                marginBottom: "16px",
-              }}
-            >
-              We're cooking up something special! 🍳
-            </p>
-            <p style={{ fontSize: "1rem", color: "#6c757d" }}>
-              Check back soon for new events.
-            </p>
-          </div>
-        ) : (
+        {isLoading && (
           <GridContainer>
-            {filteredEvents.map((event, index) => {
-              const fullDate = formatFullDate(event.startDate);
-              return (
-                <EventCard
-                  key={event.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  to={`/events/${event.slug}`}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <EventImage image={event.primaryImage}>
-                    <StatusBadge status={event.computedStatus}>
-                      {event.computedStatus}
-                    </StatusBadge>
-                    <TypeBadge type={event.type}>{event.type}</TypeBadge>
-                  </EventImage>
-                  <EventContent>
-                    <EventTitle>{event.title}</EventTitle>
-                    <EventDescription>{event.description}</EventDescription>
-                    <EventPrice>
-                      ₹ {event.ticketTypes?.[0]?.price} onwards
-                    </EventPrice>
-                    <EventDateText>
-                      <Calendar size={14} /> {fullDate}
-                    </EventDateText>
-                  </EventContent>
-                </EventCard>
-              );
-            })}
+            {/* Render 6 skeleton cards as a placeholder */}
+            {[...Array(6)].map((_, index) => (
+              <EventCardSkeleton key={index} />
+            ))}
           </GridContainer>
+        )}
+        {isError && (
+          <div style={{ textAlign: "center", color: "#f87171" }}>
+            <h3>An Error Occurred</h3>
+            <p>{error.message}</p>
+          </div>
+        )}
+        {!isLoading && !isError && (
+          <>
+            {filteredEvents.length === 0 ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "40px",
+                  minHeight: "30vh",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: "bold",
+                    color: "#6c757d",
+                    marginBottom: "16px",
+                  }}
+                >
+                  We're cooking up something special! 🍳
+                </p>
+                <p style={{ fontSize: "1rem", color: "#6c757d" }}>
+                  Check back soon for new events.
+                </p>
+              </div>
+            ) : (
+              <GridContainer>
+                {filteredEvents.map((event, index) => {
+                  const fullDate = formatFullDate(event.startDate);
+                  return (
+                    <EventCard
+                      key={event.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      to={`/events/${event.slug}`}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                    >
+                      <EventImage image={event.primaryImage}>
+                        <StatusBadge status={event.computedStatus}>
+                          {event.computedStatus}
+                        </StatusBadge>
+                        <TypeBadge type={event.type}>{event.type}</TypeBadge>
+                      </EventImage>
+                      <EventContent>
+                        <EventTitle>{event.title}</EventTitle>
+                        <EventDescription>{event.description}</EventDescription>
+                        <EventPrice>
+                          ₹ {event.ticketTypes?.[0]?.price} onwards
+                        </EventPrice>
+                        <EventDateText>
+                          <Calendar size={14} /> {fullDate}
+                        </EventDateText>
+                      </EventContent>
+                    </EventCard>
+                  );
+                })}
+              </GridContainer>
+            )}
+          </>
         )}
       </EventsGrid>
     </PageWrapper>

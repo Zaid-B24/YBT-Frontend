@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Car,
   Image,
+  Video,
   Upload,
   X,
   Calendar,
@@ -85,6 +86,7 @@ const CreateEventForm = ({ onSuccess, onBack }) => {
       startDate: "",
       endDate: "",
       images: [],
+      videos: [],
       ticketTypes: [
         {
           name: "Basic",
@@ -155,13 +157,17 @@ const CreateEventForm = ({ onSuccess, onBack }) => {
       const value = processedData[key];
       if (key === "images" && value) {
         for (let i = 0; i < value.length; i++) {
-          data.append("images", value[i]);
+          data.append("images", value[i]); // Appends to 'images' field
+        }
+      } else if (key === "videos" && value) {
+        // --- ADDED THIS BLOCK ---
+        for (let i = 0; i < value.length; i++) {
+          data.append("videos", value[i]); // Appends to 'videos' field
         }
       } else if (Array.isArray(value)) {
-        // This will now correctly stringify the ticketTypes array from the form
         data.append(key, JSON.stringify(value));
-      } else if (key !== "images" && value) {
-        // Added check for 'value' to avoid sending empty strings
+      } else if (key !== "images" && key !== "videos" && value) {
+        // --- CHANGED ---
         data.append(key, value);
       }
     });
@@ -317,6 +323,62 @@ const CreateEventForm = ({ onSuccess, onBack }) => {
                       </RemoveItemButton>
                     </SelectedFile>
                   ))}
+                </ImagePreviewContainer>
+              )}
+            </>
+          )}
+        />
+      </FileInputContainer>
+
+      <FileInputContainer>
+        <Label>
+          <Video size={16} />
+          <span>Event Videos</span>
+        </Label>
+        <Controller
+          control={control}
+          name="videos" // Changed name to "videos"
+          render={({ field: { onChange, value } }) => (
+            <>
+              <FileInputWrapper className={value?.length > 0 ? "has-file" : ""}>
+                <HiddenFileInput
+                  type="file"
+                  accept="video/*" // Only videos
+                  multiple
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files);
+                    onChange([...(value || []), ...files]);
+                  }}
+                />
+                <FileInputContent>
+                  <Upload size={24} />
+                  <FileInputText>
+                    {value?.length > 0
+                      ? `${value.length} video(s) selected` // Changed text
+                      : "Click or drag to upload"}
+                  </FileInputText>
+                </FileInputContent>
+              </FileInputWrapper>
+              {value?.length > 0 && (
+                <ImagePreviewContainer>
+                  {value.map(
+                    (
+                      video,
+                      index // Renamed 'image' to 'video' for clarity
+                    ) => (
+                      <SelectedFile key={index}>
+                        <span>{video.name}</span>
+                        <RemoveItemButton
+                          type="button"
+                          onClick={() =>
+                            onChange(value.filter((_, i) => i !== index))
+                          }
+                        >
+                          <X size={16} />
+                        </RemoveItemButton>
+                      </SelectedFile>
+                    )
+                  )}
                 </ImagePreviewContainer>
               )}
             </>

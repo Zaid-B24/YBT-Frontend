@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -74,15 +74,6 @@ const RightColumn = styled(motion.div)`
   gap: 2rem;
 `;
 
-// 2. Header & Banner Elements
-// const EventBannerVideo = styled(motion.video)`
-//   width: 100%;
-//   height: auto;
-//   border-radius: 12px;
-//   object-fit: cover;
-//   border: 1px solid rgba(255, 255, 255, 0.1);
-// `;
-
 const EventHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -110,22 +101,6 @@ const Description = styled.div`
   color: #ccc;
   line-height: 1.8;
   font-size: 1rem;
-`;
-
-const TagContainer = styled.div`
-  display: flex;
-  gap: 0.75rem; /* More space between tags */
-  flex-wrap: wrap;
-`;
-
-const Tag = styled.span`
-  /* Use your accent color for tags */
-  background-color: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  padding: 0.4rem 0.9rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
 `;
 
 // 4. Information & Lists
@@ -393,7 +368,125 @@ const facilityIconMap = {
   // Add any other facilities you expect from your backend
 };
 
-// --- The Reusable Locked Component ---
+const shimmer = keyframes`
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+`;
+
+// 2. Create a base Skeleton element with the animation
+const SkeletonElement = styled.div`
+  animation: ${shimmer} 1.5s infinite linear;
+  background: linear-gradient(to right, #1a1a1a 8%, #2a2a2a 18%, #1a1a1a 33%);
+  background-size: 800px 104px;
+  border-radius: 4px;
+`;
+
+const EventDetailsSkeleton = () => (
+  <PageWrapper>
+    <EventLayout>
+      <LeftColumn>
+        {/* Media Skeleton */}
+        <SkeletonElement
+          style={{ width: "100%", aspectRatio: "16 / 9", borderRadius: "12px" }}
+        />
+
+        {/* Thumbnails Skeleton */}
+        <ThumbnailContainer>
+          <SkeletonElement
+            style={{ width: "80px", height: "60px", borderRadius: "8px" }}
+          />
+          <SkeletonElement
+            style={{ width: "80px", height: "60px", borderRadius: "8px" }}
+          />
+          <SkeletonElement
+            style={{ width: "80px", height: "60px", borderRadius: "8px" }}
+          />
+        </ThumbnailContainer>
+
+        {/* About Section Skeleton */}
+        <MainContent>
+          <SkeletonElement
+            style={{ height: "2rem", width: "40%", marginBottom: "1.5rem" }}
+          />
+          <SkeletonElement
+            style={{ height: "1rem", width: "100%", marginBottom: "0.75rem" }}
+          />
+          <SkeletonElement
+            style={{ height: "1rem", width: "100%", marginBottom: "0.75rem" }}
+          />
+          <SkeletonElement
+            style={{ height: "1rem", width: "80%", marginBottom: "0.75rem" }}
+          />
+        </MainContent>
+
+        {/* You Should Know Skeleton */}
+        <div>
+          <SkeletonElement
+            style={{ height: "2rem", width: "50%", marginBottom: "1rem" }}
+          />
+          <InfoBox>
+            <SkeletonElement
+              style={{ height: "1.5rem", width: "60%", marginBottom: "1rem" }}
+            />
+            <SkeletonElement
+              style={{ height: "1rem", width: "90%", marginBottom: "0.5rem" }}
+            />
+            <SkeletonElement
+              style={{ height: "1rem", width: "85%", marginBottom: "0.5rem" }}
+            />
+          </InfoBox>
+        </div>
+
+        {/* Facilities Skeleton */}
+        <div>
+          <SkeletonElement
+            style={{ height: "2rem", width: "30%", marginBottom: "1rem" }}
+          />
+          <FacilitiesGrid>
+            <SkeletonElement style={{ height: "60px", borderRadius: "12px" }} />
+            <SkeletonElement style={{ height: "60px", borderRadius: "12px" }} />
+            <SkeletonElement style={{ height: "60px", borderRadius: "12px" }} />
+          </FacilitiesGrid>
+        </div>
+      </LeftColumn>
+
+      <RightColumn>
+        {/* Details Card Skeleton */}
+        <DetailsCard>
+          <EventHeader>
+            <SkeletonElement style={{ height: "2.2rem", width: "80%" }} />
+          </EventHeader>
+          <InfoList>
+            <SkeletonElement
+              style={{ height: "1.5rem", width: "70%", marginBottom: "0.5rem" }}
+            />
+            <SkeletonElement style={{ height: "1.5rem", width: "50%" }} />
+          </InfoList>
+          <EventActions>
+            <SkeletonElement style={{ height: "2rem", width: "40%" }} />
+            <SkeletonElement
+              style={{ height: "44px", width: "120px", borderRadius: "8px" }}
+            />
+          </EventActions>
+        </DetailsCard>
+
+        {/* Location Card Skeleton */}
+        <LocationCard>
+          <SkeletonElement
+            style={{ height: "1.5rem", width: "50%", marginBottom: "1rem" }}
+          />
+          <SkeletonElement
+            style={{ height: "45px", width: "100%", borderRadius: "8px" }}
+          />
+        </LocationCard>
+      </RightColumn>
+    </EventLayout>
+  </PageWrapper>
+);
 
 const formatDateRange = (startDateStr, endDateStr) => {
   const options = {
@@ -448,23 +541,22 @@ const EventDetailsPage = () => {
   });
 
   const mediaGallery = useMemo(() => {
-    if (!event?.imageUrls) return [];
+    const images = event?.imageUrls || [];
+    const videos = event?.videoUrls || [];
+    const imageMedia = images.map((url) => ({
+      type: "image",
+      url: url,
+      thumbnail: url,
+    }));
+    const videoMedia = videos.map((url) => ({
+      type: "video",
+      url: url,
+      thumbnail: event.primaryImage,
+    }));
 
-    return [
-      ...event.imageUrls.map((url) => ({
-        type: "image",
-        url: url,
-        thumbnail: url,
-      })),
-      {
-        type: "video",
-        url: "/videos/trial.mp4",
-        thumbnail: event.primaryImage,
-      },
-    ];
+    return [...imageMedia, ...videoMedia];
   }, [event]);
 
-  // 3. Update the useEffect dependency
   useEffect(() => {
     if (mediaGallery.length > 0) {
       setCurrentMedia(mediaGallery[0]);
@@ -493,7 +585,7 @@ const EventDetailsPage = () => {
     }
   };
 
-  if (isLoading) return <PageWrapper>Loading event details...</PageWrapper>;
+  if (isLoading) return <EventDetailsSkeleton />;
   if (isError) return <PageWrapper>Error: {error.message}</PageWrapper>;
   if (!event) return <PageWrapper>Event not found.</PageWrapper>;
 
@@ -516,10 +608,6 @@ const EventDetailsPage = () => {
     text: text,
     icon: facilityIconMap[text] || <HelpCircle size={24} />, // Use the mapped icon or a default one
   }));
-
-  if (isLoading) return <PageWrapper>Loading event details...</PageWrapper>;
-  if (isError) return <PageWrapper>Error: {error.message}</PageWrapper>;
-  if (!event) return <PageWrapper>Event not found.</PageWrapper>;
 
   return (
     <PageWrapper>
@@ -570,10 +658,10 @@ const EventDetailsPage = () => {
               ))}
             </ThumbnailContainer>
           )}
-          <TagContainer>
+          {/* <TagContainer>
             <Tag>Great</Tag>
             <Tag>Trending</Tag>
-          </TagContainer>
+          </TagContainer> */}
 
           <MainContent
             initial="hidden"

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { ChevronRight, ChevronLeft, ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+import styled, { keyframes } from "styled-components";
+import { Loader2, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 const HomepageWrapper = styled.div`
   background: #000;
@@ -10,7 +10,6 @@ const HomepageWrapper = styled.div`
   overflow-x: hidden;
 `;
 
-// Hero Carousel Section
 const HeroSection = styled.section`
   position: relative;
   height: 100vh;
@@ -119,7 +118,6 @@ const Dot = styled.button`
   transition: all 0.3s ease;
 `;
 
-// Find Your Dream Model Section
 const FindModelSection = styled.section`
   padding: 4rem 2rem;
   background: rgba(20, 20, 20, 0.8);
@@ -184,11 +182,13 @@ const SearchButton = styled(Link)`
   }
 `;
 
-// Latest Additions Section
 const LatestSection = styled.section`
   padding: 4rem 2rem;
   background: #0a0a0a;
   color: #fff;
+  @media (max-width: 768px) {
+    padding: 3rem 1rem; /* Reduces padding for mobile */
+  }
 `;
 
 const SectionTitle = styled.h2`
@@ -203,35 +203,43 @@ const SectionTitle = styled.h2`
 
 const CardsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
+  /* --- THIS IS THE FIX --- */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem; /* Reduced gap for a tighter fit */
   max-width: 1400px;
   margin: 0 auto;
 `;
 
 const CarCard = styled(Link)`
   position: relative;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: block;
+  height: 250px; /* Set a fixed height for the card */
   overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  border-radius: 8px; /* Add a radius for a softer look */
   text-decoration: none;
   color: inherit;
-  display: block;
+  transition: all 0.3s ease;
 
   &:hover {
     transform: translateY(-5px);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   }
 `;
 
 const CardImage = styled.div`
-  height: 250px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: ${(props) => (props.image ? `url(${props.image})` : "#ddd")}
     center center/cover no-repeat;
-  position: relative;
+  transition: transform 0.4s ease;
+
+  /* Add a zoom effect on hover */
+  ${CarCard}:hover & {
+    transform: scale(1.05);
+  }
 `;
 
 const CardBadges = styled.div`
@@ -241,6 +249,7 @@ const CardBadges = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  z-index: 3; /* Add this line */
 `;
 
 const Badge = styled.span`
@@ -254,7 +263,13 @@ const Badge = styled.span`
 `;
 
 const CardContent = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2; /* Make sure it's above the image */
   padding: 1.5rem;
+  background: none; /* <-- This is the fix. No more gradient. */
 `;
 
 const CardTitle = styled.h3`
@@ -263,9 +278,12 @@ const CardTitle = styled.h3`
   font-weight: 400;
   margin-bottom: 0.5rem;
   color: #fff;
+
+  /* --- ADD THIS LINE --- */
+  /* This makes the text readable on any image */
+  text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.9);
 `;
 
-// Cars for Sale Section
 const CarsForSaleSection = styled.section`
   padding: 4rem 2rem;
   background: #111;
@@ -337,104 +355,6 @@ const CarSpecs = styled.div`
   color: #ccc;
 `;
 
-const DetailsButton = styled(Link)`
-  background: transparent;
-  border: 1px solid #000;
-  color: #000;
-  padding: 0.8rem 2rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  display: inline-block;
-
-  &:hover {
-    background: #000;
-    color: #fff;
-  }
-`;
-
-// Split Sections (All Cars / Rims)
-const SplitSection = styled.section`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: 60vh;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    height: auto;
-  }
-`;
-
-const SplitPanel = styled.div`
-  position: relative;
-  background: ${(props) => (props.image ? `url(${props.image})` : "#333")}
-    center center/cover no-repeat;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: scale(1.02);
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-  }
-`;
-
-const SplitContent = styled.div`
-  position: relative;
-  z-index: 2;
-`;
-
-const SplitTitle = styled.h2`
-  font-family: "Playfair Display", serif;
-  font-size: 3rem;
-  font-weight: 400;
-  margin-bottom: 1rem;
-  letter-spacing: 0.05em;
-`;
-
-const SplitSubtitle = styled.p`
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  max-width: 300px;
-`;
-
-const SplitButton = styled.button`
-  background: transparent;
-  border: 2px solid #fff;
-  color: #fff;
-  padding: 1rem 2rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: #fff;
-    color: #000;
-  }
-`;
-
-// Mission Section
 const MissionSection = styled.section`
   padding: 6rem 2rem;
   background: #000;
@@ -481,19 +401,10 @@ const MissionButton = styled(Link)`
   }
 `;
 
-// Join Section
 const JoinSection = styled.section`
   padding: 4rem 2rem;
   background: #000;
   text-align: center;
-`;
-
-const JoinTitle = styled.h2`
-  font-family: "Playfair Display", serif;
-  font-size: 2.5rem;
-  font-weight: 400;
-  margin-bottom: 1rem;
-  letter-spacing: 0.05em;
 `;
 
 const JoinSubtitle = styled.p`
@@ -521,60 +432,112 @@ const ContactButton = styled(Link)`
   }
 `;
 
+const HeroVideo = styled.video`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+`;
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
+const HeroLoadingWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  min-height: 700px;
+  color: #fff;
+  z-index: 3;
+
+  svg {
+    margin-bottom: 1rem;
+  }
+`;
+
+const LoadingSpinner = styled(Loader2)`
+  animation: ${spin} 1s linear infinite;
+`;
+
+const fetchHeroSlides = async () => {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/homepage/hero-slides`
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.message || "Failed to fetch hero slides");
+  }
+  return result.data;
+};
+
+const fetchLatestAdditions = async () => {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/cars/latest-additions`
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.message || "Failed to fetch latest additions");
+  }
+  return result.data;
+};
+
+const getTransformedUrl = (url, assetType) => {
+  if (!url || !url.includes("cloudinary.com")) {
+    return url;
+  }
+
+  const width = 1920;
+  const height = 1080;
+  const transformations = `c_fill,w_${width},h_${height},q_auto`;
+
+  const parts = url.split("/upload/");
+  if (parts.length !== 2) {
+    return url;
+  }
+
+  if (assetType === "VIDEO") {
+    const videoTransformations = `f_auto,${transformations}`;
+    return `${parts[0]}/upload/${videoTransformations}/${parts[1]}`;
+  }
+  return `${parts[0]}/upload/${transformations}/${parts[1]}`;
+};
+
 const Homepage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const {
+    data: heroSlides,
+    isLoading: isHeroLoading,
+    isError: isHeroError,
+  } = useQuery({
+    queryKey: ["heroSlides"],
+    queryFn: fetchHeroSlides,
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const heroSlides = [
-    {
-      title: "YOUNG BOY TOYZ SPERANZA",
-      subtitle:
-        "Completely Mercedes G-Class (W465) converted into a 4-door convertible",
-      image:
-        "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    },
-    {
-      title: "Rolls-Royce Cullinan MY 2025 By YOUNG BOY TOYZ",
-      subtitle: "The ultimate luxury SUV redefined",
-      image:
-        "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    },
-    {
-      title: "Bugatti Chiron YOUNG BOY TOYZ",
-      subtitle: "The ultimate expression of automotive excellence and luxury",
-      image:
-        "https://images.unsplash.com/photo-1614200187524-dc4b892acf16?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    },
-  ];
-
-  const latestAdditions = [
-    {
-      id: "alec-monopoly-collaboration",
-      title:
-        "YOUNG BOY TOYZ goes art – Collaboration with pop artist Alec Monopoly",
-      image:
-        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
-      badges: [
-        "WIDE BODY KIT",
-        "LIMITED EDITION",
-        "LATEST ADDITIONS",
-        "ATELIER",
-      ],
-    },
-    {
-      id: "bmw-m5-ybt-edition",
-      title: "BMW M5 YOUNG BOY TOYZ Edition",
-      image:
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      badges: ["LATEST ADDITIONS", "PERFORMANCE"],
-    },
-    {
-      id: "pugnator-tricolore",
-      title: "Lamborghini Pugnator Tricolore",
-      image:
-        "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      badges: ["ATELIER", "LATEST ADDITIONS", "ONE OF ONE", "WIDE BODY KIT"],
-    },
-  ];
+  const {
+    data: latestAdditions,
+    isLoading: isLatestLoading,
+    isError: isLatestError,
+  } = useQuery({
+    queryKey: ["latestAdditions"],
+    queryFn: fetchLatestAdditions,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+  });
 
   const carsForSale = [
     {
@@ -616,35 +579,78 @@ const Homepage = () => {
   ];
 
   useEffect(() => {
+    if (!heroSlides || heroSlides.length === 0) return;
+
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 5000);
+
     return () => clearInterval(timer);
-  }, [heroSlides.length]);
+  }, [heroSlides]);
 
   return (
     <HomepageWrapper>
-      {/* Hero Carousel */}
       <HeroSection>
-        <HeroBackground image={heroSlides[currentSlide].image} />
-        <HeroOverlay />
-        <HeroContent>
-          <HeroTitle>{heroSlides[currentSlide].title}</HeroTitle>
-          <HeroSubtitle>{heroSlides[currentSlide].subtitle}</HeroSubtitle>
-          <HeroButton to="/models">DISCOVER NOW</HeroButton>
-        </HeroContent>
-        <CarouselDots>
-          {heroSlides.map((_, index) => (
-            <Dot
-              key={index}
-              active={index === currentSlide}
-              onClick={() => setCurrentSlide(index)}
-            />
-          ))}
-        </CarouselDots>
+        {isHeroLoading && (
+          <HeroLoadingWrapper>
+            <LoadingSpinner size={32} />
+            <p>Loading...</p>
+          </HeroLoadingWrapper>
+        )}
+
+        {isHeroError && (
+          <HeroLoadingWrapper>
+            <AlertCircle size={32} />
+            <p>Error loading content.</p>
+          </HeroLoadingWrapper>
+        )}
+
+        {heroSlides && heroSlides.length > 0 && (
+          <>
+            {heroSlides[currentSlide].assetType === "VIDEO" ? (
+              <HeroVideo
+                src={getTransformedUrl(
+                  heroSlides[currentSlide].assetUrl,
+                  "VIDEO"
+                )}
+                autoPlay
+                loop
+                muted
+                playsInline
+                key={currentSlide}
+              />
+            ) : (
+              <HeroBackground
+                image={getTransformedUrl(
+                  heroSlides[currentSlide].assetUrl,
+                  "IMAGE"
+                )}
+              />
+            )}
+
+            <HeroOverlay />
+
+            <HeroContent>
+              <HeroTitle>{heroSlides[currentSlide].title}</HeroTitle>
+              <HeroSubtitle>{heroSlides[currentSlide].subtitle}</HeroSubtitle>
+              <HeroButton to={heroSlides[currentSlide].linkUrl}>
+                DISCOVER NOW
+              </HeroButton>
+            </HeroContent>
+
+            <CarouselDots>
+              {heroSlides.map((_, index) => (
+                <Dot
+                  key={index}
+                  active={index === currentSlide}
+                  onClick={() => setCurrentSlide(index)}
+                />
+              ))}
+            </CarouselDots>
+          </>
+        )}
       </HeroSection>
 
-      {/* Find Your Dream Model */}
       <FindModelSection>
         <FindModelTitle>FIND YOUR DREAM MODEL</FindModelTitle>
         <FindModelSubtitle>
@@ -669,28 +675,51 @@ const Homepage = () => {
         </SearchForm>
       </FindModelSection>
 
-      {/* Latest Additions */}
       <LatestSection>
         <SectionTitle>LATEST ADDITIONS</SectionTitle>
-        <CardsGrid>
-          {latestAdditions.map((car, index) => (
-            <CarCard key={index} to={`/cars/${car.id}`}>
-              <CardImage image={car.image}>
-                <CardBadges>
-                  {car.badges.map((badge, i) => (
-                    <Badge key={i}>{badge}</Badge>
-                  ))}
-                </CardBadges>
-              </CardImage>
-              <CardContent>
-                <CardTitle>{car.title}</CardTitle>
-              </CardContent>
-            </CarCard>
-          ))}
-        </CardsGrid>
+        {isLatestLoading && (
+          <HeroLoadingWrapper>
+            {" "}
+            {/* You can reuse the hero loading component */}
+            <LoadingSpinner size={32} />
+            <p>Loading Latest Cars...</p>
+          </HeroLoadingWrapper>
+        )}
+
+        {/* --- Handle Error State --- */}
+        {isLatestError && (
+          <HeroLoadingWrapper>
+            <AlertCircle size={32} />
+            <p>Error loading cars.</p>
+          </HeroLoadingWrapper>
+        )}
+
+        {latestAdditions && latestAdditions.length > 0 && (
+          <CardsGrid>
+            {latestAdditions.map((car) => (
+              <CarCard key={car.id} to={`/cars/${car.id}`}>
+                {" "}
+                {/* Use car.slug */}
+                <CardImage image={car.thumbnail}>
+                  {" "}
+                  {/* Use car.thumbnail */}
+                  <CardBadges>
+                    {car.badges.map((badge, i) => (
+                      <Badge key={i}>{badge}</Badge>
+                    ))}
+                  </CardBadges>
+                </CardImage>
+                <CardContent>
+                  <CardTitle>
+                    {car.brand} {car.title}
+                  </CardTitle>
+                </CardContent>
+              </CarCard>
+            ))}
+          </CardsGrid>
+        )}
       </LatestSection>
 
-      {/* Cars for Sale */}
       <CarsForSaleSection>
         <SectionTitle>CARS FOR SALE</SectionTitle>
         <CarsGrid>
@@ -714,33 +743,6 @@ const Homepage = () => {
         </CarsGrid>
       </CarsForSaleSection>
 
-      {/* Split Sections */}
-      {/* <SplitSection>
-        <SplitPanel image="https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80">
-          <SplitContent>
-            <SplitTitle>ALL CARS</SplitTitle>
-            <SplitSubtitle>
-              We create unique masterpieces that defy convention.
-            </SplitSubtitle>
-            <SplitButton>
-              <ArrowRight size={20} />
-            </SplitButton>
-          </SplitContent>
-        </SplitPanel>
-        <SplitPanel image="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80">
-          <SplitContent>
-            <SplitTitle>RIMS</SplitTitle>
-            <SplitSubtitle>
-              Each rim has its own story. Match it with your unique style.
-            </SplitSubtitle>
-            <SplitButton>
-              <ArrowRight size={20} />
-            </SplitButton>
-          </SplitContent>
-        </SplitPanel>
-      </SplitSection> */}
-
-      {/* Mission Statement */}
       <MissionSection>
         <MissionTitle>
           OUR MISSION GOES BEYOND TUNING.
@@ -757,7 +759,6 @@ const Homepage = () => {
         </MissionButtons>
       </MissionSection>
 
-      {/* Join YOUNG BOY TOYZ */}
       <JoinSection>
         <JoinSubtitle>Get in touch to make your dream car true.</JoinSubtitle>
         <ContactButton to="/contact">CONTACT US</ContactButton>

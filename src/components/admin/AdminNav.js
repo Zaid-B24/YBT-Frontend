@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BarChart3, Car, Users, LogOut, Menu, X, Bike } from "lucide-react";
+import {
+  BarChart3,
+  Car,
+  Users,
+  LogOut,
+  Menu,
+  X,
+  Bike,
+  Home,
+} from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { GrAnalytics } from "react-icons/gr";
 
@@ -353,7 +362,8 @@ const AdminNav = () => {
 
   const rightNavItems = [
     { path: "/admin/users", label: "Users", icon: Users },
-    { path: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+    { path: "/admin/homepage", label: "HomePage", icon: Home },
+    // { path: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   ];
 
   useEffect(() => {

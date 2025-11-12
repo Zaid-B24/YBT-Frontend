@@ -11,6 +11,9 @@ const UserManagement = lazy(() => import("../pages/admin/UserManagement"));
 const BikeManagement = lazy(() => import("../pages/admin/bikeManagement"));
 const EventManagement = lazy(() => import("../pages/admin/EventManagement"));
 const AnalyticsPage = lazy(() => import("../pages/admin/AnalyticsPage"));
+const HomePageManagement = lazy(() =>
+  import("../pages/admin/HomePageManagement")
+);
 
 const AdminRoutes = (
   <Route path="/admin" element={<AdminLayout />}>
@@ -21,6 +24,7 @@ const AdminRoutes = (
     <Route path="users" element={<UserManagement />} />
     <Route path="events" element={<EventManagement />} />
     <Route path="analytics" element={<AnalyticsPage />} />
+    <Route path="homepage" element={<HomePageManagement />} />
   </Route>
 );
 

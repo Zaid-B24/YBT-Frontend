@@ -5,3 +5,4 @@ export { default as UserManagement } from "./UserManagement";
 export { default as BikeManagement } from "./bikeManagement";
 export { default as AdminLogin } from "./AdminLogin";
 export { default as AnalyticsPage } from "./AnalyticsPage";
+export { default as HomePageManagement } from "./HomePageManagement";
