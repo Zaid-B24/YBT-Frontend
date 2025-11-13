@@ -569,7 +569,6 @@ const Homepage = () => {
         {isHeroLoading && (
           <HeroLoadingWrapper>
             <LoadingSpinner size={32} />
-            <p>Loading...</p>
           </HeroLoadingWrapper>
         )}
 
@@ -695,32 +694,6 @@ const Homepage = () => {
         )}
       </LatestSection>
 
-      <LatestSection style={{ background: "#111" }}>
-        <SectionTitle>CARS FOR SALE</SectionTitle>
-
-        {/* 2. Reuse CardsGrid */}
-        <CardsGrid>
-          {carsForSale.map((car, index) => (
-            // 3. Reuse CarCard
-            <CarCard key={index} to={`/cars/${car.id}`}>
-              {/* 4. Reuse CardImage */}
-              <CardImage image={car.image}>
-                {/* 5. Reuse CardBadges logic */}
-                <CardBadges>
-                  <Badge>AVAILABLE • {car.number}</Badge>
-                </CardBadges>
-              </CardImage>
-
-              <CardContent>
-                <CardTitle>
-                  {car.brand} {car.title}
-                </CardTitle>
-              </CardContent>
-            </CarCard>
-          ))}
-        </CardsGrid>
-      </LatestSection>
-
       <MissionSection>
         <MissionTitle>
           OUR MISSION GOES BEYOND TUNING.
@@ -746,3 +719,29 @@ const Homepage = () => {
 };
 
 export default Homepage;
+
+// <LatestSection style={{ background: "#111" }}>
+//         <SectionTitle>CARS FOR SALE</SectionTitle>
+
+//         {/* 2. Reuse CardsGrid */}
+//         <CardsGrid>
+//           {carsForSale.map((car, index) => (
+//             // 3. Reuse CarCard
+//             <CarCard key={index} to={`/cars/${car.id}`}>
+//               {/* 4. Reuse CardImage */}
+//               <CardImage image={car.image}>
+//                 {/* 5. Reuse CardBadges logic */}
+//                 <CardBadges>
+//                   <Badge>AVAILABLE • {car.number}</Badge>
+//                 </CardBadges>
+//               </CardImage>
+
+//               <CardContent>
+//                 <CardTitle>
+//                   {car.brand} {car.title}
+//                 </CardTitle>
+//               </CardContent>
+//             </CarCard>
+//           ))}
+//         </CardsGrid>
+//       </LatestSection>
