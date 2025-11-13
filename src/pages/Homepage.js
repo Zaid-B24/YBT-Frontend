@@ -53,6 +53,12 @@ const HeroContent = styled.div`
   text-align: left;
   max-width: 600px;
   padding: 0 0 0 5vw;
+
+  @media (max-width: 768px) {
+    padding: 0 1.5rem; /* 1.5rem on left and right */
+    max-width: 100%;
+    text-align: center; /* Or keep left, but balanced padding is key */
+  }
 `;
 
 const HeroTitle = styled.h1`
@@ -70,9 +76,9 @@ const HeroTitle = styled.h1`
 `;
 
 const HeroSubtitle = styled.p`
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 300;
-  line-height: 1.5;
+  line-height: 1.4;
   color: #fff;
   margin-bottom: 2.5rem;
   max-width: 400px;
@@ -107,6 +113,21 @@ const CarouselDots = styled.div`
   display: flex;
   gap: 0.5rem;
   z-index: 3;
+  @media (max-width: 768px) {
+    width: 30px;
+    height: 4px; /* Slightly thicker */
+
+    /* Add a "tap target" for accessibility */
+    position: relative;
+    &::after {
+      content: "";
+      position: absolute;
+      top: -10px;
+      bottom: -10px;
+      left: -5px;
+      right: -5px;
+    }
+  }
 `;
 
 const Dot = styled.button`
@@ -122,11 +143,14 @@ const FindModelSection = styled.section`
   padding: 4rem 2rem;
   background: rgba(20, 20, 20, 0.8);
   text-align: center;
+  @media (max-width: 768px) {
+    padding: 3rem 1.5rem;
+  }
 `;
 
 const FindModelTitle = styled.h2`
   font-family: "Playfair Display", serif;
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 400;
   margin-bottom: 1rem;
   letter-spacing: 0.05em;
@@ -193,7 +217,7 @@ const LatestSection = styled.section`
 
 const SectionTitle = styled.h2`
   font-family: "Playfair Display", serif;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 400;
   margin-bottom: 3rem;
   letter-spacing: 0.05em;
@@ -213,7 +237,7 @@ const CardsGrid = styled.div`
 const CarCard = styled(Link)`
   position: relative;
   display: block;
-  height: 250px; /* Set a fixed height for the card */
+  aspect-ratio: 4 / 3; /* Set a fixed height for the card */
   overflow: hidden;
   border-radius: 8px; /* Add a radius for a softer look */
   text-decoration: none;
@@ -284,86 +308,18 @@ const CardTitle = styled.h3`
   text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.9);
 `;
 
-const CarsForSaleSection = styled.section`
-  padding: 4rem 2rem;
-  background: #111;
-  color: #fff;
-  text-align: center;
-`;
-
-const CarsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 2rem;
-  max-width: 1400px;
-  margin: 2rem auto 0;
-`;
-
-const CarForSaleCard = styled(Link)`
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  color: inherit;
-  display: block;
-
-  &:hover {
-    transform: translateY(-3px);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.05);
-  }
-`;
-
-const CarSaleImage = styled.div`
-  height: 250px;
-  background: ${(props) => (props.image ? `url(${props.image})` : "#ddd")}
-    center center/cover no-repeat;
-  position: relative;
-`;
-
-const AvailableBadge = styled.div`
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 0.5rem 1rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  text-transform: uppercase;
-`;
-
-const CarSaleContent = styled.div`
-  padding: 2rem;
-  text-align: left;
-`;
-
-const CarSaleTitle = styled.h3`
-  font-family: "Playfair Display", serif;
-  font-size: 1.4rem;
-  font-weight: 400;
-  margin-bottom: 1rem;
-  color: #fff;
-`;
-
-const CarSpecs = styled.div`
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-  color: #ccc;
-`;
-
 const MissionSection = styled.section`
   padding: 6rem 2rem;
   background: #000;
   text-align: center;
+  @media (max-width: 768px) {
+    padding: 4rem 1.5rem;
+  }
 `;
 
 const MissionTitle = styled.h2`
   font-family: "Playfair Display", serif;
-  font-size: 3.5rem;
+  font-size: 3.5rem; // Desktop
   font-weight: 400;
   line-height: 1.2;
   margin-bottom: 3rem;
@@ -371,6 +327,12 @@ const MissionTitle = styled.h2`
 
   span {
     color: #666;
+  }
+
+  /* --- ADD THIS --- */
+  @media (max-width: 768px) {
+    font-size: 2.2rem; // Mobile
+    margin-bottom: 2rem;
   }
 `;
 
@@ -458,6 +420,19 @@ const HeroLoadingWrapper = styled.div`
   min-height: 700px;
   color: #fff;
   z-index: 3;
+
+  svg {
+    margin-bottom: 1rem;
+  }
+`;
+
+const StatusWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  padding: 4rem 0; /* Give it some space */
 
   svg {
     margin-bottom: 1rem;
@@ -678,20 +653,20 @@ const Homepage = () => {
       <LatestSection>
         <SectionTitle>LATEST ADDITIONS</SectionTitle>
         {isLatestLoading && (
-          <HeroLoadingWrapper>
+          <StatusWrapper>
             {" "}
             {/* You can reuse the hero loading component */}
             <LoadingSpinner size={32} />
             <p>Loading Latest Cars...</p>
-          </HeroLoadingWrapper>
+          </StatusWrapper>
         )}
 
         {/* --- Handle Error State --- */}
         {isLatestError && (
-          <HeroLoadingWrapper>
+          <StatusWrapper>
             <AlertCircle size={32} />
             <p>Error loading cars.</p>
-          </HeroLoadingWrapper>
+          </StatusWrapper>
         )}
 
         {latestAdditions && latestAdditions.length > 0 && (
@@ -720,28 +695,31 @@ const Homepage = () => {
         )}
       </LatestSection>
 
-      <CarsForSaleSection>
+      <LatestSection style={{ background: "#111" }}>
         <SectionTitle>CARS FOR SALE</SectionTitle>
-        <CarsGrid>
+
+        {/* 2. Reuse CardsGrid */}
+        <CardsGrid>
           {carsForSale.map((car, index) => (
-            <CarForSaleCard key={index} to={`/cars/${car.id}`}>
-              <CarSaleImage image={car.image}>
-                <AvailableBadge>AVAILABLE • {car.number}</AvailableBadge>
-              </CarSaleImage>
-              <CarSaleContent>
-                <CarSaleTitle>{car.title}</CarSaleTitle>
-                <CarSpecs>
-                  <span>{car.type}</span>
-                  <span>{car.year}</span>
-                  <span>{car.transmission}</span>
-                  <span>{car.power}</span>
-                  <span>{car.mileage}</span>
-                </CarSpecs>
-              </CarSaleContent>
-            </CarForSaleCard>
+            // 3. Reuse CarCard
+            <CarCard key={index} to={`/cars/${car.id}`}>
+              {/* 4. Reuse CardImage */}
+              <CardImage image={car.image}>
+                {/* 5. Reuse CardBadges logic */}
+                <CardBadges>
+                  <Badge>AVAILABLE • {car.number}</Badge>
+                </CardBadges>
+              </CardImage>
+
+              <CardContent>
+                <CardTitle>
+                  {car.brand} {car.title}
+                </CardTitle>
+              </CardContent>
+            </CarCard>
           ))}
-        </CarsGrid>
-      </CarsForSaleSection>
+        </CardsGrid>
+      </LatestSection>
 
       <MissionSection>
         <MissionTitle>
