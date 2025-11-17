@@ -1,5 +1,5 @@
 // =================== Imports ===================
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 
@@ -16,6 +16,7 @@ import {
   UserCircle,
   Users,
   Zap,
+  PlayCircle,
 } from "lucide-react";
 import { FaDoorOpen } from "react-icons/fa";
 import { LuGitCommitHorizontal, LuGitCommitVertical } from "react-icons/lu";
@@ -23,6 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import { VehicleInfoPageSkeleton } from "../../components/cards/VehicleInfoPageSkeleton";
 import { useAuth } from "../../contexts/AuthContext";
 import LockedContent from "../../components/common/Locked";
+import { motion } from "framer-motion";
 
 // Components
 
@@ -106,6 +108,7 @@ const VehicleInfoPage = () => {
   const vehicleId = idAndSlug ? idAndSlug.split("-")[0] : null;
 
   const { isLoggedIn } = useAuth();
+  const [currentMedia, setCurrentMedia] = useState(null);
 
   const {
     data: vehicle,
@@ -129,17 +132,58 @@ const VehicleInfoPage = () => {
     staleTime: 1000 * 60 * 60, // 1 hour
   });
 
+  const mediaGallery = useMemo(() => {
+    if (!vehicle) return [];
+
+    // Get images based on category key
+    const rawImages = vehicle[getImageProp(category)] || [];
+    const rawVideos = vehicle.videoUrls || [];
+
+    const imageMedia = rawImages.map((url) => ({
+      type: "image",
+      url: url,
+      thumbnail: url, // Image is its own thumbnail
+    }));
+
+    const videoMedia = rawVideos.map((url) => ({
+      type: "video",
+      url: url,
+      // Use the first image as the poster/thumbnail for the video, or a placeholder
+      thumbnail: rawImages[0] || "/placeholder.png",
+    }));
+
+    return [...imageMedia, ...videoMedia];
+  }, [vehicle, category]);
+
+  useEffect(() => {
+    if (mediaGallery.length > 0 && !currentMedia) {
+      setCurrentMedia(mediaGallery[0]);
+    }
+  }, [mediaGallery, currentMedia]);
+
   if (isLoading) return <VehicleInfoPageSkeleton />;
   if (isError) return <div>Error: {error.message}</div>;
   if (!vehicle) return <div>Vehicle not found</div>;
 
-  // Derived data
+  // Derived specs data
   const specList = ALL_SPECS_CONFIG.filter((spec) =>
     getNestedValue(vehicle, spec.key)
   ).map((spec) => ({
     ...spec,
     value: getNestedValue(vehicle, spec.key),
   }));
+
+  if (isLoading) return <VehicleInfoPageSkeleton />;
+  if (isError) return <div>Error: {error.message}</div>;
+  if (!vehicle) return <div>Vehicle not found</div>;
+
+  // // Derived data
+  // const specList = ALL_SPECS_CONFIG.filter((spec) =>
+  //   getNestedValue(vehicle, spec.key)
+  // ).map((spec) => ({
+  //   ...spec,
+  //   value: getNestedValue(vehicle, spec.key),
+  // }));
   const imageList = vehicle[getImageProp(category)] || [];
 
   return (
@@ -155,37 +199,72 @@ const VehicleInfoPage = () => {
           {/* =================== Image + Details Section =================== */}
           <MainContent>
             <ImageSection>
-              <MainImage
-                image={
-                  resizeCloudinaryImage(imageList[selectedImage], {
-                    width: 800,
-                    crop: "fit",
-                  }) || "/placeholder.png"
-                }
-              >
-                <ImageBadges>
-                  {vehicle.badges?.map((badge, index) => (
-                    <ImageBadge key={index}>{badge}</ImageBadge>
-                  ))}
-                </ImageBadges>
-              </MainImage>
+              {currentMedia && (
+                <MediaContainer>
+                  {currentMedia.type === "image" ? (
+                    <DisplayedImage
+                      key={currentMedia.url} // Key forces re-render for animation
+                      src={resizeCloudinaryImage(currentMedia.url, {
+                        width: 1200, // Higher res for main view
+                        crop: "limit",
+                      })}
+                      alt="Vehicle"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                    />
+                  ) : (
+                    <DisplayedVideo
+                      key={currentMedia.url}
+                      src={currentMedia.url}
+                      poster={currentMedia.thumbnail}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                    />
+                  )}
 
-              <ThumbnailGrid>
-                {imageList.map((image, index) => (
-                  <Thumbnail
-                    key={index}
-                    image={
-                      resizeCloudinaryImage(image, {
-                        width: 150,
-                        height: 100,
-                        crop: "fill",
-                      }) || "/placeholder.png"
-                    }
-                    active={selectedImage === index}
-                    onClick={() => setSelectedImage(index)}
-                  />
-                ))}
-              </ThumbnailGrid>
+                  {/* Badges Overlay (Only show on Images ideally, or both) */}
+                  {currentMedia.type === "image" && (
+                    <ImageBadges>
+                      {vehicle.badges?.map((badge, index) => (
+                        <ImageBadge key={index}>{badge}</ImageBadge>
+                      ))}
+                    </ImageBadges>
+                  )}
+                </MediaContainer>
+              )}
+
+              {/* --- 4. Thumbnails --- */}
+              {mediaGallery.length > 1 && (
+                <ThumbnailGrid>
+                  {mediaGallery.map((mediaItem, index) => (
+                    <ThumbnailWrapper
+                      key={index}
+                      active={currentMedia?.url === mediaItem.url}
+                      onClick={() => setCurrentMedia(mediaItem)}
+                    >
+                      {mediaItem.type === "video" && (
+                        <VideoIndicator>
+                          <PlayCircle size={20} color="#fff" />
+                        </VideoIndicator>
+                      )}
+                      <ThumbnailImage
+                        src={resizeCloudinaryImage(mediaItem.thumbnail, {
+                          width: 150,
+                          height: 100,
+                          crop: "fill",
+                        })}
+                        alt={`Thumbnail ${index}`}
+                      />
+                    </ThumbnailWrapper>
+                  ))}
+                </ThumbnailGrid>
+              )}
             </ImageSection>
 
             {/* Title, Rating, Location */}
@@ -389,31 +468,31 @@ const MainImage = styled.div`
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 `;
 
-const ImageBadges = styled.div`
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
+// const ImageBadges = styled.div`
+//   position: absolute;
+//   top: 1rem;
+//   left: 1rem;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 0.5rem;
+// `;
 
-const ImageBadge = styled.span`
-  background: linear-gradient(to right, #ffffff, #ff6b6b, #e53935);
-  color: #fff;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.7rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 20px;
-`;
+// const ImageBadge = styled.span`
+//   background: linear-gradient(to right, #ffffff, #ff6b6b, #e53935);
+//   color: #fff;
+//   padding: 0.3rem 0.8rem;
+//   font-size: 0.7rem;
+//   font-weight: 500;
+//   text-transform: uppercase;
+//   letter-spacing: 1px;
+//   border-radius: 20px;
+// `;
 
-const ThumbnailGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-`;
+// const ThumbnailGrid = styled.div`
+//   display: grid;
+//   grid-template-columns: repeat(4, 1fr);
+//   gap: 1.5rem;
+// `;
 
 const Thumbnail = styled.div`
   height: 100px;
@@ -535,3 +614,246 @@ const ReserveCar = styled.button`
     transform: scale(0.98);
   }
 `;
+
+const MediaContainer = styled.div`
+  width: 100%;
+  height: 65vh; /* Fixed height looks better for car galleries */
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #000;
+  position: relative; /* For badges overlay */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+  @media (max-width: 768px) {
+    height: 40vh;
+  }
+`;
+
+const DisplayedImage = styled(motion.img)`
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Changed to contain to see full car details */
+  display: block;
+`;
+
+const DisplayedVideo = styled(motion.video)`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+`;
+
+const ImageBadges = styled.div`
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 10;
+`;
+
+const ImageBadge = styled.span`
+  background: linear-gradient(to right, #ffffff, #ff6b6b, #e53935);
+  color: #fff;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+`;
+
+const ThumbnailGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+`;
+
+const ThumbnailWrapper = styled.div`
+  height: 80px;
+  border-radius: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid
+    ${(props) => (props.active ? "#ef4444" : "rgba(255, 255, 255, 0.1)")};
+  transition: all 0.3s ease;
+  opacity: ${(props) => (props.active ? 1 : 0.7)};
+
+  &:hover {
+    border-color: #ef4444;
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+`;
+
+const ThumbnailImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const VideoIndicator = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+// --- End Media Styles ---
+
+// const DetailsSection = styled.section`
+//   padding-top: 0.5rem;
+//   border-top: 1px solid rgba(255, 255, 255, 0.05);
+//   &:first-of-type {
+//     border-top: none;
+//   }
+// `;
+
+// const VehicleInfo = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   gap: 0.5rem;
+//   padding-top: 1.5rem;
+//   border-top: 1px solid rgba(255, 255, 255, 0.05);
+// `;
+
+// const SectionTitle = styled.h2`
+//   font-family: "Playfair Display", serif;
+//   font-size: 1.8rem;
+//   font-weight: 400;
+//   margin: 0;
+// `;
+
+// const VehicleTitle = styled.h1`
+//   font-family: "Playfair Display", serif;
+//   font-size: 2.2rem;
+//   font-weight: 400;
+//   margin: 0;
+// `;
+
+// const Description = styled.p`
+//   color: #b3b3b3;
+//   line-height: 1.7;
+//   font-size: 1rem;
+//   font-family: "Inter", sans-serif;
+//   max-width: 70ch;
+// `;
+
+// const SpecsGrid = styled.div`
+//   display: grid;
+//   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+//   gap: 1.5rem;
+//   margin-top: 1rem;
+// `;
+
+// const SpecItem = styled.div`
+//   background: #1a1a1a;
+//   border: 1px solid #292929;
+//   border-radius: 8px;
+//   padding: 1.5rem;
+//   text-align: center;
+//   transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+//   &:hover {
+//     transform: translateY(-5px);
+//     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+//   }
+// `;
+
+// const SpecIcon = styled.div`
+//   color: #e1c841;
+//   margin-bottom: 0.8rem;
+//   display: flex;
+//   justify-content: center;
+// `;
+
+// const SpecLabel = styled.div`
+//   font-size: 0.8rem;
+//   color: #a3a3a3;
+//   text-transform: uppercase;
+//   letter-spacing: 0.5px;
+//   margin-bottom: 0.3rem;
+// `;
+
+// const SpecValue = styled.div`
+//   font-weight: 600;
+//   color: #f2f2f2;
+// `;
+
+// const FeatureList = styled.ul`
+//   list-style: none;
+//   padding: 1rem;
+//   display: grid;
+//   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+//   gap: 1rem;
+// `;
+
+// const FeatureItem = styled.li`
+//   background-color: #1a1a1a;
+//   border: 1px solid #292929;
+//   border-radius: 8px;
+//   padding: 1rem;
+//   display: flex;
+//   align-items: center;
+//   gap: 1rem;
+//   color: #d9d9d9;
+// `;
+
+// const VehicleDetails = styled.div`
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   width: 100%;
+// `;
+
+// const VehicleRating = styled.div`
+//   display: flex;
+//   align-items: center;
+//   gap: 0.5rem;
+// `;
+
+// const RatingStars = styled.div`
+//   display: flex;
+//   align-items: center;
+//   gap: 0.2rem;
+// `;
+
+// const RatingText = styled.span`
+//   color: #b3b3b3;
+//   font-size: 0.9rem;
+// `;
+
+// const ReserveCar = styled.button`
+//   background: linear-gradient(to right, #dc2626, #b91c1c);
+//   color: #fff;
+//   border: none;
+//   border-radius: 50px;
+//   padding: 0.75rem 1.5rem;
+//   font-size: 1rem;
+//   font-weight: bold;
+//   cursor: pointer;
+//   transition: all 0.3s ease;
+//   text-transform: uppercase;
+//   letter-spacing: 1px;
+
+//   &:hover {
+//     background: linear-gradient(to right, #991b1b, #c51c1c);
+//     transform: scale(1.05);
+//   }
+
+//   &:active {
+//     transform: scale(0.98);
+//   }
+// `;

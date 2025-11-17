@@ -24,6 +24,7 @@ import {
   FileText,
   BadgeCheck,
   MapIcon,
+  Video,
 } from "lucide-react";
 import { GiSteeringWheel } from "react-icons/gi";
 import { BsCarFront, BsSpeedometer } from "react-icons/bs";
@@ -178,13 +179,15 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
       badges: "",
       specs: "",
       features: "",
-      carImages: [],
+      images: [],
+      videos: [],
     },
   });
 
   console.log("Validation Errors:", errors);
 
-  const carImages = watch("carImages");
+  const images = watch("images");
+  const videos = watch("videos");
 
   const collectionType = watch("collectionType");
 
@@ -193,11 +196,15 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
 
     Object.keys(data).forEach((key) => {
       const value = data[key];
-      if (value === null || value === "" || value === undefined) return;
-      if (key === "carImages") {
-        Array.from(value).forEach((file) =>
-          formDataApi.append("carImages", file)
-        );
+      if (value === null || value === undefined || value === "") return;
+      if (key === "images" && value.length > 0) {
+        Array.from(value).forEach((file) => {
+          formDataApi.append("images", file);
+        });
+      } else if (key === "videos" && value.length > 0) {
+        Array.from(value).forEach((file) => {
+          formDataApi.append("videos", file);
+        });
       } else {
         formDataApi.append(key, value);
       }
@@ -620,30 +627,63 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         <RequiredStar>*</RequiredStar>
         <FileInputContainer>
           <FileInputWrapper
-            htmlFor="carImages"
-            className={carImages?.length > 0 ? "has-file" : ""}
+            htmlFor="images"
+            className={images?.length > 0 ? "has-file" : ""}
           >
             <HiddenFileInput
-              id="carImages"
+              id="images"
               type="file"
               accept="image/*"
               multiple
-              {...register("carImages")}
+              {...register("images")}
             />
             <FileInputContent>
               <FileInputIcon>
                 <Upload size={24} />
               </FileInputIcon>
               <FileInputText>
-                {carImages?.length > 0
-                  ? `${carImages.length} image(s) selected`
+                {images?.length > 0
+                  ? `${images.length} image(s) selected`
                   : "Click or drag files to upload"}
               </FileInputText>
               <FileInputSubtext>PNG, JPG, WEBP up to 10MB</FileInputSubtext>
             </FileInputContent>
           </FileInputWrapper>
-          {errors.carImages && (
-            <ErrorMessage>{errors.carImages.message}</ErrorMessage>
+          {errors.images && (
+            <ErrorMessage>{errors.images.message}</ErrorMessage>
+          )}
+        </FileInputContainer>
+      </Section>
+
+      <Section>
+        <SectionTitle>🎥 Car Videos</SectionTitle>
+        <FileInputContainer>
+          <FileInputWrapper
+            htmlFor="videos"
+            className={videos?.length > 0 ? "has-file" : ""}
+          >
+            <HiddenFileInput
+              id="videos"
+              type="file"
+              accept="video/*" // Only accepts videos
+              multiple
+              {...register("videos")}
+            />
+            <FileInputContent>
+              <FileInputIcon>
+                {/* You might want to import the Video icon from lucide-react */}
+                <Video size={24} />
+              </FileInputIcon>
+              <FileInputText>
+                {videos?.length > 0
+                  ? `${videos.length} video(s) selected`
+                  : "Click or drag videos to upload"}
+              </FileInputText>
+              <FileInputSubtext>MP4, MOV up to 50MB</FileInputSubtext>
+            </FileInputContent>
+          </FileInputWrapper>
+          {errors.videos && (
+            <ErrorMessage>{errors.videos.message}</ErrorMessage>
           )}
         </FileInputContainer>
       </Section>

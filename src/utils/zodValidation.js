@@ -78,12 +78,12 @@ export const carValidationSchema = z
     driveType: z.union([DriveType, z.literal("")]).optional(),
 
     // --- File Validation (No changes needed) ---
-    carImages: z
+    images: z
       .any()
-      .refine(
-        (files) => files?.length > 0,
-        "At least one car image is required."
-      ),
+      .refine((files) => files?.length > 0, "At least one image is required."),
+
+    // 2. Added 'videos' so the form knows it's a valid field
+    videos: z.any().optional(),
   })
   // MODIFIED: Aligned the refine logic to be more robust, like the backend
   .refine(

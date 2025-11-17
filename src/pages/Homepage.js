@@ -319,47 +319,63 @@ const MissionSection = styled.section`
 
 const MissionTitle = styled.h2`
   font-family: "Playfair Display", serif;
-  font-size: 3.5rem; // Desktop
+  font-size: 3rem;
   font-weight: 400;
-  line-height: 1.2;
-  margin-bottom: 3rem;
-  letter-spacing: 0.02em;
+  line-height: 1.3;
+  letter-spacing: 0.5px;
+  margin-bottom: 3.5rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 
   span {
-    color: #666;
+    display: block;
+    margin-top: 1rem;
+    color: #888;
+    font-size: 1.4rem;
+    line-height: 1.4;
   }
 
-  /* --- ADD THIS --- */
+  /* Tablet */
+  @media (max-width: 1024px) {
+    font-size: 2.6rem;
+    max-width: 700px;
+  }
+
+  /* Mobile */
   @media (max-width: 768px) {
-    font-size: 2.2rem; // Mobile
-    margin-bottom: 2rem;
+    font-size: 2rem;
+    line-height: 1.4;
+    max-width: 90%;
+    span {
+      font-size: 1.1rem;
+    }
   }
 `;
 
 const MissionButtons = styled.div`
   display: flex;
-  gap: 1rem;
+  gap: 1.2rem;
   justify-content: center;
   flex-wrap: wrap;
 `;
 
 const MissionButton = styled(Link)`
   background: ${(props) =>
-    props.$primary ? "rgba(255,255,255,0.2)" : "transparent"};
+    props.$primary ? "rgba(255,255,255,0.15)" : "transparent"};
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: #fff;
-  padding: 1rem 2rem;
-  font-size: 0.9rem;
+  padding: 1rem 2.2rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-decoration: none;
   display: inline-block;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.25);
   }
 `;
 
@@ -696,11 +712,14 @@ const Homepage = () => {
 
       <MissionSection>
         <MissionTitle>
-          OUR MISSION GOES BEYOND TUNING.
+          EVERY TRADE IS A PRIVILEGE.
           <br />
-          WE CREATE UNIQUE MASTERPIECES
+          AUTHENTIC BUILDS, RESERVED FOR THOSE WHO MEET OUR STANDARD.
           <br />
-          <span>THAT DEFY CONVENTION</span>
+          <span>
+            WE TRADE IN AUTHENTICITY. EACH VEHICLE IS HANDPICKED FOR CLIENTS WHO
+            VALUE EXCE
+          </span>
         </MissionTitle>
         <MissionButtons>
           <MissionButton to="/about">ABOUT US</MissionButton>
@@ -708,40 +727,14 @@ const Homepage = () => {
             ALL MODELS
           </MissionButton>
         </MissionButtons>
-      </MissionSection>
 
-      <JoinSection>
-        <JoinSubtitle>Get in touch to make your dream car true.</JoinSubtitle>
-        <ContactButton to="/contact">CONTACT US</ContactButton>
-      </JoinSection>
+        <JoinSection>
+          <JoinSubtitle>Get in touch to make your dream car true.</JoinSubtitle>
+          <ContactButton to="/contact">CONTACT US</ContactButton>
+        </JoinSection>
+      </MissionSection>
     </HomepageWrapper>
   );
 };
 
 export default Homepage;
-
-// <LatestSection style={{ background: "#111" }}>
-//         <SectionTitle>CARS FOR SALE</SectionTitle>
-
-//         {/* 2. Reuse CardsGrid */}
-//         <CardsGrid>
-//           {carsForSale.map((car, index) => (
-//             // 3. Reuse CarCard
-//             <CarCard key={index} to={`/cars/${car.id}`}>
-//               {/* 4. Reuse CardImage */}
-//               <CardImage image={car.image}>
-//                 {/* 5. Reuse CardBadges logic */}
-//                 <CardBadges>
-//                   <Badge>AVAILABLE • {car.number}</Badge>
-//                 </CardBadges>
-//               </CardImage>
-
-//               <CardContent>
-//                 <CardTitle>
-//                   {car.brand} {car.title}
-//                 </CardTitle>
-//               </CardContent>
-//             </CarCard>
-//           ))}
-//         </CardsGrid>
-//       </LatestSection>
