@@ -7,20 +7,17 @@ import * as Pages from "../pages";
 import ContactSection from "../components/common/ContactSection";
 import BookingConfirmationPage from "../pages/events/BookingConfirmationPage";
 import BookingsPage from "../pages/user/MyBookingsPage";
-import YBTCaravansPage from "../pages/collections/YBTCaravansPage";
-import YBTJetsPage from "../pages/collections/YBTJetsPage";
 
 const Homepage = lazy(() => import("../pages/Homepage"));
 const AboutPage = lazy(() => import("../pages/AboutPage"));
 
 const MainRoutes = (
   <>
-    {/* Routes that use the main header and footer */}
     <Route path="/" element={<MainLayout />}>
       <Route index element={<Homepage />} />
       <Route path="/auth" element={<Pages.AuthPage />} />
       <Route path="about" element={<AboutPage />} />
-      <Route path="cars" element={<Pages.CarsPage />} />
+      {/* <Route path="cars" element={<Pages.CarsPage />} /> */}
       <Route path="models" element={<Pages.ModelsPage />} />
       <Route path="blog" element={<Pages.BlogPage />} />
       <Route path="/dealers" element={<Pages.DealersPage />} />
@@ -31,7 +28,6 @@ const MainRoutes = (
       />
       <Route path="contact" element={<ContactSection />} />
 
-      {/* Collections Routes */}
       <Route path="collections" element={<Pages.CollectionsPage />} />
       <Route path="collections/ybt" element={<Pages.YBTCollectionPage />} />
       <Route path="collections/ybt-cars" element={<Pages.YBTCarsPage />} />
@@ -41,7 +37,7 @@ const MainRoutes = (
         element={<Pages.YBTCaravansPage />}
       />
       <Route path="collections/ybt-jets" element={<Pages.YBTJetsPage />} />
-      {/* <YBTCaravansPage></YBTCaravansPage> */}
+
       <Route
         path="collections/designer"
         element={<Pages.DesignerCollectionPage />}
@@ -62,7 +58,7 @@ const MainRoutes = (
         path="collections/workshop/:slug"
         element={<Pages.WorkshopDetailPage />}
       />
-      <Route path="/rims" element={<Pages.RimsPage />} />
+      {/* <Route path="/rims" element={<Pages.RimsPage />} /> */}
 
       {/* Rentals Routes */}
       <Route path="rentals" element={<Pages.RentalsPage />} />
@@ -87,11 +83,10 @@ const MainRoutes = (
       {/* Merchandise Routes */}
       <Route path="merchandise" element={<Pages.MerchandisePage />} />
 
-      {/* User Routes (Protected routes will be handled by your component) */}
       <Route path="profile" element={<Pages.ProfilePage />} />
-      <Route path="wishlist" element={<Pages.WishlistPage />} />
-      <Route path="checkout" element={<Pages.CheckoutPage />} />
-      <Route path="orders" element={<Pages.OrdersPage />} />
+      {/* <Route path="wishlist" element={<Pages.WishlistPage />} /> */}
+      {/* <Route path="checkout" element={<Pages.CheckoutPage />} /> */}
+      {/* <Route path="orders" element={<Pages.OrdersPage />} /> */}
 
       {/* Legal Routes */}
       <Route path="faq" element={<Pages.FAQPage />} />
@@ -100,7 +95,6 @@ const MainRoutes = (
       <Route path="/my-bookings" element={<BookingsPage />} />
     </Route>
 
-    {/* Standalone routes without the MainLayout (e.g., booking process) */}
     <Route path="/book/:slug" element={<Pages.TicketSelectionPage />} />
     <Route path="/book/:slug/summary" element={<Pages.BookingSummaryPage />} />
     <Route path="/booking-confirmation" element={<BookingConfirmationPage />} />

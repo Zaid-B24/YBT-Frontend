@@ -2,27 +2,6 @@ import { LuLockKeyhole } from "react-icons/lu";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
-const DirectionsButton = styled.button`
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-  justify-content: center;
-  font-size: 0.9rem;
-  font-weight: 500;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-`;
-
 const AuthButton = styled(Link)`
   background: linear-gradient(to right, #dc2626, #b91c1c);
   color: #fff;

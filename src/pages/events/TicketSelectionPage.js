@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, Minus, Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -154,27 +154,6 @@ const ProceedButton = styled.button`
     cursor: not-allowed;
     filter: grayscale(0.2);
   }
-`;
-
-const SmallNote = styled.p`
-  margin: 0;
-  font-size: 0.85rem;
-  color: #bdbdbd;
-`;
-
-const Toast = styled.div`
-  position: fixed;
-  right: 16px;
-  bottom: 84px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 0.6rem 0.9rem;
-  border-radius: 8px;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  z-index: 9999;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
 `;
 
 // --- The Main Component ---

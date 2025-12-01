@@ -75,7 +75,6 @@ const CreateEventForm = ({ onSuccess, onBack }) => {
     register,
     handleSubmit,
     control,
-    watch,
     formState: { errors },
   } = useForm({
     mode: "onChange",
@@ -119,9 +118,9 @@ const CreateEventForm = ({ onSuccess, onBack }) => {
     }
 
     // Get just the date part (e.g., "2025-10-02") from the main start date.
-    const eventDatePart = new Date(formData.startDate)
-      .toISOString()
-      .split("T")[0];
+    // const eventDatePart = new Date(formData.startDate)
+    //   .toISOString()
+    //   .split("T")[0];
     const processedData = {
       ...formData,
 
@@ -174,8 +173,6 @@ const CreateEventForm = ({ onSuccess, onBack }) => {
 
     mutate(data);
   };
-
-  const images = watch("images");
 
   const inputFields = [
     {

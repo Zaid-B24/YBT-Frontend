@@ -2,8 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Search, ChevronDown, ChevronUp, Zap } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { Search, ChevronDown, ChevronUp } from "lucide-react";
 import { CarCardSkeleton } from "../../components/cards/CarCardSkeleton";
 import { useCars } from "../../hooks/useCars";
 import VehicleBadges from "../../components/common/VehicleBadges";
@@ -111,40 +110,6 @@ const ResetButton = styled.button`
   &:hover {
     color: #fff;
   }
-`;
-
-const SearchContainer = styled.div`
-  padding: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative;
-`;
-
-const SearchInput = styled.input`
-  width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
-  font-size: 0.9rem;
-
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-  }
-
-  &:focus {
-    outline: none;
-    border-color: rgba(255, 255, 255, 0.4);
-  }
-`;
-
-const SearchIcon = styled(Search)`
-  position: absolute;
-  left: 2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  color: rgba(255, 255, 255, 0.5);
 `;
 
 const FilterSection = styled.div`

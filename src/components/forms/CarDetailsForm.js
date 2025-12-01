@@ -9,7 +9,6 @@ import {
   Zap,
   Palette,
   DoorOpen,
-  ArrowLeft,
   Building2,
   Tags,
   CalendarDays,
@@ -136,7 +135,6 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
   const {
     register,
     handleSubmit,
-    control,
     watch,
     formState: { errors, isSubmitting, isDirty },
   } = useForm({
@@ -646,7 +644,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
                   ? `${images.length} image(s) selected`
                   : "Click or drag files to upload"}
               </FileInputText>
-              <FileInputSubtext>PNG, JPG, WEBP up to 10MB</FileInputSubtext>
+              <FileInputSubtext>PNG, JPG, WEBP up to 100MB</FileInputSubtext>
             </FileInputContent>
           </FileInputWrapper>
           {errors.images && (
@@ -804,12 +802,12 @@ const Checkbox = styled.input.attrs({ type: "checkbox" })`
   accent-color: #0af253;
   cursor: pointer;
 `;
-const BadgeRow = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  margin-bottom: 0.5rem;
-`;
+// const BadgeRow = styled.div`
+//   display: flex;
+//   gap: 0.5rem;
+//   align-items: center;
+//   margin-bottom: 0.5rem;
+// `;
 const buttonReset = css`
   background: transparent;
   border: 1px solid;
@@ -818,28 +816,28 @@ const buttonReset = css`
   transition: all 0.2s;
   font-size: 0.875rem;
 `;
-const AddBadgeButton = styled.button`
-  ${buttonReset}
-  margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
-  color: #fca5a5;
-  border-color: #7f1d1d;
-  align-self: flex-start;
-  &:hover {
-    background-color: #7f1d1d;
-    color: white;
-  }
-`;
-const RemoveButton = styled.button`
-  ${buttonReset}
-  color: rgba(255, 255, 255, 0.5);
-  border: none;
-  padding: 0.5rem;
-  &:hover {
-    color: #ef4444;
-    background: rgba(239, 68, 68, 0.1);
-  }
-`;
+// const AddBadgeButton = styled.button`
+//   ${buttonReset}
+//   margin-top: 0.5rem;
+//   padding: 0.5rem 1rem;
+//   color: #fca5a5;
+//   border-color: #7f1d1d;
+//   align-self: flex-start;
+//   &:hover {
+//     background-color: #7f1d1d;
+//     color: white;
+//   }
+// `;
+// const RemoveButton = styled.button`
+//   ${buttonReset}
+//   color: rgba(255, 255, 255, 0.5);
+//   border: none;
+//   padding: 0.5rem;
+//   &:hover {
+//     color: #ef4444;
+//     background: rgba(239, 68, 68, 0.1);
+//   }
+// `;
 const FileInputContainer = styled.div`
   grid-column: 1 / -1;
 `;
@@ -885,13 +883,13 @@ const ErrorMessage = styled.p`
   font-size: 0.8rem;
   margin-top: 0.25rem;
 `;
-const FormActions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 1.5rem;
-  margin-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-`;
+// const FormActions = styled.div`
+//   display: flex;
+//   justify-content: flex-end;
+//   padding-top: 1.5rem;
+//   margin-top: 1.5rem;
+//   border-top: 1px solid rgba(255, 255, 255, 0.2);
+// `;
 const BackButton = styled.button`
   ${buttonReset}
   padding: 0.5rem 1rem;

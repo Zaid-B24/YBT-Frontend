@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import styled from "styled-components";
 import {
   BarChart3,
@@ -7,12 +6,8 @@ import {
   Users,
   Car,
   DollarSign,
-  Calendar,
-  Eye,
-  ShoppingCart,
   Star,
   MapPin,
-  Clock,
   Filter,
   Download,
   RefreshCw,
@@ -420,7 +415,7 @@ const TopItemValue = styled.div`
 `;
 
 const AnalyticsPage = () => {
-  const [timeRange, setTimeRange] = useState("30d");
+  //const [timeRange, setTimeRange] = useState("30d");
 
   const stats = [
     {

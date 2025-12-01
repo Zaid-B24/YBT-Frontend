@@ -93,7 +93,7 @@ src/
 │   └── 📄 WishlistContext.js
 │
 ├── 📂 data/                    # Static data and mock data
-│   └── 📄 carsData.js
+│   └── 📄
 │
 ├── 📂 hooks/                   # Custom React hooks (future)
 │
@@ -113,22 +113,26 @@ src/
 ## 🎯 Organization Benefits
 
 ### **1. Feature-Based Organization**
+
 - **Pages grouped by functionality**: Auth, Collections, Rentals, etc.
 - **Easier navigation** and maintenance
 - **Logical separation** of concerns
 
 ### **2. Component Hierarchy**
+
 - **Layout components**: Header, Footer
 - **Common components**: Shared across features
 - **Card components**: Reusable card designs
 - **Form components**: Reusable form elements
 
 ### **3. Centralized Exports**
+
 - **Index files** in major directories for cleaner imports
 - **Single import statements** instead of multiple imports
 - **Better IDE support** with auto-completion
 
 ### **4. Scalability**
+
 - **Easy to add new features** in appropriate directories
 - **Clear separation** between different application areas
 - **Consistent naming conventions**
@@ -136,34 +140,39 @@ src/
 ## 📋 Import Examples
 
 ### Before (Messy)
+
 ```javascript
-import Homepage from './pages/Homepage';
-import LoginPage from './pages/LoginPage';
-import RentalsPage from './pages/RentalsPage';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import Cart from './components/Cart';
+import Homepage from "./pages/Homepage";
+import LoginPage from "./pages/LoginPage";
+import RentalsPage from "./pages/RentalsPage";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Cart from "./components/Cart";
 ```
 
 ### After (Clean)
+
 ```javascript
-import { Homepage, LoginPage, RentalsPage } from './pages';
-import { Header, Footer, Cart } from './components';
+import { Homepage, LoginPage, RentalsPage } from "./pages";
+import { Header, Footer, Cart } from "./components";
 ```
 
 ## 🔧 Development Guidelines
 
 ### **Adding New Pages**
+
 1. Create page in appropriate feature directory
 2. Add export to `pages/index.js`
 3. Add route to `App.js`
 
 ### **Adding New Components**
+
 1. Create component in appropriate category
 2. Add export to `components/index.js`
 3. Import from centralized location
 
 ### **File Naming Conventions**
+
 - **PascalCase** for component files: `ComponentName.js`
 - **camelCase** for utility files: `utilityName.js`
 - **kebab-case** for asset files: `image-name.jpg`
@@ -171,6 +180,7 @@ import { Header, Footer, Cart } from './components';
 ## 🚀 Future Enhancements
 
 ### **Planned Additions**
+
 - **Custom hooks** directory for reusable logic
 - **API service** layer for backend communication
 - **Global styles** and theme management
@@ -178,6 +188,7 @@ import { Header, Footer, Cart } from './components';
 - **Build optimization** configurations
 
 ### **Potential Features**
+
 - **Admin dashboard** pages
 - **API integration** utilities
 - **Form validation** components
@@ -186,12 +197,12 @@ import { Header, Footer, Cart } from './components';
 
 ## 📊 File Statistics
 
-| Directory | Files | Purpose |
-|-----------|-------|---------|
-| `pages/` | 40+ | Application pages |
-| `components/` | 7 | Reusable UI components |
-| `contexts/` | 3 | State management |
-| `utils/` | 1 | Helper functions |
-| `constants/` | 1 | App-wide constants |
+| Directory     | Files | Purpose                |
+| ------------- | ----- | ---------------------- |
+| `pages/`      | 40+   | Application pages      |
+| `components/` | 7     | Reusable UI components |
+| `contexts/`   | 3     | State management       |
+| `utils/`      | 1     | Helper functions       |
+| `constants/`  | 1     | App-wide constants     |
 
-This organized structure makes the YBT website more maintainable, scalable, and developer-friendly! 🎉 
+This organized structure makes the YBT website more maintainable, scalable, and developer-friendly! 🎉

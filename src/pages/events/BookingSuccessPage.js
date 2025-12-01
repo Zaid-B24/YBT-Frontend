@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 import styled from "styled-components";

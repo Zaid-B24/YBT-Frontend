@@ -266,7 +266,7 @@ const tabs = [
   { id: "personal", label: "Personal Info" },
   { id: "orders", label: "Orders" },
   { id: "password", label: "Password" },
-  { id: "preferences", label: "Preferences" },
+  // { id: "preferences", label: "Preferences" },
 ];
 
 const ProfilePage = () => {

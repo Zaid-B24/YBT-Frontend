@@ -1,9 +1,7 @@
-// =================== Imports ===================
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 
-// Icons
 import {
   ArrowLeft,
   CheckCircle,
@@ -12,7 +10,6 @@ import {
   Gauge,
   Palette,
   RotateCw,
-  Star,
   UserCircle,
   Users,
   Zap,
@@ -25,6 +22,7 @@ import { VehicleInfoPageSkeleton } from "../../components/cards/VehicleInfoPageS
 import { useAuth } from "../../contexts/AuthContext";
 import LockedContent from "../../components/common/Locked";
 import { motion } from "framer-motion";
+import { BiRupee } from "react-icons/bi";
 
 // Components
 
@@ -60,23 +58,6 @@ const ALL_SPECS_CONFIG = [
   { key: "dealer.name", label: "Listed By", Icon: UserCircle },
 ];
 
-const dummyVehicle = {
-  features: [
-    "Adaptive M Suspension",
-    "M Performance Exhaust",
-    "Carbon Fiber Interior",
-    "Premium Sound System",
-    "Advanced Driver Assistance",
-    "Sport Seats with Memory",
-    "Wireless Charging",
-    "Premium Leather Interior",
-    "Adaptive LED Headlights",
-    "M Sport Brakes",
-    "Launch Control",
-    "Multiple Driving Modes",
-  ],
-};
-
 const resizeCloudinaryImage = (
   url,
   { width, height, crop = "scale", quality = "auto:best" }
@@ -101,14 +82,10 @@ const resizeCloudinaryImage = (
 // =================== Component ===================
 const VehicleInfoPage = () => {
   const { category, idAndSlug } = useParams();
-  console.log(category, idAndSlug, "These are recieved in params");
   const navigate = useNavigate();
-  const [selectedImage, setSelectedImage] = useState(0);
-
   const vehicleId = idAndSlug ? idAndSlug.split("-")[0] : null;
 
   const { isLoggedIn } = useAuth();
-  const [currentMedia, setCurrentMedia] = useState(null);
 
   const {
     data: vehicle,
@@ -155,12 +132,8 @@ const VehicleInfoPage = () => {
     return [...imageMedia, ...videoMedia];
   }, [vehicle, category]);
 
-  useEffect(() => {
-    if (mediaGallery.length > 0 && !currentMedia) {
-      setCurrentMedia(mediaGallery[0]);
-    }
-  }, [mediaGallery, currentMedia]);
-
+  const [selectedMediaState, setSelectedMediaState] = useState(null);
+  const currentMedia = selectedMediaState || mediaGallery[0];
   if (isLoading) return <VehicleInfoPageSkeleton />;
   if (isError) return <div>Error: {error.message}</div>;
   if (!vehicle) return <div>Vehicle not found</div>;
@@ -176,15 +149,6 @@ const VehicleInfoPage = () => {
   if (isLoading) return <VehicleInfoPageSkeleton />;
   if (isError) return <div>Error: {error.message}</div>;
   if (!vehicle) return <div>Vehicle not found</div>;
-
-  // // Derived data
-  // const specList = ALL_SPECS_CONFIG.filter((spec) =>
-  //   getNestedValue(vehicle, spec.key)
-  // ).map((spec) => ({
-  //   ...spec,
-  //   value: getNestedValue(vehicle, spec.key),
-  // }));
-  const imageList = vehicle[getImageProp(category)] || [];
 
   return (
     <PageWrapper>
@@ -246,7 +210,7 @@ const VehicleInfoPage = () => {
                     <ThumbnailWrapper
                       key={index}
                       active={currentMedia?.url === mediaItem.url}
-                      onClick={() => setCurrentMedia(mediaItem)}
+                      onClick={() => setSelectedMediaState(mediaItem)}
                     >
                       {mediaItem.type === "video" && (
                         <VideoIndicator>
@@ -273,24 +237,11 @@ const VehicleInfoPage = () => {
                 {vehicle.brand} {vehicle.title}
               </VehicleTitle>
 
+              <VehiclePrice>
+                <BiRupee /> {vehicle.sellingPrice}
+              </VehiclePrice>
+
               <VehicleDetails>
-                <VehicleRating>
-                  <RatingStars>
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        size={14}
-                        fill={
-                          i < Math.floor(vehicle.rating)
-                            ? "currentColor"
-                            : "none"
-                        }
-                        color="#e1c841"
-                      />
-                    ))}
-                  </RatingStars>
-                  <RatingText>4.5 ({vehicle.reviewCount} reviews)</RatingText>
-                </VehicleRating>
                 <ReserveCar
                   onClick={() => navigate(`/reserve/${category}/${vehicleId}`)}
                 >
@@ -331,17 +282,18 @@ const VehicleInfoPage = () => {
               )}
             </DetailsSection>
 
-            <DetailsSection>
-              <SectionTitle>Features & Amenities</SectionTitle>
-              <FeatureList>
-                {vehicle.features?.map((feature, index) => (
-                  <FeatureItem key={index}>
-                    <CheckCircle size={16} color="#e1c841" />
-                    {feature}
-                  </FeatureItem>
-                ))}
-              </FeatureList>
-            </DetailsSection>
+            {vehicle.features && vehicle.features.length > 0 && (
+              <DetailsSection>
+                <SectionTitle>Features & Amenities</SectionTitle>
+                <FeatureList>
+                  {vehicle.features.map((feature, index) => (
+                    <FeatureItem key={index}>
+                      <CheckCircle size={16} color="#e1c841" /> {feature}
+                    </FeatureItem>
+                  ))}
+                </FeatureList>
+              </DetailsSection>
+            )}
           </MainContent>
 
           {/* =================== New Contact Section =================== */}
@@ -453,67 +405,8 @@ const Description = styled.p`
   max-width: 70ch;
 `;
 
-// =================== Image Gallery ===================
-const MainImage = styled.div`
-  height: 80vh; /* Changed from 500px to 60vh */
-  /* Keep the rest of your styles the same */
-  background: ${(props) =>
-      props.image
-        ? `url(${props.image})`
-        : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
-    center center/contain no-repeat;
-  border-radius: 10px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-`;
+const VehiclePrice = styled.div``;
 
-// const ImageBadges = styled.div`
-//   position: absolute;
-//   top: 1rem;
-//   left: 1rem;
-//   display: flex;
-//   flex-direction: column;
-//   gap: 0.5rem;
-// `;
-
-// const ImageBadge = styled.span`
-//   background: linear-gradient(to right, #ffffff, #ff6b6b, #e53935);
-//   color: #fff;
-//   padding: 0.3rem 0.8rem;
-//   font-size: 0.7rem;
-//   font-weight: 500;
-//   text-transform: uppercase;
-//   letter-spacing: 1px;
-//   border-radius: 20px;
-// `;
-
-// const ThumbnailGrid = styled.div`
-//   display: grid;
-//   grid-template-columns: repeat(4, 1fr);
-//   gap: 1.5rem;
-// `;
-
-const Thumbnail = styled.div`
-  height: 100px;
-  background: ${(props) =>
-      props.image
-        ? `url(${props.image})`
-        : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
-    center center/contain no-repeat;
-  border-radius: 5px;
-  cursor: pointer;
-  border: 2px solid ${(props) => (props.active ? "#dc2626" : "transparent")};
-  transition: all 0.3s ease;
-  transform: ${(props) => (props.active ? "scale(1.05)" : "scale(1)")};
-
-  &:hover {
-    border-color: #dc2626;
-    transform: scale(1.05);
-  }
-`;
-
-// =================== Specs & Features ===================
 const SpecsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -575,22 +468,6 @@ const FeatureItem = styled.li`
 `;
 
 // =================== Rating & Location ===================
-const VehicleRating = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const RatingStars = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
-`;
-
-const RatingText = styled.span`
-  color: #b3b3b3;
-  font-size: 0.9rem;
-`;
 
 const ReserveCar = styled.button`
   background: linear-gradient(to right, #dc2626, #b91c1c);
@@ -633,7 +510,7 @@ const MediaContainer = styled.div`
 const DisplayedImage = styled(motion.img)`
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Changed to contain to see full car details */
+  object-fit: cover; /* Changed to contain to see full car details */
   display: block;
 `;
 

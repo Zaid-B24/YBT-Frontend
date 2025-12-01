@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from 'react';
-import styled from 'styled-components';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Filter, X, Search } from 'lucide-react';
-import CarCard from '../components/cards/CarCard';
-import { carsData } from '../data/carsData';
+import React, { useState, useMemo } from "react";
+import styled from "styled-components";
+import { motion, AnimatePresence } from "framer-motion";
+import { Filter, X, Search } from "lucide-react";
+import CarCard from "../components/cards/CarCard";
+//import { carsData } from '../data/carsData';
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -18,7 +18,7 @@ const PageHeader = styled.section`
 `;
 
 const PageTitle = styled.h1`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 3rem;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -90,7 +90,7 @@ const FilterButton = styled.button`
 const ResultsInfo = styled.div`
   color: #cccccc;
   font-size: 0.9rem;
-  
+
   @media (max-width: 768px) {
     text-align: center;
   }
@@ -227,8 +227,11 @@ const FilterOptions = styled.div`
 
 const FilterOption = styled.button`
   padding: 0.5rem 1rem;
-  background: ${props => props.active ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.02)'};
-  border: 1px solid ${props => props.active ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)'};
+  background: ${(props) =>
+    props.active ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.02)"};
+  border: 1px solid
+    ${(props) =>
+      props.active ? "rgba(255, 255, 255, 0.3)" : "rgba(255, 255, 255, 0.1)"};
   border-radius: 4px;
   color: #ffffff;
   font-size: 0.8rem;
@@ -265,29 +268,38 @@ const NoResults = styled.div`
   font-size: 1.1rem;
 `;
 
+const carsData = [{}];
+
 const CarsPage = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('name-asc');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("name-asc");
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilters, setActiveFilters] = useState({
     brand: [],
     model: [],
-    type: []
+    type: [],
   });
 
-  const brands = [...new Set(carsData.map(car => car.brand))].sort();
-  const models = [...new Set(carsData.map(car => car.model))].sort();
-  const types = [...new Set(carsData.map(car => car.type))].sort();
+  const brands = [...new Set(carsData.map((car) => car.brand))].sort();
+  const models = [...new Set(carsData.map((car) => car.model))].sort();
+  const types = [...new Set(carsData.map((car) => car.type))].sort();
 
   const filteredCars = useMemo(() => {
-    let filtered = carsData.filter(car => {
-      const matchesSearch = car.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           car.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           car.model.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesBrand = activeFilters.brand.length === 0 || activeFilters.brand.includes(car.brand);
-      const matchesModel = activeFilters.model.length === 0 || activeFilters.model.includes(car.model);
-      const matchesType = activeFilters.type.length === 0 || activeFilters.type.includes(car.type);
+    let filtered = carsData.filter((car) => {
+      const matchesSearch =
+        car.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        car.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        car.model.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesBrand =
+        activeFilters.brand.length === 0 ||
+        activeFilters.brand.includes(car.brand);
+      const matchesModel =
+        activeFilters.model.length === 0 ||
+        activeFilters.model.includes(car.model);
+      const matchesType =
+        activeFilters.type.length === 0 ||
+        activeFilters.type.includes(car.type);
 
       return matchesSearch && matchesBrand && matchesModel && matchesType;
     });
@@ -295,13 +307,13 @@ const CarsPage = () => {
     // Sort results
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'name-asc':
+        case "name-asc":
           return a.name.localeCompare(b.name);
-        case 'name-desc':
+        case "name-desc":
           return b.name.localeCompare(a.name);
-        case 'newest':
+        case "newest":
           return new Date(b.date) - new Date(a.date);
-        case 'oldest':
+        case "oldest":
           return new Date(a.date) - new Date(b.date);
         default:
           return 0;
@@ -312,11 +324,11 @@ const CarsPage = () => {
   }, [searchTerm, sortBy, activeFilters]);
 
   const toggleFilter = (category, value) => {
-    setActiveFilters(prev => ({
+    setActiveFilters((prev) => ({
       ...prev,
       [category]: prev[category].includes(value)
-        ? prev[category].filter(item => item !== value)
-        : [...prev[category], value]
+        ? prev[category].filter((item) => item !== value)
+        : [...prev[category], value],
     }));
   };
 
@@ -324,9 +336,9 @@ const CarsPage = () => {
     setActiveFilters({
       brand: [],
       model: [],
-      type: []
+      type: [],
     });
-    setSearchTerm('');
+    setSearchTerm("");
   };
 
   return (
@@ -334,7 +346,7 @@ const CarsPage = () => {
       <PageHeader>
         <PageTitle>Models</PageTitle>
         <PageSubtitle>
-          Discover our exclusive collection of luxury automotive masterpieces, 
+          Discover our exclusive collection of luxury automotive masterpieces,
           each crafted with uncompromising attention to detail and performance.
         </PageSubtitle>
       </PageHeader>
@@ -346,9 +358,7 @@ const CarsPage = () => {
               <Filter size={16} />
               Filters
             </FilterButton>
-            <ResultsInfo>
-              {filteredCars.length} results
-            </ResultsInfo>
+            <ResultsInfo>{filteredCars.length} results</ResultsInfo>
           </FilterLeft>
 
           <FilterRight>
@@ -393,7 +403,10 @@ const CarsPage = () => {
         {filteredCars.length === 0 && (
           <NoResults>
             <h3>No results found.</h3>
-            <button onClick={resetFilters} style={{ color: '#fff', textDecoration: 'underline' }}>
+            <button
+              onClick={resetFilters}
+              style={{ color: "#fff", textDecoration: "underline" }}
+            >
               Reset filters
             </button>
           </NoResults>
@@ -418,11 +431,11 @@ const CarsPage = () => {
               <FilterGroup>
                 <FilterGroupTitle>Brand</FilterGroupTitle>
                 <FilterOptions>
-                  {brands.map(brand => (
+                  {brands.map((brand) => (
                     <FilterOption
                       key={brand}
                       active={activeFilters.brand.includes(brand)}
-                      onClick={() => toggleFilter('brand', brand)}
+                      onClick={() => toggleFilter("brand", brand)}
                     >
                       {brand}
                     </FilterOption>
@@ -433,11 +446,11 @@ const CarsPage = () => {
               <FilterGroup>
                 <FilterGroupTitle>Model</FilterGroupTitle>
                 <FilterOptions>
-                  {models.slice(0, 20).map(model => (
+                  {models.slice(0, 20).map((model) => (
                     <FilterOption
                       key={model}
                       active={activeFilters.model.includes(model)}
-                      onClick={() => toggleFilter('model', model)}
+                      onClick={() => toggleFilter("model", model)}
                     >
                       {model}
                     </FilterOption>
@@ -448,11 +461,11 @@ const CarsPage = () => {
               <FilterGroup>
                 <FilterGroupTitle>Type</FilterGroupTitle>
                 <FilterOptions>
-                  {types.map(type => (
+                  {types.map((type) => (
                     <FilterOption
                       key={type}
                       active={activeFilters.type.includes(type)}
-                      onClick={() => toggleFilter('type', type)}
+                      onClick={() => toggleFilter("type", type)}
                     >
                       {type}
                     </FilterOption>
@@ -463,13 +476,13 @@ const CarsPage = () => {
               <button
                 onClick={resetFilters}
                 style={{
-                  width: '100%',
-                  padding: '1rem',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  color: '#fff',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '4px',
-                  marginTop: '1rem'
+                  width: "100%",
+                  padding: "1rem",
+                  background: "rgba(255, 255, 255, 0.1)",
+                  color: "#fff",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  borderRadius: "4px",
+                  marginTop: "1rem",
                 }}
               >
                 Reset Filters
@@ -482,4 +495,4 @@ const CarsPage = () => {
   );
 };
 
-export default CarsPage; 
+export default CarsPage;

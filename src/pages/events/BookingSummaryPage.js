@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { ChevronLeft, Ticket } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
 // --- Styled Components (Matching your YBT Theme) ---
@@ -78,13 +77,13 @@ const SectionTitle = styled.h2`
   margin-bottom: 1.5rem;
 `;
 
-const InfoCard = styled.div`
-  background: #1a1a1a;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-`;
+// const InfoCard = styled.div`
+//   background: #1a1a1a;
+//   border: 1px solid rgba(255, 255, 255, 0.1);
+//   border-radius: 12px;
+//   padding: 1.5rem;
+//   margin-bottom: 1.5rem;
+// `;
 
 const TicketTypeDisplay = styled.div`
   display: flex;
@@ -305,7 +304,7 @@ const indianStates = [
 
 const BookingSummaryPage = () => {
   const location = useLocation();
-  const { slug } = useParams();
+  //const { slug } = useParams();
   const navigate = useNavigate();
   const { event, selectedTickets } = location.state || {};
 

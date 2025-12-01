@@ -131,15 +131,6 @@ const NewsletterButton = styled.button`
 
 const FooterColumn = styled.div``;
 
-const ColumnTitle = styled.h4`
-  font-size: 1rem;
-  font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 1.5rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-`;
-
 const FooterLinks = styled.ul`
   list-style: none;
   padding: 0;

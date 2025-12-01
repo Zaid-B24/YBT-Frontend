@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { carsData } from '../../data/carsData';
+import React from "react";
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+// import { carsData } from '../../data/carsData';
 
 const Section = styled.section`
   padding: 6rem 2rem;
@@ -21,7 +21,7 @@ const Header = styled.div`
 `;
 
 const Title = styled.h2`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 3rem;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -66,7 +66,8 @@ const FeaturedCard = styled(motion.div)`
 const CardImage = styled.div`
   width: 100%;
   height: 100%;
-  background: ${props => props.image ? `url(${props.image})` : 'linear-gradient(45deg, #333, #555)'};
+  background: ${(props) =>
+    props.image ? `url(${props.image})` : "linear-gradient(45deg, #333, #555)"};
   background-size: cover;
   background-position: center;
   transition: transform 0.5s ease;
@@ -82,7 +83,12 @@ const CardOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, transparent 100%);
+  background: linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.3) 70%,
+    transparent 100%
+  );
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -108,7 +114,7 @@ const CardContent = styled.div`
 `;
 
 const CardTitle = styled.h3`
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
@@ -193,6 +199,8 @@ const ViewAllButton = styled(Link)`
   }
 `;
 
+const carsData = [{}];
+
 const FeaturedCars = () => {
   // Get featured cars (first 3 from carsData)
   const featuredCars = carsData.slice(0, 3);
@@ -203,8 +211,8 @@ const FeaturedCars = () => {
         <Header>
           <Title>Featured Masterpieces</Title>
           <Subtitle>
-            Discover our latest automotive artistry, where engineering excellence 
-            meets uncompromising luxury and performance.
+            Discover our latest automotive artistry, where engineering
+            excellence meets uncompromising luxury and performance.
           </Subtitle>
         </Header>
 
@@ -219,8 +227,12 @@ const FeaturedCars = () => {
               <CardBadge>{featuredCars[0]?.category}</CardBadge>
               <CardContent>
                 <CardTitle>{featuredCars[0]?.name}</CardTitle>
-                <CardSubtitle>{featuredCars[0]?.brand} {featuredCars[0]?.model}</CardSubtitle>
-                <CardDescription>{featuredCars[0]?.description}</CardDescription>
+                <CardSubtitle>
+                  {featuredCars[0]?.brand} {featuredCars[0]?.model}
+                </CardSubtitle>
+                <CardDescription>
+                  {featuredCars[0]?.description}
+                </CardDescription>
                 <CardButton>
                   Explore Details
                   <ArrowRight size={20} />
@@ -241,8 +253,12 @@ const FeaturedCars = () => {
                 <CardOverlay>
                   <CardBadge>{car.category}</CardBadge>
                   <CardContent>
-                    <CardTitle style={{ fontSize: '1.5rem' }}>{car.name}</CardTitle>
-                    <CardSubtitle>{car.brand} {car.model}</CardSubtitle>
+                    <CardTitle style={{ fontSize: "1.5rem" }}>
+                      {car.name}
+                    </CardTitle>
+                    <CardSubtitle>
+                      {car.brand} {car.model}
+                    </CardSubtitle>
                     <CardButton>
                       View Details
                       <ArrowRight size={16} />
@@ -265,4 +281,4 @@ const FeaturedCars = () => {
   );
 };
 
-export default FeaturedCars; 
+export default FeaturedCars;

@@ -641,7 +641,7 @@ const Homepage = () => {
         )}
       </HeroSection>
 
-      <FindModelSection>
+      {/* <FindModelSection>
         <FindModelTitle>FIND YOUR DREAM MODEL</FindModelTitle>
         <FindModelSubtitle>
           Choose options from below and find your customization
@@ -663,7 +663,7 @@ const Homepage = () => {
           </SearchSelect>
           <SearchButton to="/models">SEARCH</SearchButton>
         </SearchForm>
-      </FindModelSection>
+      </FindModelSection> */}
 
       <LatestSection>
         <SectionTitle>LATEST ADDITIONS</SectionTitle>

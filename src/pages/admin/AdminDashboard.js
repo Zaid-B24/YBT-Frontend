@@ -12,12 +12,10 @@ import {
   Eye,
   Edit,
   Trash2,
-  Plus,
   ArrowUpRight,
   X,
   ArrowDownRight,
 } from "lucide-react";
-import { useAuth } from "../../contexts/AuthContext";
 import CreateEventForm from "../../components/forms/CreateEventForm";
 
 const DashboardWrapper = styled.div`
@@ -484,7 +482,6 @@ const ChartPlaceholder = styled.div`
 `;
 
 const AdminDashboard = () => {
-  const { user } = useAuth();
   const [stats, setStats] = useState({
     totalRevenue: 125000,
     totalUsers: 0,

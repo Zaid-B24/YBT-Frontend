@@ -5,7 +5,6 @@ import {
   Fuel,
   Upload,
   X,
-  ArrowLeft,
   Tags,
   CalendarDays,
   GaugeCircle,
@@ -15,7 +14,6 @@ import {
   Sparkles,
   FileText,
   BadgeCheck,
-  RotateCw,
   Cog,
 } from "lucide-react";
 import { TbBikeFilled } from "react-icons/tb";
@@ -456,14 +454,14 @@ export default BikeDetailsForm;
 
 /* --- Styled Components --- */
 
-const Spinner = styled(RotateCw)`
-  animation: spin 1s linear infinite;
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-`;
+// const Spinner = styled(RotateCw)`
+//   animation: spin 1s linear infinite;
+//   @keyframes spin {
+//     to {
+//       transform: rotate(360deg);
+//     }
+//   }
+// `;
 
 const RequiredStar = styled.span`
   color: red;
@@ -631,13 +629,13 @@ const ErrorMessage = styled.p`
   font-size: 0.8rem;
   margin-top: 0.25rem;
 `;
-const FormActions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 1.5rem;
-  margin-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-`;
+// const FormActions = styled.div`
+//   display: flex;
+//   justify-content: flex-end;
+//   padding-top: 1.5rem;
+//   margin-top: 1.5rem;
+//   border-top: 1px solid rgba(255, 255, 255, 0.2);
+// `;
 const BackButton = styled.button`
   ${buttonReset}
   padding: 0.5rem 1rem;

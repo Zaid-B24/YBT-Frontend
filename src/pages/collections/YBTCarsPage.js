@@ -3,11 +3,10 @@ import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Filter, ArrowRight } from "lucide-react";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { CarCardSkeleton } from "../../components/cards/CarCardSkeleton";
-import React from "react";
 import VehicleBadges from "../../components/common/VehicleBadges";
 import { useCars } from "../../hooks/useCars";
+import { useCarFilters } from "../../hooks/useCarFilters";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -230,6 +229,8 @@ const YBTCarsPage = () => {
     year: "",
   });
 
+  const { data: filterOptions, isLoading: filtersLoading } = useCarFilters();
+
   const handleResetFilters = () => {
     setFilters({
       brand: "",
@@ -255,17 +256,28 @@ const YBTCarsPage = () => {
     isFetchingNextPage,
   } = useCars("YBT", filters, { useInfinite: true });
 
-  const availableBrands = useMemo(() => {
-    if (!cars) return [];
-    return [...new Set(cars.map((car) => car.brand).filter(Boolean))];
-  }, [cars]);
+  const yearList = useMemo(() => {
+    if (!filterOptions || !filterOptions.minYear || !filterOptions.maxYear)
+      return [];
+    const years = [];
+    // Loop from Max Year down to Min Year
+    for (let i = filterOptions.maxYear; i >= filterOptions.minYear; i--) {
+      years.push(i);
+    }
+    return years;
+  }, [filterOptions]);
 
-  const availableYears = useMemo(() => {
-    if (!cars) return [];
-    return [...new Set(cars.map((car) => car.year).filter(Boolean))].sort(
-      (a, b) => b - a
-    );
-  }, [cars]);
+  // const availableBrands = useMemo(() => {
+  //   if (!cars) return [];
+  //   return [...new Set(cars.map((car) => car.brand).filter(Boolean))];
+  // }, [cars]);
+
+  // const availableYears = useMemo(() => {
+  //   if (!cars) return [];
+  //   return [...new Set(cars.map((car) => car.year).filter(Boolean))].sort(
+  //     (a, b) => b - a
+  //   );
+  // }, [cars]);
 
   const loadMoreRef = useRef(null);
   useEffect(() => {
@@ -303,19 +315,20 @@ const YBTCarsPage = () => {
               >
                 All
               </FilterButton>
-              {availableBrands.map((brand) => (
-                <FilterButton
-                  key={brand}
-                  isActive={filters.brand === brand}
-                  onClick={() =>
-                    handleFilterChange({
-                      target: { name: "brand", value: brand },
-                    })
-                  }
-                >
-                  {brand}
-                </FilterButton>
-              ))}
+              {!filtersLoading &&
+                filterOptions?.brands?.map((brand) => (
+                  <FilterButton
+                    key={brand}
+                    isActive={filters.brand === brand}
+                    onClick={() =>
+                      handleFilterChange({
+                        target: { name: "brand", value: brand },
+                      })
+                    }
+                  >
+                    {brand}
+                  </FilterButton>
+                ))}
             </FilterButtonGroup>
           </FilterGroup>
 
@@ -327,7 +340,7 @@ const YBTCarsPage = () => {
               onChange={handleFilterChange}
             >
               <option value="">All Years</option>
-              {availableYears.map((year) => (
+              {yearList.map((year) => (
                 <option key={year} value={year}>
                   {year}
                 </option>

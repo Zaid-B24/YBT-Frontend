@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { XCircle } from "lucide-react";
 import styled from "styled-components";

@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { Car, Bike, ArrowRight, Bus, Plane } from "lucide-react";
+import { Car, Bike, Bus, Plane } from "lucide-react";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -170,25 +170,6 @@ const StatLabel = styled.div`
   color: #ccc;
   text-transform: uppercase;
   letter-spacing: 1px;
-`;
-
-const ExploreButton = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  align-self: flex-start;
-
-  &:hover {
-    gap: 1rem;
-    transform: translateX(5px);
-  }
 `;
 
 const YBTCollectionPage = () => {

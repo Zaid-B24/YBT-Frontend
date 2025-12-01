@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Filter, ArrowRight, Heart, ShoppingCart } from "lucide-react";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { Filter, ArrowRight } from "lucide-react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { CarCardSkeleton } from "../../components/cards/CarCardSkeleton";
 
 const PageWrapper = styled.div`
@@ -304,7 +304,6 @@ const YBTBikesPage = () => {
     error,
     fetchNextPage,
     hasNextPage,
-    isFetching,
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({

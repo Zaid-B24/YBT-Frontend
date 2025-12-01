@@ -5,6 +5,7 @@ A complete replica of the YOUNG BOY TOYZ luxury automotive customization website
 ## 🚗 Features
 
 ### Core Features
+
 - **Responsive Design** - Fully responsive across all devices
 - **Luxury UI/UX** - Premium design aesthetic matching the original YOUNG BOY TOYZ brand
 - **Car Collection** - Extensive catalog of luxury vehicle modifications
@@ -13,6 +14,7 @@ A complete replica of the YOUNG BOY TOYZ luxury automotive customization website
 - **Interactive Navigation** - Smooth scrolling and intuitive menu system
 
 ### Technical Features
+
 - **React 18** - Latest React with hooks and concurrent features
 - **Styled Components** - CSS-in-JS styling solution
 - **Framer Motion** - Smooth animations and transitions
@@ -20,6 +22,7 @@ A complete replica of the YOUNG BOY TOYZ luxury automotive customization website
 - **Modern JavaScript** - ES6+ features and modern development practices
 
 ### Pages & Components
+
 - **Homepage** - Hero section, featured cars, brand showcase, contact form
 - **Cars Collection** - Filterable grid of all vehicles with search
 - **Individual Car Cards** - Detailed car information and images
@@ -40,23 +43,27 @@ A complete replica of the YOUNG BOY TOYZ luxury automotive customization website
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js (version 16 or higher)
 - npm or yarn package manager
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd young-boy-toyz-website
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start the development server**
+
    ```bash
    npm start
    ```
@@ -86,7 +93,7 @@ src/
 │   ├── Homepage.js     # Landing page
 │   └── CarsPage.js     # Cars collection page
 ├── data/               # Static data
-│   └── carsData.js     # Car collection database
+│   └──
 ├── App.js              # Main application component
 └── index.js            # Application entry point
 ```
@@ -94,6 +101,7 @@ src/
 ## 🎨 Design Features
 
 ### Visual Design
+
 - **Dark Theme** - Sophisticated black and white color scheme
 - **Luxury Typography** - Playfair Display for headings, Inter for body text
 - **Gradient Overlays** - Subtle gradients for depth and premium feel
@@ -101,6 +109,7 @@ src/
 - **Smooth Animations** - Framer Motion for elegant transitions
 
 ### User Experience
+
 - **Intuitive Navigation** - Easy-to-use menu system
 - **Fast Loading** - Optimized performance and lazy loading
 - **Mobile First** - Responsive design for all screen sizes
@@ -112,8 +121,9 @@ src/
 The website features an extensive collection of luxury vehicle modifications including:
 
 ### Brands Supported
+
 - Ferrari
-- Lamborghini  
+- Lamborghini
 - Porsche
 - Mercedes-Benz
 - BMW
@@ -126,6 +136,7 @@ The website features an extensive collection of luxury vehicle modifications inc
 - Tesla
 
 ### Modification Types
+
 - **Atelier** - Custom one-off creations
 - **Wide Body Kits** - Aggressive styling packages
 - **Full Body Kits** - Complete vehicle transformations
@@ -135,7 +146,8 @@ The website features an extensive collection of luxury vehicle modifications inc
 ## 🔧 Customization
 
 ### Adding New Cars
-1. Edit `src/data/carsData.js`
+
+1. Edit `src/admin`
 2. Add new car objects with required fields:
    ```javascript
    {
@@ -154,11 +166,13 @@ The website features an extensive collection of luxury vehicle modifications inc
    ```
 
 ### Styling Modifications
+
 - Edit styled-components in respective component files
 - Modify colors, fonts, and spacing in global styles
 - Update brand colors in the design system
 
 ### Adding New Pages
+
 1. Create new component in `src/pages/`
 2. Add route in `src/App.js`
 3. Update navigation in `src/components/Header.js`
@@ -166,6 +180,7 @@ The website features an extensive collection of luxury vehicle modifications inc
 ## 🌐 Deployment
 
 ### Build for Production
+
 ```bash
 npm run build
 ```
@@ -173,6 +188,7 @@ npm run build
 This creates a `build` folder with optimized production files.
 
 ### Deployment Options
+
 - **Netlify** - Connect GitHub repo for automatic deployments
 - **Vercel** - Zero-config deployment platform
 - **GitHub Pages** - Free hosting for static sites
@@ -208,4 +224,4 @@ This project is for educational purposes. All YOUNG BOY TOYZ branding and conten
 
 ---
 
-**Note**: This is a replica/educational project and is not affiliated with the official Young Boy Toy company. 
+**Note**: This is a replica/educational project and is not affiliated with the official Young Boy Toy company.

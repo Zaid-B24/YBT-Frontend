@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import styled from "styled-components";
-import { Tag, X } from "lucide-react"; // Using Tag for category icon
+import { Tag } from "lucide-react"; // Using Tag for category icon
 
 // ========== API HELPER ==========
 // This function sends the data to your backend controller.
@@ -127,14 +127,14 @@ const Button = styled.button`
   `}
 `;
 
-const SubmitButton = styled(Button)`
-  background: linear-gradient(135deg, #4a00e0, #8e2de2);
-  color: #fff;
+// const SubmitButton = styled(Button)`
+//   background: linear-gradient(135deg, #4a00e0, #8e2de2);
+//   color: #fff;
 
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-  }
-`;
+//   &:hover:not(:disabled) {
+//     transform: translateY(-2px);
+//   }
+// `;
 
 const CancelButton = styled(Button)`
   background: transparent;
@@ -172,11 +172,7 @@ const CreateCategoryForm = ({ onSuccess, onCancel }) => {
     mode: "onChange",
   });
 
-  const {
-    mutate,
-    isPending,
-    error: mutationError,
-  } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: createCategory,
     onSuccess: (data) => {
       // This refreshes any queries that depend on categories, like a category list.

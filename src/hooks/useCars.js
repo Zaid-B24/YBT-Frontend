@@ -18,7 +18,7 @@ export const useCars = (collectionType, filters = {}, options = {}) => {
     id: car.id,
     title: car.title,
     brand: car.brand,
-    year: new Date(car.createdAt).getFullYear().toString(),
+    year: car.registrationYear ? car.registrationYear.toString() : "",
     price: car.ybtPrice,
     image: car.thumbnail,
     badges: [...(car.badges || []), car.tuningStage].filter(Boolean),

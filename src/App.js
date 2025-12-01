@@ -1,3 +1,31 @@
+import { Suspense } from "react";
+import { Routes, Route } from "react-router-dom";
+
+import AppProviders from "./contexts/AppProviders";
+import GlobalStyle from "./styles/GlobalStyle";
+
+import MainRoutes from "./Routes/MainRoutes";
+import AdminRoutes from "./Routes/AdminRoutes";
+
+import AdminLoginPage from "./pages/admin/AdminLoginPage";
+
+function App() {
+  return (
+    <AppProviders>
+      <GlobalStyle />
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          {MainRoutes}
+          {AdminRoutes}
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+        </Routes>
+      </Suspense>
+    </AppProviders>
+  );
+}
+
+export default App;
+
 // import React from "react";
 // import { Routes, Route } from "react-router-dom";
 // import { createGlobalStyle } from "styled-components";
@@ -553,31 +581,3 @@
 // }
 
 // export default App;
-
-import { Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
-
-import AppProviders from "./contexts/AppProviders";
-import GlobalStyle from "./styles/GlobalStyle";
-
-import MainRoutes from "./Routes/MainRoutes";
-import AdminRoutes from "./Routes/AdminRoutes";
-
-import AdminLoginPage from "./pages/admin/AdminLoginPage";
-
-function App() {
-  return (
-    <AppProviders>
-      <GlobalStyle />
-      <Suspense fallback={<div>Loading...</div>}>
-        <Routes>
-          {MainRoutes}
-          {AdminRoutes}
-          <Route path="/admin/login" element={<AdminLoginPage />} />
-        </Routes>
-      </Suspense>
-    </AppProviders>
-  );
-}
-
-export default App;

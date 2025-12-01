@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar } from "lucide-react";
+import { useEvents } from "../../hooks/useEvent";
+import { fetchEventCategoriesAPI } from "../../services/eventService";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -266,28 +268,6 @@ const EventCardSkeleton = () => (
   </SkeletonCardWrapper>
 );
 
-const fetchEvents = async () => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/events/user`);
-  console.log("raw response", response);
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  const responseData = await response.json();
-  console.log("responseData :", responseData);
-  return responseData;
-};
-
-const getEventStatus = (startDateStr, endDateStr) => {
-  const now = new Date();
-  const startDate = new Date(startDateStr);
-  const endDate = new Date(endDateStr);
-
-  if (now > startDate && now < endDate) return "Ongoing";
-  if (now < startDate) return "Upcoming";
-  return "Completed";
-};
-
 const formatFullDate = (dateStr) => {
   const date = new Date(dateStr);
   return new Intl.DateTimeFormat("en-US", {
@@ -299,61 +279,60 @@ const formatFullDate = (dateStr) => {
 };
 
 const EventsPage = () => {
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState("upcoming");
 
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["events"],
-    queryFn: fetchEvents,
-    staleTime: 5 * 60 * 1000,
+  const { data: filterData } = useQuery({
+    queryKey: ["eventFilters"],
+    queryFn: fetchEventCategoriesAPI,
+    staleTime: 1000 * 60 * 60, // Cache for 1 hour
+    refetchOnWindowFocus: false,
   });
+
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useEvents(activeFilter);
+
+  const events = useMemo(() => {
+    return data?.pages.flatMap((page) => page.data) || [];
+  }, [data]);
 
   const filters = useMemo(() => {
     const staticFilters = [
-      { key: "all", label: "All Events" },
       { key: "upcoming", label: "Upcoming" },
+      { key: "past", label: "Past Events" },
     ];
-
-    if (!data?.data) {
-      return staticFilters;
-    }
-
-    // Use a Map to get all unique categories from the events list
-    const uniqueCategories = new Map();
-    data.data.forEach((event) => {
-      event.categories?.forEach((category) => {
-        if (!uniqueCategories.has(category.slug)) {
-          uniqueCategories.set(category.slug, {
-            key: category.slug,
-            label: category.name,
-          });
-        }
-      });
-    });
-
-    const dynamicFilters = Array.from(uniqueCategories.values());
+    const dynamicFilters =
+      filterData?.data?.categories?.map((cat) => ({
+        key: cat.slug,
+        label: cat.name,
+      })) || [];
 
     return [...staticFilters, ...dynamicFilters];
-  }, [data]);
+  }, [filterData]);
 
-  const filteredEvents = useMemo(() => {
-    const allEvents = data?.data || [];
-    console.log("THis is inside allEvents", allEvents);
-    return allEvents
-      .map((event) => ({
-        ...event,
-        computedStatus: getEventStatus(event.startDate, event.endDate),
-      }))
-      .filter((event) => {
-        if (activeFilter === "all") return true;
-
-        if (activeFilter === "upcoming") {
-          return event.computedStatus === "Upcoming";
+  // 4. Infinite Scroll Observer
+  const loadMoreRef = useRef(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
         }
-
-        // Check if any category slug in the event's categories array matches the active filter
-        return event.categories?.some((cat) => cat.slug === activeFilter);
-      });
-  }, [data, activeFilter]);
+      },
+      { threshold: 1.0 }
+    );
+    const currentRef = loadMoreRef.current;
+    if (currentRef) observer.observe(currentRef);
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
     <PageWrapper>
@@ -394,7 +373,7 @@ const EventsPage = () => {
         )}
         {!isLoading && !isError && (
           <>
-            {filteredEvents.length === 0 ? (
+            {events.length === 0 ? (
               <div
                 style={{
                   textAlign: "center",
@@ -422,8 +401,11 @@ const EventsPage = () => {
               </div>
             ) : (
               <GridContainer>
-                {filteredEvents.map((event, index) => {
+                {events.map((event, index) => {
                   const fullDate = formatFullDate(event.startDate);
+                  const priceLabel = event.ticketTypes?.[0]
+                    ? `₹ ${event.ticketTypes[0].price.toLocaleString()} onwards`
+                    : "Free / TBD";
                   return (
                     <EventCard
                       key={event.id}
@@ -434,17 +416,23 @@ const EventsPage = () => {
                       viewport={{ once: true }}
                     >
                       <EventImage image={event.primaryImage}>
-                        <StatusBadge status={event.computedStatus}>
-                          {event.computedStatus}
+                        <StatusBadge
+                          status={
+                            event.status === "PUBLISHED"
+                              ? activeFilter === "past"
+                                ? "Completed"
+                                : "Upcoming"
+                              : "Draft"
+                          }
+                        >
+                          {activeFilter === "past" ? "Completed" : "Upcoming"}
                         </StatusBadge>
                         <TypeBadge type={event.type}>{event.type}</TypeBadge>
                       </EventImage>
                       <EventContent>
                         <EventTitle>{event.title}</EventTitle>
                         <EventDescription>{event.description}</EventDescription>
-                        <EventPrice>
-                          ₹ {event.ticketTypes?.[0]?.price} onwards
-                        </EventPrice>
+                        <EventPrice>₹ {priceLabel} onwards</EventPrice>
                         <EventDateText>
                           <Calendar size={14} /> {fullDate}
                         </EventDateText>
