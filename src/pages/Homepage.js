@@ -4,496 +4,28 @@ import { Loader2, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
-const HomepageWrapper = styled.div`
-  background: #000;
-  color: #fff;
-  overflow-x: hidden;
-`;
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-const HeroSection = styled.section`
-  position: relative;
-  height: 100vh;
-  min-height: 700px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  overflow: hidden;
-`;
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-const HeroBackground = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  background: ${(props) => (props.image ? `url(${props.image})` : "#000")}
-    center center/cover no-repeat;
-  transition: all 0.5s ease;
-`;
-
-const HeroOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.3) 60%,
-    rgba(0, 0, 0, 0.1) 100%
-  );
-  z-index: 2;
-`;
-
-const HeroContent = styled.div`
-  position: relative;
-  z-index: 3;
-  text-align: left;
-  max-width: 600px;
-  padding: 0 0 0 5vw;
-
-  @media (max-width: 768px) {
-    padding: 0 1.5rem; /* 1.5rem on left and right */
-    max-width: 100%;
-    text-align: center; /* Or keep left, but balanced padding is key */
-  }
-`;
-
-const HeroTitle = styled.h1`
-  font-family: "Playfair Display", serif;
-  font-size: 4rem;
-  font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: 0.02em;
-  margin-bottom: 1.5rem;
-  color: #fff;
-
-  @media (max-width: 768px) {
-    font-size: 2.5rem;
-  }
-`;
-
-const HeroSubtitle = styled.p`
-  font-size: 1rem;
-  font-weight: 300;
-  line-height: 1.4;
-  color: #fff;
-  margin-bottom: 2.5rem;
-  max-width: 400px;
-`;
-
-const HeroButton = styled(Link)`
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  padding: 0.8rem 2rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  display: inline-block;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.4);
-  }
-`;
-
-const CarouselDots = styled.div`
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.5rem;
-  z-index: 3;
-  @media (max-width: 768px) {
-    width: 30px;
-    height: 4px; /* Slightly thicker */
-
-    /* Add a "tap target" for accessibility */
-    position: relative;
-    &::after {
-      content: "";
-      position: absolute;
-      top: -10px;
-      bottom: -10px;
-      left: -5px;
-      right: -5px;
-    }
-  }
-`;
-
-const Dot = styled.button`
-  width: 40px;
-  height: 3px;
-  background: ${(props) => (props.active ? "#fff" : "rgba(255,255,255,0.3)")};
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-`;
-
-const FindModelSection = styled.section`
-  padding: 4rem 2rem;
-  background: rgba(20, 20, 20, 0.8);
-  text-align: center;
-  @media (max-width: 768px) {
-    padding: 3rem 1.5rem;
-  }
-`;
-
-const FindModelTitle = styled.h2`
-  font-family: "Playfair Display", serif;
-  font-size: 2rem;
-  font-weight: 400;
-  margin-bottom: 1rem;
-  letter-spacing: 0.05em;
-`;
-
-const FindModelSubtitle = styled.p`
-  font-size: 1.1rem;
-  color: #ccc;
-  margin-bottom: 3rem;
-`;
-
-const SearchForm = styled.div`
-  display: flex;
-  gap: 1rem;
-  max-width: 800px;
-  margin: 0 auto;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
-`;
-
-const SearchSelect = styled.select`
-  flex: 1;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  font-size: 1rem;
-
-  option {
-    background: #333;
-    color: #fff;
-  }
-`;
-
-const SearchButton = styled(Link)`
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
-  padding: 1rem 2rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  display: inline-block;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.3);
-  }
-`;
-
-const LatestSection = styled.section`
-  padding: 4rem 2rem;
-  background: #0a0a0a;
-  color: #fff;
-  @media (max-width: 768px) {
-    padding: 3rem 1rem; /* Reduces padding for mobile */
-  }
-`;
-
-const SectionTitle = styled.h2`
-  font-family: "Playfair Display", serif;
-  font-size: 1.8rem;
-  font-weight: 400;
-  margin-bottom: 3rem;
-  letter-spacing: 0.05em;
-  text-align: center;
-  color: #fff;
-`;
-
-const CardsGrid = styled.div`
-  display: grid;
-  /* --- THIS IS THE FIX --- */
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem; /* Reduced gap for a tighter fit */
-  max-width: 1400px;
-  margin: 0 auto;
-`;
-
-const CarCard = styled(Link)`
-  position: relative;
-  display: block;
-  aspect-ratio: 4 / 3; /* Set a fixed height for the card */
-  overflow: hidden;
-  border-radius: 8px; /* Add a radius for a softer look */
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  }
-`;
-
-const CardImage = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: ${(props) => (props.image ? `url(${props.image})` : "#ddd")}
-    center center/cover no-repeat;
-  transition: transform 0.4s ease;
-
-  /* Add a zoom effect on hover */
-  ${CarCard}:hover & {
-    transform: scale(1.05);
-  }
-`;
-
-const CardBadges = styled.div`
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  z-index: 3; /* Add this line */
-`;
-
-const Badge = styled.span`
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-`;
-
-const CardContent = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 2; /* Make sure it's above the image */
-  padding: 1.5rem;
-  background: none; /* <-- This is the fix. No more gradient. */
-`;
-
-const CardTitle = styled.h3`
-  font-family: "Playfair Display", serif;
-  font-size: 1.3rem;
-  font-weight: 400;
-  margin-bottom: 0.5rem;
-  color: #fff;
-
-  /* --- ADD THIS LINE --- */
-  /* This makes the text readable on any image */
-  text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.9);
-`;
-
-const MissionSection = styled.section`
-  padding: 6rem 2rem;
-  background: #000;
-  text-align: center;
-  @media (max-width: 768px) {
-    padding: 4rem 1.5rem;
-  }
-`;
-
-const MissionTitle = styled.h2`
-  font-family: "Playfair Display", serif;
-  font-size: 3rem;
-  font-weight: 400;
-  line-height: 1.3;
-  letter-spacing: 0.5px;
-  margin-bottom: 3.5rem;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-
-  span {
-    display: block;
-    margin-top: 1rem;
-    color: #888;
-    font-size: 1.4rem;
-    line-height: 1.4;
-  }
-
-  /* Tablet */
-  @media (max-width: 1024px) {
-    font-size: 2.6rem;
-    max-width: 700px;
-  }
-
-  /* Mobile */
-  @media (max-width: 768px) {
-    font-size: 2rem;
-    line-height: 1.4;
-    max-width: 90%;
-    span {
-      font-size: 1.1rem;
-    }
-  }
-`;
-
-const MissionButtons = styled.div`
-  display: flex;
-  gap: 1.2rem;
-  justify-content: center;
-  flex-wrap: wrap;
-`;
-
-const MissionButton = styled(Link)`
-  background: ${(props) =>
-    props.$primary ? "rgba(255,255,255,0.15)" : "transparent"};
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
-  padding: 1rem 2.2rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: inline-block;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.25);
-  }
-`;
-
-const JoinSection = styled.section`
-  padding: 4rem 2rem;
-  background: #000;
-  text-align: center;
-`;
-
-const JoinSubtitle = styled.p`
-  font-size: 1.1rem;
-  color: #ccc;
-  margin-bottom: 2rem;
-`;
-
-const ContactButton = styled(Link)`
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
-  padding: 1rem 2rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  display: inline-block;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.3);
-  }
-`;
-
-const HeroVideo = styled.video`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 1;
-`;
-
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`;
-
-const HeroLoadingWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  min-height: 700px;
-  color: #fff;
-  z-index: 3;
-
-  svg {
-    margin-bottom: 1rem;
-  }
-`;
-
-const StatusWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  padding: 4rem 0; /* Give it some space */
-
-  svg {
-    margin-bottom: 1rem;
-  }
-`;
-
-const LoadingSpinner = styled(Loader2)`
-  animation: ${spin} 1s linear infinite;
-`;
-
-const fetchHeroSlides = async () => {
-  const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/homepage/hero-slides`
-  );
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  const result = await response.json();
-  if (!result.success) {
-    throw new Error(result.message || "Failed to fetch hero slides");
-  }
-  return result.data;
+  return isMobile;
 };
 
-const fetchLatestAdditions = async () => {
-  const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/cars/latest-additions`
-  );
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  const result = await response.json();
-  if (!result.success) {
-    throw new Error(result.message || "Failed to fetch latest additions");
-  }
-  return result.data;
-};
-
-const getTransformedUrl = (url, assetType) => {
+const getTransformedUrl = (url, assetType, isMobile) => {
   if (!url || !url.includes("cloudinary.com")) {
     return url;
   }
 
-  const width = 1920;
-  const height = 1080;
+  // LOGIC: If mobile, request 9:16 (Portrait). If Desktop, request 16:9 (Landscape)
+  const width = isMobile ? 1080 : 1920;
+  const height = isMobile ? 1920 : 1080;
   const transformations = `c_fill,w_${width},h_${height},q_auto`;
 
   const parts = url.split("/upload/");
@@ -502,14 +34,35 @@ const getTransformedUrl = (url, assetType) => {
   }
 
   if (assetType === "VIDEO") {
+    // f_auto ensures correct video codec for iOS/Android
     const videoTransformations = `f_auto,${transformations}`;
     return `${parts[0]}/upload/${videoTransformations}/${parts[1]}`;
   }
   return `${parts[0]}/upload/${transformations}/${parts[1]}`;
 };
 
+const fetchHeroSlides = async () => {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/homepage/hero-slides`
+  );
+  if (!response.ok) throw new Error("Network response was not ok");
+  const result = await response.json();
+  return result.data;
+};
+
+const fetchLatestAdditions = async () => {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/cars/latest-additions`
+  );
+  if (!response.ok) throw new Error("Network response was not ok");
+  const result = await response.json();
+  return result.data;
+};
+
 const Homepage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const isMobile = useIsMobile();
+
   const {
     data: heroSlides,
     isLoading: isHeroLoading,
@@ -529,45 +82,6 @@ const Homepage = () => {
     queryFn: fetchLatestAdditions,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
-
-  const carsForSale = [
-    {
-      id: "tesla-cybertruck-elongation-evo",
-      title: "Tesla Cybertruck - Elongation EVO by YOUNG BOY TOYZ",
-      type: "SUV",
-      year: "2024",
-      transmission: "AUTOMATIC",
-      power: "630 HP",
-      mileage: "100 KM",
-      number: "NR.1113",
-      image:
-        "https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    },
-    {
-      id: "lamborghini-urus-coupe",
-      title: "Lamborghini Urus Coupé by YOUNG BOY TOYZ",
-      type: "COUPE",
-      year: "2021",
-      transmission: "AUTOMATIC",
-      power: "900 HP",
-      mileage: "219 KM",
-      number: "NR.714",
-      image:
-        "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    },
-    {
-      id: "lamborghini-aventador-ultima",
-      title: "Lamborghini Aventador Ultima 1/350 by YOUNG BOY TOYZ",
-      type: "COUPE",
-      year: "2022",
-      transmission: "AUTOMATIC",
-      power: "770 HP",
-      mileage: "200 KM",
-      number: "NR.840",
-      image:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    },
-  ];
 
   useEffect(() => {
     if (!heroSlides || heroSlides.length === 0) return;
@@ -601,19 +115,21 @@ const Homepage = () => {
               <HeroVideo
                 src={getTransformedUrl(
                   heroSlides[currentSlide].assetUrl,
-                  "VIDEO"
+                  "VIDEO",
+                  isMobile // Pass isMobile status
                 )}
                 autoPlay
                 loop
                 muted
                 playsInline
-                key={currentSlide}
+                key={currentSlide} // Force re-render on slide change
               />
             ) : (
               <HeroBackground
                 image={getTransformedUrl(
                   heroSlides[currentSlide].assetUrl,
-                  "IMAGE"
+                  "IMAGE",
+                  isMobile
                 )}
               />
             )}
@@ -622,7 +138,7 @@ const Homepage = () => {
 
             <HeroContent>
               <HeroTitle>{heroSlides[currentSlide].title}</HeroTitle>
-              <HeroSubtitle>{heroSlides[currentSlide].subtitle}</HeroSubtitle>
+
               <HeroButton to={heroSlides[currentSlide].linkUrl}>
                 DISCOVER NOW
               </HeroButton>
@@ -640,30 +156,6 @@ const Homepage = () => {
           </>
         )}
       </HeroSection>
-
-      {/* <FindModelSection>
-        <FindModelTitle>FIND YOUR DREAM MODEL</FindModelTitle>
-        <FindModelSubtitle>
-          Choose options from below and find your customization
-        </FindModelSubtitle>
-        <SearchForm>
-          <SearchSelect>
-            <option>Brand</option>
-            <option>Ferrari</option>
-            <option>Lamborghini</option>
-            <option>Porsche</option>
-            <option>Mercedes-Benz</option>
-          </SearchSelect>
-          <SearchSelect>
-            <option>Model</option>
-            <option>F8 Tributo</option>
-            <option>Huracán</option>
-            <option>911 Turbo S</option>
-            <option>G-Class</option>
-          </SearchSelect>
-          <SearchButton to="/models">SEARCH</SearchButton>
-        </SearchForm>
-      </FindModelSection> */}
 
       <LatestSection>
         <SectionTitle>LATEST ADDITIONS</SectionTitle>
@@ -723,9 +215,9 @@ const Homepage = () => {
         </MissionTitle>
         <MissionButtons>
           <MissionButton to="/about">ABOUT US</MissionButton>
-          <MissionButton to="/models" $primary>
+          {/* <MissionButton to="/models" $primary>
             ALL MODELS
-          </MissionButton>
+          </MissionButton> */}
         </MissionButtons>
 
         <JoinSection>
@@ -738,3 +230,517 @@ const Homepage = () => {
 };
 
 export default Homepage;
+
+const HomepageWrapper = styled.div`
+  background: #000;
+  color: #fff;
+  overflow-x: hidden;
+  width: 100%;
+`;
+
+const HeroSection = styled.section`
+  position: relative;
+  height: 100vh;
+  @supports (height: 100dvh) {
+    height: 100dvh;
+  }
+  min-height: 600px;
+  display: flex;
+
+  /* CHANGE: Align content to the bottom */
+  align-items: flex-end;
+  justify-content: flex-start;
+
+  overflow: hidden;
+
+  /* Add padding bottom to ensure text doesn't hit the very edge or overlap dots too much */
+  padding-bottom: 8vh;
+
+  @media (max-width: 768px) {
+    padding-bottom: 12vh; /* More space on mobile for safe area */
+  }
+`;
+
+const HeroBackground = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  background-color: #000;
+  background-image: ${(props) =>
+    props.image ? `url(${props.image})` : "none"};
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: opacity 0.5s ease-in-out;
+`;
+
+const HeroVideo = styled.video`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+`;
+
+const HeroOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Darker overlay on mobile to make text pop against busy portrait images */
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.4) 60%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  z-index: 2;
+`;
+
+const HeroContent = styled.div`
+  position: relative;
+  z-index: 3;
+  text-align: left;
+  max-width: 800px; /* Increased max-width */
+  padding: 0 0 0 5vw; /* Left padding */
+
+  @media (max-width: 768px) {
+    padding: 0 1.5rem;
+    max-width: 100%;
+    text-align: left;
+    /* No margin-top needed since we use flex-end on parent */
+  }
+`;
+
+const HeroTitle = styled.h1`
+  font-family: "Playfair Display", serif;
+  font-size: 4.5rem; /* Slightly larger on desktop */
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  margin-bottom: 2rem; /* Space between title and button */
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Better readability */
+
+  @media (max-width: 768px) {
+    font-size: 2.2rem;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+`;
+
+const HeroButton = styled(Link)`
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.8rem 2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  @media (max-width: 768px) {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.8rem;
+  }
+`;
+
+const CarouselDots = styled.div`
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 3;
+
+  @media (max-width: 768px) {
+    bottom: 4rem; /* Move dots up slightly on mobile */
+  }
+`;
+
+const Dot = styled.button`
+  width: 40px;
+  height: 3px;
+  background: ${(props) => (props.active ? "#fff" : "rgba(255,255,255,0.3)")};
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0; /* Reset padding */
+`;
+
+/* --- LATEST SECTION --- */
+
+const LatestSection = styled.section`
+  padding: 4rem 2rem;
+  background: #0a0a0a;
+  color: #fff;
+  @media (max-width: 768px) {
+    padding: 3rem 1rem;
+  }
+`;
+
+const SectionTitle = styled.h2`
+  font-family: "Playfair Display", serif;
+  font-size: 1.8rem;
+  font-weight: 400;
+  margin-bottom: 3rem;
+  letter-spacing: 0.05em;
+  text-align: center;
+  color: #fff;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+`;
+
+const CardsGrid = styled.div`
+  display: grid;
+  /* FIX: Adjusted minmax for small screens so cards don't overflow */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+`;
+
+const CarCard = styled(Link)`
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  background: #111; /* Fallback color */
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+`;
+
+const CardImage = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: ${(props) => (props.image ? `url(${props.image})` : "#333")}
+    center center/cover no-repeat;
+  transition: transform 0.4s ease;
+
+  ${CarCard}:hover & {
+    transform: scale(1.05);
+  }
+`;
+
+const CardBadges = styled.div`
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  z-index: 3;
+`;
+
+const Badge = styled.span`
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+`;
+
+const CardContent = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+`;
+
+const CardTitle = styled.h3`
+  font-family: "Playfair Display", serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+  color: #fff;
+  text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.9);
+`;
+
+/* --- MISSION SECTION --- */
+
+const MissionSection = styled.section`
+  padding: 6rem 2rem;
+  background: #000;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 4rem 1.5rem;
+  }
+`;
+
+const MissionTitle = styled.h2`
+  font-family: "Playfair Display", serif;
+  font-size: 3rem;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.5px;
+  margin-bottom: 3.5rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+
+  span {
+    display: block;
+    margin-top: 1rem;
+    color: #888;
+    font-size: 1.4rem;
+    line-height: 1.4;
+  }
+
+  /* FIX: Mobile font sizes significantly reduced */
+  @media (max-width: 768px) {
+    font-size: 1.1rem; /* Reduced to ~17px */
+    line-height: 1.5;
+    max-width: 100%;
+    margin-bottom: 2rem;
+
+    span {
+      font-size: 0.75rem; /* Reduced to ~12px */
+      margin-top: 0.75rem;
+      line-height: 1.5;
+      color: #666; /* Slightly darker for better read on small text */
+    }
+  }
+`;
+
+const MissionButtons = styled.div`
+  display: flex;
+  gap: 1.2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+
+const MissionButton = styled(Link)`
+  background: ${(props) =>
+    props.$primary ? "rgba(255,255,255,0.15)" : "transparent"};
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 1rem 2.2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  text-decoration: none;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  @media (max-width: 768px) {
+    /* FIX: Compact size for mobile */
+    width: 100%;
+    max-width: 280px; /* Slightly narrower max-width */
+    padding: 0.8rem 1.5rem; /* Reduced padding */
+    font-size: 0.8rem; /* Smaller text */
+    letter-spacing: 1px;
+  }
+`;
+
+const JoinSection = styled.section`
+  padding: 4rem 2rem;
+  background: #000;
+  text-align: center;
+`;
+
+const JoinSubtitle = styled.p`
+  font-size: 1.1rem;
+  color: #ccc;
+  margin-bottom: 2rem;
+`;
+
+const ContactButton = styled(Link)`
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 1rem 2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    /* FIX: Compact size for mobile */
+    padding: 0.8rem 2rem; /* Reduced height */
+    font-size: 0.8rem; /* Smaller text */
+    width: 100%;
+    max-width: 280px; /* Match MissionButton width */
+  }
+`;
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
+const HeroLoadingWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  min-height: 700px;
+  color: #fff;
+  z-index: 3;
+  width: 100%;
+  background: #000;
+
+  svg {
+    margin-bottom: 1rem;
+  }
+`;
+
+const StatusWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  padding: 4rem 0;
+
+  svg {
+    margin-bottom: 1rem;
+  }
+`;
+
+const LoadingSpinner = styled(Loader2)`
+  animation: ${spin} 1s linear infinite;
+`;
+
+/////////////////////////////////////////////////////
+// const FindModelSection = styled.section`
+//   padding: 4rem 2rem;
+//   background: rgba(20, 20, 20, 0.8);
+//   text-align: center;
+//   @media (max-width: 768px) {
+//     padding: 3rem 1.5rem;
+//   }
+// `;
+
+// const FindModelTitle = styled.h2`
+//   font-family: "Playfair Display", serif;
+//   font-size: 2rem;
+//   font-weight: 400;
+//   margin-bottom: 1rem;
+//   letter-spacing: 0.05em;
+// `;
+
+// const FindModelSubtitle = styled.p`
+//   font-size: 1.1rem;
+//   color: #ccc;
+//   margin-bottom: 3rem;
+// `;
+
+// const SearchForm = styled.div`
+//   display: flex;
+//   gap: 1rem;
+//   max-width: 800px;
+//   margin: 0 auto;
+
+//   @media (max-width: 768px) {
+//     flex-direction: column;
+//   }
+// `;
+
+// const SearchSelect = styled.select`
+//   flex: 1;
+//   padding: 1rem;
+//   background: rgba(255, 255, 255, 0.1);
+//   border: 1px solid rgba(255, 255, 255, 0.2);
+//   color: #fff;
+//   font-size: 1rem;
+
+//   option {
+//     background: #333;
+//     color: #fff;
+//   }
+// `;
+
+// const SearchButton = styled(Link)`
+//   background: rgba(255, 255, 255, 0.2);
+//   border: 1px solid rgba(255, 255, 255, 0.3);
+//   color: #fff;
+//   padding: 1rem 2rem;
+//   font-size: 0.9rem;
+//   font-weight: 500;
+//   letter-spacing: 1px;
+//   text-transform: uppercase;
+//   cursor: pointer;
+//   transition: all 0.3s ease;
+//   text-decoration: none;
+//   display: inline-block;
+
+//   &:hover {
+//     background: rgba(255, 255, 255, 0.3);
+//   }
+// `;
+
+// {/* <FindModelSection>
+//         <FindModelTitle>FIND YOUR DREAM MODEL</FindModelTitle>
+//         <FindModelSubtitle>
+//           Choose options from below and find your customization
+//         </FindModelSubtitle>
+//         <SearchForm>
+//           <SearchSelect>
+//             <option>Brand</option>
+//             <option>Ferrari</option>
+//             <option>Lamborghini</option>
+//             <option>Porsche</option>
+//             <option>Mercedes-Benz</option>
+//           </SearchSelect>
+//           <SearchSelect>
+//             <option>Model</option>
+//             <option>F8 Tributo</option>
+//             <option>Huracán</option>
+//             <option>911 Turbo S</option>
+//             <option>G-Class</option>
+//           </SearchSelect>
+//           <SearchButton to="/models">SEARCH</SearchButton>
+//         </SearchForm>
+//       </FindModelSection> */}

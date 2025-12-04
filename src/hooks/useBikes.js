@@ -1,32 +1,31 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { fetchCarsAPI, searchCarsAPI } from "../services/carService";
+import { fetchBikesAPI, searchBikesAPI } from "../services/BikeService";
 
-export const useCars = (collectionType, filters = {}, options = {}) => {
-  const queryKey = ["cars", collectionType, filters];
+export const useBikes = (filters = {}, options = {}) => {
+  const queryKey = ["bikes", filters];
 
   const queryFn = ({ pageParam }) => {
     const allParams = {
-      collectionType,
       ...filters,
       cursor: pageParam,
     };
     if (filters.q && filters.q.trim() !== "") {
-      return searchCarsAPI(allParams);
+      return searchBikesAPI(allParams);
     } else {
-      return fetchCarsAPI(allParams);
+      return fetchBikesAPI(allParams);
     }
   };
 
-  const transformCarData = (car) => ({
-    id: car.id,
-    title: car.title,
-    brand: car.brand,
-    year: car.registrationYear ? car.registrationYear.toString() : "",
-    price: car.ybtPrice,
-    image: car.thumbnail,
-    badges: [...(car.badges || []), car.tuningStage].filter(Boolean),
-    specs: car.specs || [],
+  const transformBikeData = (bike) => ({
+    id: bike.id,
+    title: bike.title,
+    brand: bike.brand,
+    year: bike.registrationYear ? bike.registrationYear.toString() : "",
+    price: bike.ybtPrice,
+    image: bike.thumbnail,
+    badges: [...(bike.badges || []), bike.tuningStage].filter(Boolean),
+    specs: bike.specs || [],
   });
 
   // ✅ Always call useInfiniteQuery unconditionally.
@@ -42,20 +41,19 @@ export const useCars = (collectionType, filters = {}, options = {}) => {
       // Otherwise, always return undefined to prevent fetching more pages.
       return undefined;
     },
-    enabled: !!collectionType,
   });
 
   // This data transformation logic remains the same and works perfectly.
-  const cars = useMemo(() => {
+  const bikes = useMemo(() => {
     if (!queryResult.data) return [];
     // The data structure from useInfiniteQuery is always `data.pages`
     return queryResult.data.pages.flatMap((page) =>
-      page.data.map(transformCarData)
+      page.data.map(transformBikeData)
     );
   }, [queryResult.data]);
 
   // For non-infinite queries, isLoading is more intuitive than isFetching
   const isLoading = queryResult.isFetching && !queryResult.isFetchingNextPage;
 
-  return { ...queryResult, cars, isLoading };
+  return { ...queryResult, bikes, isLoading };
 };

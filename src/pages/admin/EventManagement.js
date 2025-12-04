@@ -1,142 +1,71 @@
 import {
   Calendar,
   Edit,
+  Info,
   MapPin,
-  MoreVertical,
   Plus,
   Search,
   Trash2,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import CreateEventForm from "../../components/forms/CreateEventForm";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Slide, toast, ToastContainer } from "react-toastify";
+import { Slide, ToastContainer } from "react-toastify";
 import EditEventModal from "../../components/Overlay/EditEventModal";
 import CreateCategoryForm from "../../components/forms/CreateCategoryForm";
-
-const fetchEvents = async ({ queryKey }) => {
-  const token = localStorage.getItem("adminToken");
-  console.log("Admin token, ", token);
-  const [_key, { limit, sortBy, cursor }] = queryKey;
-  const params = new URLSearchParams({ limit, sortBy });
-  if (cursor) params.append("cursor", cursor);
-  if (!token) throw new Error("No admin token found.");
-  const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/events/admin?${params.toString()}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
-  console.log("THis is the response", response);
-  if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status}`);
-  }
-  const responseData = await response.json();
-  return responseData.data;
-};
-
-const updateEventStatusAPI = async ({ eventId, status }) => {
-  const token = localStorage.getItem("adminToken");
-  if (!token) throw new Error("Authentication token not found.");
-
-  const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/events/${eventId}/update-status`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status }),
-    }
-  );
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Failed to update event status.");
-  }
-
-  return response.json();
-};
-
-const deleteEventAPI = async (eventId) => {
-  const token = localStorage.getItem("adminToken");
-  if (!token) throw new Error("Authentication token not found.");
-
-  const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/events/${eventId}`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Failed to delete event.");
-  }
-  return { success: true };
-};
+import { useAdminEvents } from "../../hooks/useAdminEvents";
 
 const EventManagement = () => {
   const [showEventForm, setShowEventForm] = useState(false);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const queryClient = useQueryClient();
   const [editingEvent, setEditingEvent] = useState(null);
 
-  const queryFilters = useMemo(
-    () => ({
-      limit: 9,
-      sortBy,
-    }),
-    [sortBy]
-  );
+  const {
+    events,
+    isLoading,
+    isError,
+    error,
+    deleteEvent,
+    updateEventStatus,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useAdminEvents({ sortBy, searchTerm });
 
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["events", queryFilters],
-    queryFn: fetchEvents,
-    keepPreviousData: true,
-  });
+  const loadMoreRef = useRef(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // If the div is visible, and there is a next page, and we aren't already loading...
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1.0 }
+    );
 
-  const updateStatusMutation = useMutation({
-    mutationFn: updateEventStatusAPI,
-    onSuccess: () => {
-      toast.success("Event status updated successfully!");
-      queryClient.invalidateQueries({ queryKey: ["events"] });
-      setEditingEvent(null); // Close the modal
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+    const currentRef = loadMoreRef.current;
+    if (currentRef) observer.observe(currentRef);
 
-  const handleUpdateEvent = ({ eventId, eventData }) => {
-    updateStatusMutation.mutate({ eventId, status: eventData.status });
-  };
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const deleteEventMutation = useMutation({
-    mutationFn: deleteEventAPI,
-    onSuccess: () => {
-      toast.success("Event deleted successfully! 🗑️");
-      queryClient.invalidateQueries({ queryKey: ["events"] });
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
-  const handleDelete = (eventId) => {
+  const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this event?")) {
-      deleteEventMutation.mutate(eventId);
+      deleteEvent(id);
     }
   };
 
-  const eventsData = data || [];
+  const handleUpdateSave = ({ eventId, eventData }) => {
+    // The modal passes us the new data, we just call the hook function
+    updateEventStatus({ eventId, status: eventData.status });
+    setEditingEvent(null); // Close modal
+  };
+
   return (
     <PageWrapper>
       <StyledToastContainer />
@@ -146,32 +75,27 @@ const EventManagement = () => {
             onBack={() => setShowEventForm(false)}
             onSuccess={() => {
               setShowEventForm(false);
-              queryClient.invalidateQueries({ queryKey: ["events"] });
             }}
           />
         )}
         {showCategoryForm && (
           <CreateCategoryForm
-            onSuccess={() => {
-              setShowCategoryForm(false); // Use the correct setter function
-              // You might also want to invalidate the 'categories' query here
-              queryClient.invalidateQueries({ queryKey: ["categories"] });
-            }}
-            onCancel={() => setShowCategoryForm(false)} // Added onCancel for completeness
+            onBack={() => setShowEventForm(false)}
+            onSuccess={() => setShowEventForm(false)}
           />
         )}
 
         <ControlsSection>
           <ControlsRow>
-            <SearchContainer>
+            {/* <SearchContainer>
               <SearchIcon size={20} />
               <SearchInput
                 type="text"
-                placeholder="Search events by name, category, or location..."
+                placeholder="Search events by name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-            </SearchContainer>
+            </SearchContainer> */}
 
             <AddButton onClick={() => setShowCategoryForm(true)}>
               <Plus size={20} />
@@ -200,70 +124,70 @@ const EventManagement = () => {
             </AddButton>
           </ControlsRow>
         </ControlsSection>
-        {isLoading && <p>Loading events...</p>}
-        {isError && <p>Error: {error.message}</p>}
 
-        {!isLoading &&
-          !isError &&
-          (eventsData.length > 0 ? (
+        {isLoading ? (
+          <p>Loading events...</p>
+        ) : isError ? (
+          <p style={{ color: "red" }}>{error.message}</p>
+        ) : (
+          <>
             <EventsGrid>
-              {eventsData.map((event) => (
-                <EventCard key={event.id}>
-                  <EventImage imageUrl={event.primaryImage}></EventImage>
-                  <EventStatus>
-                    <StatusBadge status={event.status}>
-                      {event.status.charAt(0) +
-                        event.status.slice(1).toLowerCase()}
-                    </StatusBadge>
-                  </EventStatus>
-                  <EventContent>
-                    {/* This new container groups the info */}
-                    <EventInfo>
-                      <EventTitle>{event.title}</EventTitle>
-                      <EventMeta>
-                        <span>
-                          <Calendar size={14} />
-                          {new Date(event.startDate).toLocaleDateString()}
-                        </span>
-                        <span>
-                          <MapPin size={14} />
-                          {event.location}
-                        </span>
-                      </EventMeta>
-                    </EventInfo>
+              {events.length > 0 ? (
+                events.map((event) => (
+                  <EventCard key={event.id}>
+                    <EventImage imageUrl={event.primaryImage} />
 
-                    {/* UserActions is now at the bottom */}
-                    <UserActions>
-                      <ActionButton
-                        title="Edit Event"
-                        onClick={() => setEditingEvent(event)}
-                      >
-                        <Edit size={18} />
-                      </ActionButton>
-                      <ActionButton
-                        title="Delete Event"
-                        onClick={() => handleDelete(event.id)}
-                      >
-                        <Trash2 size={18} />
-                      </ActionButton>
-                      <ActionButton title="More Options">
-                        <MoreVertical size={18} />
-                      </ActionButton>
-                    </UserActions>
-                  </EventContent>
-                </EventCard>
-              ))}
+                    <EventStatus>
+                      <StatusBadge status={event.status}>
+                        {event.displayStatus}
+                      </StatusBadge>
+                    </EventStatus>
+
+                    <EventContent>
+                      <EventInfo>
+                        <EventTitle>{event.title}</EventTitle>
+                        <EventMeta>
+                          <span>
+                            <Calendar size={14} /> {event.formattedDate}
+                          </span>
+                          {event.description}
+                        </EventMeta>
+                      </EventInfo>
+
+                      <UserActions>
+                        <ActionButton onClick={() => setEditingEvent(event)}>
+                          <Edit size={18} />
+                        </ActionButton>
+                        <ActionButton onClick={() => handleDelete(event.id)}>
+                          <Trash2 size={18} />
+                        </ActionButton>
+                      </UserActions>
+                    </EventContent>
+                  </EventCard>
+                ))
+              ) : (
+                <p>No events found.</p>
+              )}
             </EventsGrid>
-          ) : (
-            <p>No events found.</p>
-          ))}
+
+            {/* The Invisible Watcher Div */}
+            <div
+              ref={loadMoreRef}
+              style={{ height: "40px", marginTop: "20px", textAlign: "center" }}
+            >
+              {isFetchingNextPage && <p>Loading more...</p>}
+              {!hasNextPage && events.length > 0 && (
+                <p style={{ color: "#888" }}>End of list</p>
+              )}
+            </div>
+          </>
+        )}
 
         {editingEvent && (
           <EditEventModal
             event={editingEvent}
             onClose={() => setEditingEvent(null)}
-            onUpdate={handleUpdateEvent}
-            isLoading={updateStatusMutation.isPending}
+            onUpdate={handleUpdateSave}
           />
         )}
       </PageContainer>
@@ -483,26 +407,12 @@ const EventContent = styled.div`
   flex-grow: 1; /* Makes content fill the remaining card height */
 `;
 
-const EventHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start; /* Aligns title and icons to the top */
-  gap: 1rem; /* Adds space between title and icons */
-  width: 100%;
-`;
-
 const EventTitle = styled.h3`
   font-size: 1.4rem;
   font-weight: 600;
   color: #fff;
   margin: 0;
   font-family: "Playfair Display", serif;
-`;
-
-const CarPrice = styled.div`
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #ffffff; /* Set the text color to white */
 `;
 
 const statusStyles = {
@@ -578,39 +488,6 @@ const EventStatus = styled.div`
   right: 0.75rem;
   z-index: 10;
 `;
-// const StyledToastContainer = styled(ToastContainer).attrs({
-//   position: "bottom-right",
-//   autoClose: 3000,
-//   hideProgressBar: false,
-//   newestOnTop: false,
-//   closeOnClick: true,
-//   CloseButton: false,
-//   pauseOnHover: true,
-//   draggable: true,
-//   transition: Slide,
-// })`
-//   .Toastify__toast {
-//     font-family: "Poppins", sans-serif;
-//     border-radius: 10px;
-//     padding: 16px;
-//     font-size: 0.95rem;
-//     box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
-//   }
-
-//   .Toastify__toast--error {
-//     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-//     color: white;
-//   }
-
-//   .Toastify__toast--info {
-//     background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-//     color: white;
-//   }
-
-//   .Toastify__progress-bar {
-//     background: rgba(255, 255, 255, 0.7);
-//   }
-// `;
 
 const ActionButton = styled.button`
   background: none;
@@ -628,29 +505,6 @@ const ActionButton = styled.button`
     background: rgba(255, 255, 255, 0.1);
     color: #fff;
     transform: scale(1.1);
-  }
-`;
-
-const Pagination = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 3rem;
-  color: #fff;
-`;
-
-const PageButton = styled.button`
-  background: ${(props) => (props.disabled ? "#2a2a2a" : "#333")};
-  border: 1px solid #555;
-  color: ${(props) => (props.disabled ? "#666" : "#fff")};
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
-  transition: background-color 0.2s ease;
-
-  &:not(:disabled):hover {
-    background: #444;
   }
 `;
 

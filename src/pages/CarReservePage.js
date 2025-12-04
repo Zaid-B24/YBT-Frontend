@@ -366,7 +366,6 @@ Please contact me to proceed.`;
 
 export default CarReservePage;
 
-/* --- STYLED COMPONENTS --- */
 const pulse = keyframes`
   0%, 100% { opacity: 0.2; }
   50% { opacity: 0.4; }
@@ -377,12 +376,17 @@ const fadeIn = keyframes`
   to { opacity: 1; }
 `;
 
+const slideUp = keyframes`
+  from { transform: translateY(20px) scale(0.95); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+`;
+
 const PageWrapper = styled.div`
   min-height: 100vh;
   background: #000;
   color: white;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 `;
 
 const BackgroundElements = styled.div`
@@ -405,27 +409,27 @@ const BackgroundBlob = styled.div`
   &:nth-child(1) {
     top: 25%;
     left: 25%;
-    background: #e53935; /* Red Blob */
+    background: #e53935;
   }
-
   &:nth-child(2) {
     top: 75%;
     right: 25%;
-    background: #ff5722; /* Orange-Red Blob */
+    background: #ff5722;
   }
-
   &:nth-child(3) {
     bottom: 25%;
     left: 50%;
-    background: #ff0000; /* Pure Red Blob */
+    background: #ff0000;
   }
 `;
 
 const ContentWrapper = styled.div`
   position: relative;
   z-index: 10;
-  padding: 1rem;
+  padding: 1rem; /* Reduced padding for mobile */
   padding-top: 5rem;
+  width: 100%;
+  box-sizing: border-box; /* Ensure padding doesn't add to width */
 
   @media (min-width: 768px) {
     padding: 2rem;
@@ -440,41 +444,37 @@ const MaxWidthContainer = styled.div`
 
 const HeaderSection = styled.div`
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 `;
 
 const MainTitle = styled.h1`
-  font-size: 1.5rem !important;
+  font-size: 1.75rem !important; /* Slightly larger base for mobile */
   font-weight: 700;
-  background: linear-gradient(
-    to right,
-    #ffffff,
-    #ff6b6b,
-    #e53935
-  ); /* Red Gradient */
+  background: linear-gradient(to right, #ffffff, #ff6b6b, #e53935);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 1rem;
+  line-height: 1.2;
 
   @media (min-width: 768px) {
-    font-size: 3.75rem;
+    font-size: 3.75rem !important;
   }
 `;
 
 const MainGrid = styled.div`
   display: grid;
-  gap: 3rem;
+  gap: 2rem;
   align-items: start;
 
   @media (min-width: 1024px) {
     grid-template-columns: 1fr 1fr;
+    gap: 3rem;
   }
 `;
 
 const CarDetailsSection = styled.div`
   order: 2;
-
   @media (min-width: 1024px) {
     order: 1;
   }
@@ -484,13 +484,17 @@ const CarCard = styled.div`
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 1.5rem;
-  padding: 2rem;
+  padding: 1.25rem; /* Reduced padding for mobile */
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
 `;
 
 const CarImageContainer = styled.div`
   position: relative;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   border-radius: 1rem;
   overflow: hidden;
   cursor: pointer;
@@ -502,9 +506,13 @@ const CarImageContainer = styled.div`
 
 const CarImage = styled.img`
   width: 100%;
-  height: 16rem;
+  height: 12rem; /* Smaller height for mobile */
   object-fit: cover;
   transition: transform 0.7s ease;
+
+  @media (min-width: 768px) {
+    height: 16rem;
+  }
 `;
 
 const ImageOverlay = styled.div`
@@ -515,14 +523,15 @@ const ImageOverlay = styled.div`
 
 const ImageBadge = styled.div`
   position: absolute;
-  bottom: 1rem;
-  left: 1rem;
+  bottom: 0.75rem;
+  left: 0.75rem;
   background: rgba(255, 255, 255, 0.2);
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 9999px;
+  backdrop-filter: blur(4px);
 
   span {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     font-weight: 500;
   }
 `;
@@ -532,28 +541,39 @@ const CarInfo = styled.div`
   flex-direction: column;
 `;
 
-const CarTitleSection = styled.div``;
+const CarTitleSection = styled.div`
+  margin-bottom: 1rem;
+`;
 
 const CarTitle = styled.h2`
-  font-size: 1.875rem;
+  font-size: 1.5rem; /* Adjusted for mobile */
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+
+  @media (min-width: 768px) {
+    font-size: 1.875rem;
+  }
 `;
 
 const CarPrice = styled.div`
-  font-size: 2.5rem;
+  font-size: 1.75rem; /* Adjusted for mobile */
   font-weight: 900;
-  background: linear-gradient(to right, #ef4444, #f87171); /* Red Gradient */
+  background: linear-gradient(to right, #ef4444, #f87171);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+
+  @media (min-width: 768px) {
+    font-size: 2.5rem;
+  }
 `;
 
 const SpecsGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 0.75rem; /* Smaller gap on mobile */
 `;
 
 const SpecItem = styled.div`
@@ -561,72 +581,95 @@ const SpecItem = styled.div`
   border-radius: 0.75rem;
   padding: 0.5rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex; /* <-- ADD this line */
-  align-items: center; /* <-- ADD this line */
+  display: flex;
+  align-items: center;
+  overflow: hidden; /* Prevent spill */
 `;
 
 const SpecIcon = styled.div`
-  font-size: 1.5rem; /* Increased size for better visibility inline */
-  margin-right: 0.75rem; /* <-- CHANGE from margin-bottom to margin-right */
+  font-size: 1.25rem;
+  margin-right: 0.5rem;
+  flex-shrink: 0; /* Prevent icon from squishing */
 `;
 
 const SpecDetails = styled.div`
-  /* <-- NEW component */
   display: flex;
   flex-direction: column;
+  min-width: 0; /* Enable text truncation if needed */
 `;
 
 const SpecLabel = styled.div`
   color: #9ca3af;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
 `;
 
 const SpecValue = styled.div`
   font-weight: 600;
-  font-size: 1rem; /* Adjust font size to fit well */
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
-const TrustItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  svg {
-    font-size: 1.5rem;
-  }
-
-  span {
-    font-size: 0.875rem;
-    color: #d1d5db;
-  }
-`;
-
+/* Trust Items optimized for small screens */
 const TrustSection = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-bottom: 2rem;
 
-  ${TrustItem} svg {
-    color: #ef4444; /* Deep Red for Icons */
+  /* On very small screens, maybe stack? Keeping 2 cols for now but shrinking text */
+  @media (max-width: 360px) {
+    gap: 0.5rem;
+  }
+`;
+
+const TrustItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  svg {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    color: #ef4444;
+  }
+
+  span {
+    font-size: 0.75rem; /* Smaller text for iPhone SE */
+    color: #d1d5db;
+    line-height: 1.2;
+  }
+
+  @media (min-width: 768px) {
+    gap: 0.75rem;
+    span {
+      font-size: 0.875rem;
+    }
+    svg {
+      font-size: 1.5rem;
+    }
   }
 `;
 
 const ReservationSection = styled.div`
   order: 1;
-
   @media (min-width: 1024px) {
     order: 2;
   }
 `;
 
 const SectionHeader = styled.div`
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 `;
 
 const SectionTitle = styled.h3`
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  @media (min-width: 768px) {
+    font-size: 1.5rem;
+  }
 `;
 
 const OptionsContainer = styled.div`
@@ -650,45 +693,49 @@ const OptionCard = styled.div`
 const OptionBadge = styled.div`
   position: absolute;
   top: -0.5rem;
-  left: 1.5rem;
-  background: linear-gradient(to right, #ff7171, #e53935); /* Red Badge */
+  left: 1rem; /* Adjusted for mobile */
+  background: linear-gradient(to right, #ff7171, #e53935);
   color: white;
-  padding: 0.25rem 0.75rem;
+  padding: 0.2rem 0.6rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 700;
   z-index: 10;
+  white-space: nowrap;
 `;
 
 const OptionContent = styled.div`
-  padding: 1.5rem;
+  /* CRITICAL FIX FOR IPHONE SE: Reduced padding */
+  padding: 1rem;
   border-radius: 1rem;
   border: 2px solid;
   transition: all 0.3s ease;
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 0.75rem; /* Reduced gap */
+
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
 
   ${(props) =>
     props.active
       ? `
-    background: linear-gradient(to right, rgba(255, 0, 0, 0.2), rgba(255, 69, 0, 0.2)); /* Red Active Background */
-    border-color: #ef4444; /* Deep Red Border */
+    background: linear-gradient(to right, rgba(255, 0, 0, 0.2), rgba(255, 69, 0, 0.2));
+    border-color: #ef4444;
     box-shadow: 0 25px 50px -12px rgba(239, 68, 68, 0.25);
   `
       : `
     background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);
-
-    &:hover {
-      border-color: rgba(255, 255, 255, 0.2);
-    }
+    &:hover { border-color: rgba(255, 255, 255, 0.2); }
   `}
 `;
 
 const SelectionCircle = styled.div`
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
   border-radius: 50%;
   border: 2px solid;
   display: flex;
@@ -700,55 +747,74 @@ const SelectionCircle = styled.div`
 
   ${(props) =>
     props.active
-      ? `
-    border-color: #ef4444; /* Deep Red Border */
-    background: #ef4444; /* Deep Red Background */
-    color: white;
-  `
-      : `
-    border-color: rgba(255, 255, 255, 0.3);
-  `}
+      ? `border-color: #ef4444; background: #ef4444; color: white;`
+      : `border-color: rgba(255, 255, 255, 0.3);`}
 
   svg {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+  }
+
+  @media (min-width: 768px) {
+    width: 1.5rem;
+    height: 1.5rem;
+    svg {
+      font-size: 0.875rem;
+    }
   }
 `;
 
 const OptionDetails = styled.div`
   flex: 1;
+  min-width: 0; /* Allows text wrap in flex child */
 `;
 
 const OptionHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap; /* Allow wrapping if title is long */
 `;
 
 const OptionIcon = styled.div`
-  color: #ef4444; /* Deep Red Icon */
-  font-size: 1.25rem;
+  color: #ef4444;
+  font-size: 1rem;
+  flex-shrink: 0;
+  @media (min-width: 768px) {
+    font-size: 1.25rem;
+  }
 `;
 
 const OptionTitle = styled.h4`
   font-weight: 700;
-  font-size: 1.125rem;
+  font-size: 0.95rem; /* Smaller font for mobile */
+  line-height: 1.3;
+
+  @media (min-width: 768px) {
+    font-size: 1.125rem;
+  }
 `;
 
 const OptionPrice = styled.div`
-  font-size: 1.5rem;
+  font-size: 1.25rem; /* Smaller price font for mobile */
   font-weight: 900;
-  color: #f87171; /* Light Red Price */
-  margin-bottom: 0.75rem;
+  color: #f87171;
+  margin-bottom: 0.25rem;
+
+  @media (min-width: 768px) {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
 `;
+
 const InfoButton = styled.button`
-  padding: 0.5rem;
+  padding: 0.4rem;
   background: rgba(255, 255, 255, 0.1);
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.2s ease;
   color: #9ca3af;
+  flex-shrink: 0; /* Don't shrink the info button */
 
   &:hover {
     background: rgba(255, 255, 255, 0.2);
@@ -757,206 +823,108 @@ const InfoButton = styled.button`
 
 const ReserveButton = styled.button`
   width: 100%;
-  background: linear-gradient(to right, #dc2626, #b91c1c); /* Red Gradient */
+  background: linear-gradient(to right, #dc2626, #b91c1c);
   color: white;
   font-weight: 700;
-  padding: 1rem 2rem;
+  padding: 1rem;
   border-radius: 1rem;
-  font-size: 1.125rem;
+  font-size: 1rem; /* Safe size for mobile */
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+
+  /* Ensure text doesn't overflow */
+  white-space: normal;
+  line-height: 1.4;
 
   &:hover {
     transform: scale(1.02);
-    background: linear-gradient(
-      to right,
-      #991b1b,
-      #c51c1c
-    ); /* Darker Red Gradient */
-    box-shadow: 0 25px 50px -12px rgba(220, 38, 38, 0.4);
+    background: linear-gradient(to right, #991b1b, #c51c1c);
+  }
+
+  @media (min-width: 768px) {
+    font-size: 1.125rem;
+    padding: 1rem 2rem;
   }
 `;
 
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  z-index: 50;
+  background: rgba(0, 0, 0, 0.85); /* Darker backdrop */
+  z-index: 100; /* High z-index */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
   animation: ${fadeIn} 0.3s ease;
+  backdrop-filter: blur(5px);
 `;
 
 const OverlayContent = styled.div`
   background: #1a1a1a;
-  border: 2px solid #333;
-  border-radius: 24px;
-  padding: 2rem;
-  max-width: 700px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 1.5rem;
+  max-width: 600px;
   width: 100%;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
   position: relative;
-  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: center bottom;
+  animation: ${slideUp} 0.3s ease-out;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.1),
-      transparent
-    );
-  }
+  /* Safety for landscape phones */
+  max-height: 85vh;
+  overflow-y: auto;
 
-  &::after {
-    display: none;
-  }
-
-  @media (max-width: 768px) {
-    margin: 1rem;
-    padding: 1.5rem 1rem;
-    max-width: none;
+  @media (min-width: 768px) {
+    padding: 2.5rem;
   }
 `;
 
 const OverlayTitle = styled.h2`
-  font-size: 1.75rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #fff;
   margin: 0 0 1rem 0;
   text-align: center;
-  letter-spacing: -0.025em;
   line-height: 1.3;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  position: relative;
 
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: -0.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      #ef4444,
-      /* Deep Red */ #b91c1c,
-      /* Dark Red */ transparent
-    );
-    border-radius: 1px;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 1.5rem;
+  @media (min-width: 768px) {
+    font-size: 1.75rem;
   }
 `;
 
 const OverlayDescription = styled.p`
-  font-size: 1.1rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  color: #d1d5db;
   line-height: 1.6;
   text-align: center;
-  letter-spacing: 0.01em;
-  margin: 1rem 0;
-  flex-grow: 1;
+  margin-bottom: 1.5rem;
 
-  @media (max-width: 768px) {
-    font-size: 1rem;
-    margin: 1rem 0;
+  @media (min-width: 768px) {
+    font-size: 1.1rem;
   }
 `;
 
 const OverlayButton = styled.button`
   width: 100%;
-  background: linear-gradient(
-    135deg,
-    #ef4444 0%,
-    #b91c1c 100%
-  ); /* Red Gradient */
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
   color: #fff;
   border: none;
-  border-radius: 16px;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
+  border-radius: 12px;
+  padding: 0.875rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-transform: none;
-  letter-spacing: 0.025em;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2);
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.2),
-      transparent
-    );
-    transition: left 0.6s ease;
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  span {
-    position: relative;
-    z-index: 1;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(239, 68, 68, 0.4),
-      0 6px 12px rgba(0, 0, 0, 0.3);
-
-    &::before {
-      left: 100%;
-    }
-
-    &::after {
-      opacity: 1;
-    }
-  }
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 
   &:active {
-    transform: translateY(-1px);
-    transition: transform 0.1s ease;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 1rem;
-    padding: 0.875rem 1.5rem;
+    transform: scale(0.98);
   }
 `;
-
 /* --- UNUSED CODE --- */
 
 // {!showForm ? (

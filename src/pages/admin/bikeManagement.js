@@ -117,7 +117,7 @@ const BikeManagement = () => {
 
         <ControlsSection>
           <ControlsRow>
-            <SearchContainer>
+            {/* <SearchContainer>
               <SearchIcon size={18} />
               <SearchInput
                 type="text"
@@ -125,7 +125,7 @@ const BikeManagement = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-            </SearchContainer>
+            </SearchContainer> */}
             <StyledSelect
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}

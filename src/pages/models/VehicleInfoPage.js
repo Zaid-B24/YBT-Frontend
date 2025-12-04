@@ -388,6 +388,10 @@ const SectionTitle = styled.h2`
   font-size: 1.8rem;
   font-weight: 400;
   margin: 0;
+  @media (max-width: 768px) {
+    font-size: 1.4rem; /* Reduced for mobile */
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const VehicleTitle = styled.h1`
@@ -395,6 +399,9 @@ const VehicleTitle = styled.h1`
   font-size: 2.2rem;
   font-weight: 400;
   margin: 0;
+  @media (max-width: 768px) {
+    font-size: 1.6rem; /* Much smaller on mobile to prevent wrapping issues */
+  }
 `;
 
 const Description = styled.p`
@@ -403,14 +410,28 @@ const Description = styled.p`
   font-size: 1rem;
   font-family: "Inter", sans-serif;
   max-width: 70ch;
+  @media (max-width: 768px) {
+    font-size: 0.9rem; /* Slightly smaller body text */
+    line-height: 1.6;
+  }
 `;
 
-const VehiclePrice = styled.div``;
+const VehiclePrice = styled.div`
+  font-size: 1.5rem; /* Explicit size */
+  font-weight: 600;
+  color: #f2f2f2;
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    font-size: 1.25rem; /* Smaller price tag */
+  }
+`;
 
 const SpecsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
   margin-top: 1rem;
 `;
 
@@ -425,6 +446,9 @@ const SpecItem = styled.div`
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+  @media (max-width: 768px) {
+    padding: 1rem; /* Compact padding for mobile specs */
   }
 `;
 
@@ -489,6 +513,11 @@ const ReserveCar = styled.button`
 
   &:active {
     transform: scale(0.98);
+  }
+  @media (max-width: 768px) {
+    width: 100%; /* Full width button on mobile */
+    padding: 0.875rem;
+    font-size: 0.9rem;
   }
 `;
 

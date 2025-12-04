@@ -24,9 +24,18 @@ import { bikeValidationSchema } from "../../utils/zodValidation";
 import { useQuery } from "@tanstack/react-query";
 
 const fetchDealers = async () => {
-  const res = await fetch(`${process.env.REACT_APP_API_URL}/dealer `);
+  const token = localStorage.getItem("adminToken");
+  if (!token) throw new Error("No admin token found.");
+
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/dealer`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
   if (!res.ok) throw new Error("Failed to fetch dealers");
-  return res.json();
+  const responseData = await res.json();
+  return responseData.data;
 };
 
 const renderField = (field, register, errors) => {
@@ -124,7 +133,7 @@ const BikeDetailsForm = ({ onSuccess, onBack }) => {
       specs: [""],
       engine: "",
       badges: [""],
-      bikeImages: [],
+      images: [],
     },
   });
 
@@ -138,7 +147,7 @@ const BikeDetailsForm = ({ onSuccess, onBack }) => {
     append: appendSpec,
     remove: removeSpec,
   } = useFieldArray({ control, name: "specs" });
-  const bikeImages = watch("bikeImages");
+  const images = watch("images");
 
   const onSubmit = async (data) => {
     const formDataApi = new FormData();
@@ -147,10 +156,8 @@ const BikeDetailsForm = ({ onSuccess, onBack }) => {
       const value = data[key];
       if (value === null || value === "" || value === undefined) return;
 
-      if (key === "bikeImages") {
-        Array.from(value).forEach((file) =>
-          formDataApi.append("bikeImages", file)
-        );
+      if (key === "images") {
+        Array.from(value).forEach((file) => formDataApi.append("images", file));
       } else if (key === "badges" || key === "specs") {
         value.forEach((item) => item && formDataApi.append(key, item));
       } else {
@@ -164,8 +171,16 @@ const BikeDetailsForm = ({ onSuccess, onBack }) => {
     }
 
     try {
+      const token = localStorage.getItem("adminToken"); // Or however you get your token
+      if (!token) {
+        toast.error("Authentication error. Please log in again.");
+        return;
+      }
       const response = await fetch(`${process.env.REACT_APP_API_URL}/bikes`, {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formDataApi,
       });
 
@@ -411,30 +426,30 @@ const BikeDetailsForm = ({ onSuccess, onBack }) => {
         </SectionTitle>
         <FileInputContainer>
           <FileInputWrapper
-            htmlFor="bikeImages"
-            className={bikeImages?.length > 0 ? "has-file" : ""}
+            htmlFor="images"
+            className={images?.length > 0 ? "has-file" : ""}
           >
             <HiddenFileInput
-              id="bikeImages"
+              id="images"
               type="file"
               accept="image/*"
               multiple
-              {...register("bikeImages")}
+              {...register("images")}
             />
             <FileInputContent>
               <FileInputIcon>
                 <Upload size={24} />
               </FileInputIcon>
               <FileInputText>
-                {bikeImages?.length > 0
-                  ? `${bikeImages.length} image(s) selected`
+                {images?.length > 0
+                  ? `${images.length} image(s) selected`
                   : "Click or drag files to upload"}
               </FileInputText>
               <FileInputSubtext>PNG, JPG, WEBP up to 10MB</FileInputSubtext>
             </FileInputContent>
           </FileInputWrapper>
-          {errors.bikeImages && (
-            <ErrorMessage>{errors.bikeImages.message}</ErrorMessage>
+          {errors.images && (
+            <ErrorMessage>{errors.images.message}</ErrorMessage>
           )}
         </FileInputContainer>
       </Section>

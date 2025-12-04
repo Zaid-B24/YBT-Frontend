@@ -86,6 +86,9 @@ const EventTitle = styled.h1`
   font-size: 2.2rem;
   line-height: 1.2;
   font-weight: 500;
+  @media (max-width: 768px) {
+    font-size: 1.5rem; /* Reduced from 2.2rem */
+  }
 `;
 
 // 3. Content Blocks & Typography
@@ -95,62 +98,83 @@ const SectionTitle = styled.h2`
   font-family: "Playfair Display", serif;
   font-size: 2rem;
   margin-bottom: 1rem;
+  @media (max-width: 768px) {
+    font-size: 1.4rem; /* Reduced from 2rem */
+    margin-bottom: 0.75rem;
+  }
 `;
 
 const Description = styled.div`
   color: #ccc;
   line-height: 1.8;
   font-size: 1rem;
+  @media (max-width: 768px) {
+    font-size: 0.9rem; /* Slightly smaller body text */
+    line-height: 1.6;
+  }
 `;
 
 // 4. Information & Lists
 const InfoList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem; /* More space */
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  @media (max-width: 768px) {
+    gap: 0.8rem;
+  }
 `;
 
 const InfoItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  color: #E0E0E0; /* Match body text */
-  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+    gap: 0.75rem;
+  }
 
-  svg {
-    flex-shrink: 0;
-    /* Use a consistent, non-gray color for icons. The yellow from Lightbulb is a good choice. */
-    color: #facc15;
-  }
+  svg {
+    flex-shrink: 0;
+    color: #facc15;
+    width: 20px; /* Force icon size on mobile if needed */
+    height: 20px;
+  }
 `;
 
 const FacilitiesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr; /* Force 2 columns on mobile */
+    gap: 0.75rem;
+  }
 `;
 
 const FacilityItem = styled.div`
-  /* Use a complementary dark color for cards */
-  background: #1C1E22;
-  /* Make borders even more subtle */
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  color: #E0E0E0;
-  font-size: 0.95rem;
-  transition: background-color 0.3s ease;
+  background: #1c1e22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #e0e0e0;
+  font-size: 0.95rem;
 
-  svg {
-    color: #facc15; /* Use the same yellow for icon consistency */
-  }
+  svg {
+    color: #facc15;
+  }
 
-  &:hover {
-    background-color: #25272B; /* Subtle hover for interaction */
-  }
+  @media (max-width: 768px) {
+    padding: 0.8rem;
+    font-size: 0.8rem;
+    gap: 0.5rem;
+    flex-direction: column; /* Stack icon and text for compact look */
+    text-align: center;
+  }
 `;
 
 // 5. Cards & Containers
@@ -162,6 +186,10 @@ const DetailsCard = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  @media (max-width: 768px) {
+    padding: 1.25rem; /* Reduced padding */
+    gap: 1rem;
+  }
 `;
 
 const LocationCard = styled(DetailsCard)``;
@@ -206,6 +234,10 @@ const EventActions = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  @media (max-width: 768px) {
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+  }
 `;
 
 const PriceInfo = styled.div`
@@ -218,6 +250,12 @@ const PriceInfo = styled.div`
     font-weight: 400;
     color: #ccc;
     display: block;
+  }
+  @media (max-width: 768px) {
+    font-size: 1.25rem; /* Smaller price on mobile */
+    span {
+      font-size: 0.8rem;
+    }
   }
 `;
 
@@ -236,6 +274,10 @@ const BookNowButton = styled(motion.button)`
     background-color: #dc2626;
     transform: translateY(-2px);
   }
+  @media (max-width: 768px) {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.9rem;
+  }
 `;
 
 const ShareButton = styled.button`
@@ -251,32 +293,6 @@ const ShareButton = styled.button`
   &:hover {
     background: rgba(255, 255, 255, 0.1);
     transform: scale(1.1);
-  }
-`;
-
-const TermsndCondiitonsButton = styled.button`
-  display: block;
-  width: fit-content;
-  margin: 2.5rem auto 0; /* Adds space above and centers it */
-  padding: 0.5rem 0; /* Adds some vertical clickable area */
-
-  /* Reset default button appearance */
-  background: transparent;
-  border: none;
-
-  /* Theming to match your page */
-  color: #a0a0a0; /* A muted white for secondary text */
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-decoration: underline;
-  text-underline-offset: 4px; /* Pushes the underline down slightly */
-
-  /* Interactivity */
-  cursor: pointer;
-  transition: color 0.2s ease-in-out;
-
-  &:hover {
-    color: #fff; /* Brightens to full white on hover */
   }
 `;
 
@@ -308,6 +324,9 @@ const MediaContainer = styled.div`
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background-color: #000;
+  @media (max-width: 768px) {
+    aspect-ratio: 4 / 3;
+  }
 `;
 
 const DisplayedImage = styled(motion.img)`
@@ -710,9 +729,6 @@ const EventDetailsPage = () => {
                 </FacilityItem>
               ))}
             </FacilitiesGrid>
-            <TermsndCondiitonsButton>
-              Terms & Condiitons
-            </TermsndCondiitonsButton>
           </motion.div>
         </LeftColumn>
 

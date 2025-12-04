@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Filter, ArrowRight } from "lucide-react";
+import { Filter, ArrowRight, Search, X } from "lucide-react";
 import { CarCardSkeleton } from "../../components/cards/CarCardSkeleton";
 import VehicleBadges from "../../components/common/VehicleBadges";
 import { useCars } from "../../hooks/useCars";
@@ -25,9 +25,92 @@ const Sidebar = styled.div`
   top: 100px;
   height: calc(100vh - 100px);
   overflow-y: auto;
+  transition: transform 0.3s ease-in-out;
+  z-index: 50;
 
   @media (max-width: 1024px) {
-    display: none;
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 85%;
+    max-width: 320px;
+    background: #000; /* Make background solid black on mobile */
+    transform: translateX(${(props) => (props.isOpen ? "0" : "-100%")});
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+
+    // ADDED: Huge top padding on mobile so it doesn't hide behind your Logo/Header
+    padding-top: 120px;
+  }
+`;
+
+// NEW: A dark overlay background when sidebar is open on mobile
+const SidebarOverlay = styled.div`
+  display: none;
+  @media (max-width: 1024px) {
+    display: ${(props) => (props.isOpen ? "block" : "none")};
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 40;
+    backdrop-filter: blur(3px);
+  }
+`;
+
+const MobileToggleBtn = styled.button`
+  display: none;
+  @media (max-width: 1024px) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    // Changed top margin from 0 to 2rem
+    margin: 2rem auto 2rem auto;
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+`;
+
+const MobileCloseBtn = styled.button`
+  display: none;
+  @media (max-width: 1024px) {
+    display: flex;
+    position: absolute;
+    top: 130px;
+
+    right: 1.5rem;
+    background: rgba(
+      255,
+      255,
+      255,
+      0.1
+    ); /* Optional: Add background to make it visible */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    z-index: 100; /* Ensure it sits on top of sidebar content */
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
   }
 `;
 
@@ -222,7 +305,82 @@ const ResetButton = styled.button`
   }
 `;
 
+const SearchContainer = styled.div`
+  padding: 1.5rem 0; /* Removed horizontal padding to fit flex container */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.5rem;
+`;
+
+const SearchRow = styled.div`
+  display: flex;
+  gap: 10px; /* Space between input and button */
+  align-items: stretch;
+`;
+
+const SearchInputWrapper = styled.div`
+  position: relative;
+  flex: 1; /* Take up remaining space */
+`;
+
+// Updated Input to remove the old left-padding for the icon
+const SearchInput = styled.input`
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.75rem 2.5rem 0.75rem 1rem; // Padding right for the X button
+  font-size: 0.9rem;
+  border-radius: 8px; // Rounded corners
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+`;
+
+// NEW: The Square Search Button
+const SearchActionButton = styled.button`
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  width: 44px; /* Square button */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
+const ClearButton = styled.div`
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+  }
+`;
+
 const YBTCarsPage = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
   const [filters, setFilters] = useState({
     brand: "",
     price: "",
@@ -231,12 +389,31 @@ const YBTCarsPage = () => {
 
   const { data: filterOptions, isLoading: filtersLoading } = useCarFilters();
 
+  const handleSearch = () => {
+    setAppliedSearch(searchInput);
+    setIsSidebarOpen(false);
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput("");
+    setAppliedSearch("");
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   const handleResetFilters = () => {
     setFilters({
       brand: "",
       price: "",
       year: "",
     });
+    setSearchInput("");
+    setAppliedSearch("");
+    setIsSidebarOpen(false);
   };
 
   const handleFilterChange = (e) => {
@@ -247,6 +424,14 @@ const YBTCarsPage = () => {
     }));
   };
 
+  const activeParams = useMemo(
+    () => ({
+      ...filters,
+      q: appliedSearch, // This will switch your hook to use searchCarsAPI
+    }),
+    [filters, appliedSearch]
+  );
+
   const {
     cars,
     isLoading,
@@ -254,30 +439,17 @@ const YBTCarsPage = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useCars("YBT", filters, { useInfinite: true });
+  } = useCars("YBT", activeParams, { useInfinite: true });
 
   const yearList = useMemo(() => {
     if (!filterOptions || !filterOptions.minYear || !filterOptions.maxYear)
       return [];
     const years = [];
-    // Loop from Max Year down to Min Year
     for (let i = filterOptions.maxYear; i >= filterOptions.minYear; i--) {
       years.push(i);
     }
     return years;
   }, [filterOptions]);
-
-  // const availableBrands = useMemo(() => {
-  //   if (!cars) return [];
-  //   return [...new Set(cars.map((car) => car.brand).filter(Boolean))];
-  // }, [cars]);
-
-  // const availableYears = useMemo(() => {
-  //   if (!cars) return [];
-  //   return [...new Set(cars.map((car) => car.year).filter(Boolean))].sort(
-  //     (a, b) => b - a
-  //   );
-  // }, [cars]);
 
   const loadMoreRef = useRef(null);
   useEffect(() => {
@@ -298,11 +470,39 @@ const YBTCarsPage = () => {
 
   return (
     <PageWrapper>
-      <Sidebar>
+      <SidebarOverlay
+        isOpen={isSidebarOpen}
+        onClick={() => setIsSidebarOpen(false)}
+      />
+      <Sidebar isOpen={isSidebarOpen}>
         <FilterSection>
           <FilterTitle>
-            <Filter size={20} /> Filters
+            <Filter size={20} /> Search & Filters
           </FilterTitle>
+
+          <SearchContainer>
+            <SearchRow>
+              <SearchInputWrapper>
+                <SearchInput
+                  type="text"
+                  placeholder="Search cars..."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+                {searchInput && (
+                  <ClearButton onClick={handleClearSearch}>
+                    <X size={16} />
+                  </ClearButton>
+                )}
+              </SearchInputWrapper>
+
+              {/* The Action Button */}
+              <SearchActionButton onClick={handleSearch} title="Search">
+                <Search size={20} />
+              </SearchActionButton>
+            </SearchRow>
+          </SearchContainer>
 
           <FilterGroup>
             <FilterLabel>Brand</FilterLabel>
@@ -373,6 +573,10 @@ const YBTCarsPage = () => {
             signature YBT modifications and premium customizations that define
             automotive excellence.
           </HeroSubtitle>
+          <MobileToggleBtn onClick={() => setIsSidebarOpen(true)}>
+            <Filter size={18} />
+            Search & Filters
+          </MobileToggleBtn>
         </HeroSection>
 
         {isLoading && !isFetchingNextPage ? (
@@ -389,7 +593,7 @@ const YBTCarsPage = () => {
               <CarsGrid layout>
                 {cars.map((car, index) => (
                   <CarCard
-                    key={car.id} // Use the unique car ID for the key
+                    key={car.id}
                     layout
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}

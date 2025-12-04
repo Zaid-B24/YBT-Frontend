@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Filter, ArrowRight } from "lucide-react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { Filter, ArrowRight, X, Search } from "lucide-react";
 import { CarCardSkeleton } from "../../components/cards/CarCardSkeleton";
+import { useBikeFilters } from "../../hooks/useBikeFilters";
+import { useBikes } from "../../hooks/useBikes";
 
 const PageWrapper = styled.div`
   padding-top: 100px;
@@ -23,9 +24,76 @@ const Sidebar = styled.div`
   top: 100px;
   height: calc(100vh - 100px);
   overflow-y: auto;
+  transition: transform 0.3s ease-in-out;
+  z-index: 50;
 
   @media (max-width: 1024px) {
-    display: none;
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 85%;
+    max-width: 320px;
+    background: #000; /* Make background solid black on mobile */
+    transform: translateX(${(props) => (props.isOpen ? "0" : "-100%")});
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+
+    // ADDED: Huge top padding on mobile so it doesn't hide behind your Logo/Header
+    padding-top: 120px;
+  }
+`;
+
+const SidebarOverlay = styled.div`
+  display: none;
+  @media (max-width: 1024px) {
+    display: ${(props) => (props.isOpen ? "block" : "none")};
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 40;
+    backdrop-filter: blur(3px);
+  }
+`;
+
+const MobileToggleBtn = styled.button`
+  display: none;
+  @media (max-width: 1024px) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    // Changed top margin from 0 to 2rem
+    margin: 2rem auto 2rem auto;
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+`;
+
+// NEW: Close button inside the sidebar (Mobile only)
+const MobileCloseBtn = styled.button`
+  display: none;
+  @media (max-width: 1024px) {
+    display: flex;
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
   }
 `;
 
@@ -235,57 +303,114 @@ const ResetButton = styled.button`
   }
 `;
 
-// const fetchBikes = async (filters) => {
-//   const params = new URLSearchParams();
+const SearchContainer = styled.div`
+  padding: 1.5rem 0; /* Removed horizontal padding to fit flex container */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.5rem;
+`;
 
-//   params.append("collectionType", "YBT");
+const SearchRow = styled.div`
+  display: flex;
+  gap: 10px; /* Space between input and button */
+  align-items: stretch;
+`;
 
-//   if (filters.brand) params.append("brands", filters.brand);
-//   if (filters.year) params.append("registrationYear", filters.year);
-//   if (filters.engine) params.append("engine", filters.engine); // Assuming backend supports this
+const SearchInputWrapper = styled.div`
+  position: relative;
+  flex: 1; /* Take up remaining space */
+`;
 
-//   const apiUrl = `${process.env.REACT_APP_API_URL}/bikes?${params.toString()}`;
-//   console.log(`Fetching bikes from: ${apiUrl}`);
+// Updated Input to remove the old left-padding for the icon
+const SearchInput = styled.input`
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.75rem 2.5rem 0.75rem 1rem; // Padding right for the X button
+  font-size: 0.9rem;
+  border-radius: 8px; // Rounded corners
 
-//   const response = await fetch(apiUrl);
-//   if (!response.ok) {
-//     throw new Error(`Server responded with ${response.status}.`);
-//   }
-//   const responseData = await response.json();
-//   return responseData.data || [];
-// };
-
-const fetchBikes = async ({ pageParam = null, queryKey }) => {
-  const [_key, filters] = queryKey;
-
-  const params = new URLSearchParams();
-  params.append("collectionType", "YBT");
-
-  if (filters.brand) params.append("brands", filters.brand);
-  if (filters.year) params.append("registrationYear", filters.year);
-  if (filters.engine) params.append("engine", filters.engine);
-
-  if (pageParam) {
-    params.append("cursor", pageParam);
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.5);
   }
 
-  const apiUrl = `${process.env.REACT_APP_API_URL}/bikes?${params.toString()}`;
-  console.log(`Fetching bikes from: ${apiUrl}`);
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+`;
 
-  const response = await fetch(apiUrl);
-  if (!response.ok) {
-    throw new Error(`Server responded with ${response.status}.`);
+// NEW: The Square Search Button
+const SearchActionButton = styled.button`
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  width: 44px; /* Square button */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
   }
 
-  return response.json();
-};
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
+const ClearButton = styled.div`
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+  }
+`;
 
 const YBTBikesPage = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [searchInput, setSearchInput] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
   const [filters, setFilters] = useState({
     brand: "",
     engine: "",
     year: "",
   });
+
+  const { data: filterOptions, isLoading: filtersLoading } = useBikeFilters();
+
+  const handleSearch = () => {
+    setAppliedSearch(searchInput);
+    setIsSidebarOpen(false);
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput("");
+    setAppliedSearch("");
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSearch();
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+      brand: "",
+      price: "",
+      year: "",
+    });
+    setSearchInput("");
+    setAppliedSearch("");
+    setIsSidebarOpen(false);
+  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -295,71 +420,88 @@ const YBTBikesPage = () => {
     }));
   };
 
-  const handleResetFilters = () => {
-    setFilters({ brand: "", engine: "", year: "" });
-  };
+  const activeParams = useMemo(
+    () => ({
+      ...filters,
+      q: appliedSearch,
+    }),
+    [filters, appliedSearch]
+  );
 
   const {
-    data,
+    bikes,
+    isLoading,
     error,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    status,
-  } = useInfiniteQuery({
-    queryKey: ["bikes", filters],
-    queryFn: fetchBikes,
-    getNextPageParam: (lastPage, pages) => {
-      return lastPage.pagination.nextCursor ?? undefined;
-    },
-    keepPreviousData: true,
-  });
+  } = useBikes(activeParams, { useInfinite: true });
+
+  const yearList = useMemo(() => {
+    if (!filterOptions || !filterOptions.minYear || !filterOptions.maxYear)
+      return [];
+    const years = [];
+    for (let i = filterOptions.maxYear; i >= filterOptions.minYear; i--) {
+      years.push(i);
+    }
+    return years;
+  }, [filterOptions]);
 
   const loadMoreRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        // Is the entry intersecting the viewport?
         if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
           fetchNextPage();
         }
       },
-      { threshold: 1.0 } // Trigger when the element is 100% visible
+      { threshold: 1.0 }
     );
 
     const currentRef = loadMoreRef.current;
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
+    if (currentRef) observer.observe(currentRef);
 
     return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
+      if (currentRef) observer.unobserve(currentRef);
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const bikes = useMemo(
-    () => data?.pages.flatMap((page) => page.data) ?? [],
-    [data]
-  );
-
-  const brands = [...new Set(bikes.map((bike) => bike.brand).filter(Boolean))];
-  const years = [
-    ...new Set(bikes.map((bike) => bike.registrationYear).filter(Boolean)),
-  ];
-
-  console.log("Brands array:", brands);
-  console.log("Years array:", years);
   return (
     <PageWrapper>
-      <Sidebar>
+      <SidebarOverlay
+        isOpen={isSidebarOpen}
+        onClick={() => setIsSidebarOpen(false)}
+      />
+      <Sidebar isOpen={isSidebarOpen}>
         <FilterSection>
           <FilterTitle>
-            <Filter size={20} />
-            Filters
+            <Filter size={20} /> Search & Filters
           </FilterTitle>
+
+          <SearchContainer>
+            <SearchRow>
+              <SearchInputWrapper>
+                <SearchInput
+                  type="text"
+                  placeholder="Search bikes..."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+                {searchInput && (
+                  <ClearButton onClick={handleClearSearch}>
+                    <X size={16} />
+                  </ClearButton>
+                )}
+              </SearchInputWrapper>
+
+              {/* The Action Button */}
+              <SearchActionButton onClick={handleSearch} title="Search">
+                <Search size={20} />
+              </SearchActionButton>
+            </SearchRow>
+          </SearchContainer>
 
           <FilterGroup>
             <FilterLabel>Brand</FilterLabel>
@@ -372,19 +514,20 @@ const YBTBikesPage = () => {
               >
                 All
               </FilterButton>
-              {brands.map((brand) => (
-                <FilterButton
-                  key={brand}
-                  isActive={filters.brand === brand}
-                  onClick={() =>
-                    handleFilterChange({
-                      target: { name: "brand", value: brand },
-                    })
-                  }
-                >
-                  {brand}
-                </FilterButton>
-              ))}
+              {!filtersLoading &&
+                filterOptions?.brands?.map((brand) => (
+                  <FilterButton
+                    key={brand}
+                    isActive={filters.brand === brand}
+                    onClick={() =>
+                      handleFilterChange({
+                        target: { name: "brand", value: brand },
+                      })
+                    }
+                  >
+                    {brand}
+                  </FilterButton>
+                ))}
             </FilterButtonGroup>
           </FilterGroup>
 
@@ -396,7 +539,7 @@ const YBTBikesPage = () => {
               onChange={handleFilterChange}
             >
               <option value="">All Years</option>
-              {years.map((year) => (
+              {yearList.map((year) => (
                 <option key={year} value={year}>
                   {year}
                 </option>
@@ -405,19 +548,18 @@ const YBTBikesPage = () => {
           </FilterGroup>
 
           <FilterGroup>
-            <FilterLabel>Engine Size</FilterLabel>
+            <FilterLabel>Price Range</FilterLabel>
             <FilterSelect
-              name="engine"
-              value={filters.engine}
+              name="price"
+              value={filters.price}
               onChange={handleFilterChange}
             >
-              <option value="">All Engines</option>
-              <option value="600-800cc">600-800cc</option>
-              <option value="800-1000cc">800-1000cc</option>
-              <option value="1000cc+">1000cc+</option>
+              <option value="">All Prices</option>
+              <option value="below-4cr">Below ₹4 Cr</option>
+              <option value="4-5cr">₹4-5 Cr</option>
+              <option value="above-5cr">Above ₹5 Cr</option>
             </FilterSelect>
           </FilterGroup>
-          {/* Assuming you have a styled component for ResetButton */}
           <ResetButton onClick={handleResetFilters}>Reset Filters</ResetButton>
         </FilterSection>
       </Sidebar>
@@ -430,51 +572,52 @@ const YBTBikesPage = () => {
             each featuring signature YBT modifications and premium
             customizations for the ultimate riding experience.
           </HeroSubtitle>
+          <MobileToggleBtn onClick={() => setIsSidebarOpen(true)}>
+            <Filter size={18} />
+            Search & Filters
+          </MobileToggleBtn>
         </HeroSection>
 
-        {status === "loading" ? (
+        {isLoading && !isFetchingNextPage ? (
           <BikesGrid>
             {Array.from({ length: 6 }).map((_, index) => (
               <CarCardSkeleton key={index} />
             ))}
           </BikesGrid>
-        ) : status === "error" ? (
+        ) : error ? (
           <p>Error: {error.message}</p>
         ) : (
           <>
-            <BikesGrid>
-              {/* ✨ Map over the pages, and then map over the bikes in each page */}
-              {data?.pages.map((page, i) => (
-                <React.Fragment key={i}>
-                  {page.data.map((bike, index) => (
-                    <BikeCard
-                      key={bike.id}
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: (index % 6) * 0.1 }}
-                      viewport={{ once: true }}
-                    >
-                      <BikeImage image={bike.thumbnail}>
-                        <BikeBadge>{bike.badges?.[0] || "Featured"}</BikeBadge>
-                      </BikeImage>
-                      <BikeContent>
-                        <BikeTitle>{bike.title}</BikeTitle>
-                        <BikeSpecs>
-                          <span>{bike.specs.join(" • ")}</span>
-                        </BikeSpecs>
-                        <BikePrice>
-                          ₹{bike.ybtPrice?.toLocaleString("en-IN")}
-                        </BikePrice>
-                        <ViewButton to={`/bikes/${bike.id}`}>
-                          View Details <ArrowRight size={16} />
-                        </ViewButton>
-                      </BikeContent>
-                    </BikeCard>
-                  ))}
-                </React.Fragment>
-              ))}
-            </BikesGrid>
-
+            <AnimatePresence>
+              <BikesGrid layout>
+                {bikes.map((bike, index) => (
+                  <BikeCard
+                    key={bike.id}
+                    layout
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -30 }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
+                  >
+                    <BikeImage image={bike.image}>
+                      <BikeBadge>{bike.badges?.[0] || "Featured"}</BikeBadge>
+                    </BikeImage>
+                    <BikeContent>
+                      <BikeTitle>{bike.title}</BikeTitle>
+                      <BikeSpecs>
+                        <span>{bike.specs.join(" • ")}</span>
+                      </BikeSpecs>
+                      <BikePrice>
+                        ₹{bike.ybtPrice?.toLocaleString("en-IN")}
+                      </BikePrice>
+                      <ViewButton to={`/bikes/${bike.id}`}>
+                        View Details <ArrowRight size={16} />
+                      </ViewButton>
+                    </BikeContent>
+                  </BikeCard>
+                ))}
+              </BikesGrid>
+            </AnimatePresence>
             <div
               ref={loadMoreRef}
               style={{ height: "100px", marginTop: "2rem" }}

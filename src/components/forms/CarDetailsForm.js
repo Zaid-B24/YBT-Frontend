@@ -49,11 +49,13 @@ const fetchDealers = async () => {
   const responseData = await res.json();
   return responseData.data;
 };
+
 const fetchDesigners = async () => {
   const res = await fetch(`${process.env.REACT_APP_API_URL}/designer`);
   if (!res.ok) throw new Error("Failed to fetch designers");
   return res.json();
 };
+
 const fetchWorkshops = async () => {
   const res = await fetch(`${process.env.REACT_APP_API_URL}/workshop`);
   if (!res.ok) throw new Error("Failed to fetch workshops");
@@ -181,8 +183,6 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
       videos: [],
     },
   });
-
-  console.log("Validation Errors:", errors);
 
   const images = watch("images");
   const videos = watch("videos");

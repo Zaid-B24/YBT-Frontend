@@ -19,7 +19,9 @@ const PageWrapper = styled.div`
 
   @media (max-width: 768px) {
     padding: 1rem;
-    gap: 1rem;
+    padding-top: 100px; /* Ensure content clears fixed header */
+    gap: 1.5rem;
+    margin: 0;
   }
 `;
 
@@ -31,11 +33,11 @@ const ContentWrapper = styled.div`
 
   @media (max-width: 768px) {
     flex-direction: column;
+    gap: 1.5rem;
   }
 `;
 const MainContent = styled.div`
   flex: 2;
-  top: 2rem;
 `;
 
 const SidePanel = styled.div`
@@ -52,7 +54,13 @@ const SidePanel = styled.div`
   top: 2rem;
   margin-top: 2rem;
   @media (max-width: 768px) {
-    order: -1; /* Move side panel above main content on small screens */
+    /* Mobile: Non-Sticky & Reordered */
+    position: relative; /* Disable sticky */
+    top: 0;
+    order: -1; /* Show summary at the top */
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 1.25rem;
   }
 `;
 
@@ -68,6 +76,12 @@ const Header = styled.div`
     font-size: 1.8rem;
     margin: 0;
   }
+  @media (max-width: 768px) {
+    margin-bottom: 1rem;
+    h1 {
+      font-size: 1.5rem; /* Smaller title on mobile */
+    }
+  }
 `;
 
 const SectionTitle = styled.h2`
@@ -75,6 +89,10 @@ const SectionTitle = styled.h2`
   font-size: 1.8rem;
   margin-top: 0;
   margin-bottom: 1.5rem;
+  @media (max-width: 768px) {
+    font-size: 1.4rem; /* Smaller section headers */
+    margin-bottom: 1rem;
+  }
 `;
 
 // const InfoCard = styled.div`
@@ -98,6 +116,9 @@ const TicketTypeDisplay = styled.div`
   span:first-child {
     color: rgba(255, 255, 255, 0.7);
   }
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
 `;
 
 const CalculationRow = styled.div`
@@ -117,6 +138,12 @@ const CalculationRow = styled.div`
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     margin-top: 1rem;
     padding-top: 1rem;
+  }
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+    &.total {
+      font-size: 1rem;
+    }
   }
 `;
 
@@ -158,6 +185,7 @@ const CheckboxContainer = styled.label`
   color: rgba(255, 255, 255, 0.8);
 
   input[type="checkbox"] {
+    flex-shrink: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -189,6 +217,9 @@ const CheckboxContainer = styled.label`
     &:checked::before {
       transform: scale(1);
     }
+    @media (max-width: 768px) {
+      font-size: 0.8rem; /* Smaller legal text */
+    }
   }
 `;
 
@@ -211,6 +242,11 @@ const ProceedToPayButton = styled.button`
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+  @media (max-width: 768px) {
+    padding: 0.9rem;
+    font-size: 1rem;
+    margin-top: 1.5rem;
   }
 `;
 
@@ -240,6 +276,9 @@ const PolicySectionTitle = styled.h3`
   font-weight: 600;
   color: #fff;
   margin: 0 0 0.75rem 0;
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
+  }
 `;
 
 const PolicyText = styled.p`
@@ -247,6 +286,9 @@ const PolicyText = styled.p`
   color: #ccc;
   line-height: 1.6;
   margin: 0;
+  @media (max-width: 768px) {
+    font-size: 0.85rem; /* Smaller readable text */
+  }
 `;
 
 const PolicyList = styled.ul`
@@ -255,6 +297,9 @@ const PolicyList = styled.ul`
   line-height: 1.6;
   padding-left: 20px;
   margin: 0.75rem 0 0 0;
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+  }
 `;
 
 const PolicyListItem = styled.li`

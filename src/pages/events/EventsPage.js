@@ -268,16 +268,6 @@ const EventCardSkeleton = () => (
   </SkeletonCardWrapper>
 );
 
-const formatFullDate = (dateStr) => {
-  const date = new Date(dateStr);
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(date);
-};
-
 const EventsPage = () => {
   const [activeFilter, setActiveFilter] = useState("upcoming");
 
@@ -289,18 +279,14 @@ const EventsPage = () => {
   });
 
   const {
-    data,
+    events,
     isLoading,
     isError,
     error,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useEvents(activeFilter);
-
-  const events = useMemo(() => {
-    return data?.pages.flatMap((page) => page.data) || [];
-  }, [data]);
+  } = useEvents(activeFilter, { useInfinite: true });
 
   const filters = useMemo(() => {
     const staticFilters = [
@@ -312,7 +298,6 @@ const EventsPage = () => {
         key: cat.slug,
         label: cat.name,
       })) || [];
-
     return [...staticFilters, ...dynamicFilters];
   }, [filterData]);
 
@@ -402,10 +387,6 @@ const EventsPage = () => {
             ) : (
               <GridContainer>
                 {events.map((event, index) => {
-                  const fullDate = formatFullDate(event.startDate);
-                  const priceLabel = event.ticketTypes?.[0]
-                    ? `₹ ${event.ticketTypes[0].price.toLocaleString()} onwards`
-                    : "Free / TBD";
                   return (
                     <EventCard
                       key={event.id}
@@ -415,26 +396,18 @@ const EventsPage = () => {
                       transition={{ duration: 0.6, delay: index * 0.1 }}
                       viewport={{ once: true }}
                     >
-                      <EventImage image={event.primaryImage}>
-                        <StatusBadge
-                          status={
-                            event.status === "PUBLISHED"
-                              ? activeFilter === "past"
-                                ? "Completed"
-                                : "Upcoming"
-                              : "Draft"
-                          }
-                        >
-                          {activeFilter === "past" ? "Completed" : "Upcoming"}
+                      <EventImage image={event.image}>
+                        <StatusBadge status={event.status}>
+                          {event.status}
                         </StatusBadge>
                         <TypeBadge type={event.type}>{event.type}</TypeBadge>
                       </EventImage>
                       <EventContent>
                         <EventTitle>{event.title}</EventTitle>
                         <EventDescription>{event.description}</EventDescription>
-                        <EventPrice>₹ {priceLabel} onwards</EventPrice>
+                        <EventPrice>{event.price}</EventPrice>
                         <EventDateText>
-                          <Calendar size={14} /> {fullDate}
+                          <Calendar size={14} /> {event.date}
                         </EventDateText>
                       </EventContent>
                     </EventCard>
@@ -442,6 +415,16 @@ const EventsPage = () => {
                 })}
               </GridContainer>
             )}
+            <div
+              ref={loadMoreRef}
+              style={{ height: "100px", marginTop: "2rem" }}
+            >
+              {isFetchingNextPage ? (
+                <p style={{ textAlign: "center" }}>Loading more...</p>
+              ) : !hasNextPage && events.length > 0 ? (
+                <p style={{ textAlign: "center" }}>You've reached the end!</p>
+              ) : null}
+            </div>
           </>
         )}
       </EventsGrid>

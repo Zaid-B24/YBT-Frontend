@@ -1,18 +1,18 @@
-export const fetchFilterAPI = async () => {
-  const response = await fetch(`${process.env.REACT_APP_API_URL}/cars/filters`);
+export const fetchBikeFilterAPI = async () => {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/bikes/filters`
+  );
   if (!response.ok) throw new Error("Failed to fetch filters");
   return response.json();
 };
 
-export const fetchCarsAPI = async (filters = {}) => {
+export const fetchBikesAPI = async (filters = {}) => {
   const params = new URLSearchParams();
 
   const paramMapping = {
-    collectionType: "collectionType",
     brand: "brands",
     brands: "brands",
     year: "registrationYear",
-    stages: "stages",
     sortBy: "sortBy",
     designerId: "designerId",
     cursor: "cursor",
@@ -35,7 +35,7 @@ export const fetchCarsAPI = async (filters = {}) => {
     }
   }
 
-  const apiUrl = `${process.env.REACT_APP_API_URL}/cars?${params.toString()}`;
+  const apiUrl = `${process.env.REACT_APP_API_URL}/bikes?${params.toString()}`;
   const response = await fetch(apiUrl);
 
   if (!response.ok) {
@@ -45,11 +45,10 @@ export const fetchCarsAPI = async (filters = {}) => {
   return response.json();
 };
 
-export const searchCarsAPI = async (filters = {}) => {
+export const searchBikesAPI = async (filters = {}) => {
   const params = new URLSearchParams();
 
   const paramMapping = {
-    collectionType: "collectionType",
     q: "q",
     sortBy: "sortBy",
     cursor: "cursor",
@@ -68,7 +67,7 @@ export const searchCarsAPI = async (filters = {}) => {
   // 2. Point specifically to the /search endpoint
   const apiUrl = `${
     process.env.REACT_APP_API_URL
-  }/cars/search?${params.toString()}`;
+  }/bikes/search?${params.toString()}`;
 
   const response = await fetch(apiUrl);
 

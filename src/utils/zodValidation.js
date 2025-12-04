@@ -177,7 +177,7 @@ const bikeValidationSchema = z.object({
   vipNumber: z.boolean().optional(),
 
   // --- Media ---
-  bikeImages: z
+  images: z
     .any()
     .refine(
       (files) => files?.length > 0,

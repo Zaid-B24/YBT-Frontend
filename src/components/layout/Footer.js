@@ -12,6 +12,11 @@ const Container = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   padding: 2.5rem 2rem 2rem;
+
+  /* Reduce padding on mobile to save space */
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem;
+  }
 `;
 
 const TopSection = styled.div`
@@ -28,17 +33,18 @@ const TopSection = styled.div`
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 2rem;
+    margin-bottom: 2rem; /* Less space below on mobile */
   }
 `;
 
 const Brand = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Align children to the left */
-  padding: 1rem 0; /* Add vertical spacing for mobile */
+  align-items: flex-start;
+  padding: 1rem 0;
 
   @media (min-width: 768px) {
-    padding: 0; /* Reset padding on desktop */
+    padding: 0;
   }
 `;
 
@@ -52,36 +58,43 @@ const Logo = styled.h3`
   letter-spacing: 3px;
   color: #ffffff;
   margin-bottom: 1rem;
+
+  /* Mobile: Smaller Logo */
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+  }
 `;
 
-/**
- * Brand description paragraph.
- */
 const BrandDescription = styled.p`
   color: #cccccc;
   line-height: 1.7;
   margin-bottom: 2rem;
   max-width: 400px;
+  font-size: 0.95rem; /* Desktop base size */
+
+  /* Mobile: Smaller text and tighter line height */
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
 `;
 
 /**
  * Container for the newsletter input and button.
- * Stacks vertically on mobile.
  */
 const NewsletterForm = styled.div`
   display: flex;
   gap: 0.5rem;
   max-width: 350px;
-  width: 100%; /* Ensure it takes available width */
+  width: 100%;
 
   @media (max-width: 768px) {
-    flex-direction: column;
+    flex-direction: row; /* Keep it side-by-side if it fits, or column if preferred */
   }
 `;
 
-/**
- * Newsletter email input field.
- */
 const NewsletterInput = styled.input`
   flex: 1;
   padding: 0.75rem 1rem;
@@ -90,7 +103,7 @@ const NewsletterInput = styled.input`
   border-radius: 4px;
   color: #ffffff;
   font-size: 0.9rem;
-  min-width: 150px; /* Prevent it from getting too squished */
+  min-width: 150px;
 
   &::placeholder {
     color: #666;
@@ -99,6 +112,12 @@ const NewsletterInput = styled.input`
   &:focus {
     outline: none;
     border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Mobile: Smaller input text */
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem;
   }
 `;
 
@@ -113,8 +132,6 @@ const NewsletterButton = styled.button`
   color: #ffffff;
   cursor: pointer;
   transition: all 0.3s ease;
-
-  /* Added to center the icon */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,8 +141,7 @@ const NewsletterButton = styled.button`
   }
 
   @media (max-width: 768px) {
-    width: 100%;
-    padding: 0.85rem; /* Make it a bit taller on mobile */
+    padding: 0.6rem 1rem;
   }
 `;
 
@@ -139,6 +155,10 @@ const FooterLinks = styled.ul`
 
 const FooterLink = styled.li`
   margin-bottom: 0.75rem;
+
+  @media (max-width: 768px) {
+    margin-bottom: 0.5rem; /* Tighter spacing on mobile */
+  }
 `;
 
 const FooterLinkItem = styled(Link)`
@@ -151,6 +171,11 @@ const FooterLinkItem = styled(Link)`
     color: #ffffff;
     transform: translateX(5px);
   }
+
+  /* Mobile: Smaller link text */
+  @media (max-width: 768px) {
+    font-size: 0.85rem;
+  }
 `;
 
 const BottomSection = styled.div`
@@ -161,15 +186,21 @@ const BottomSection = styled.div`
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 1rem;
+    flex-direction: column-reverse; /* Stack copyright below links */
+    gap: 1.5rem;
     text-align: center;
+    padding-top: 1.5rem;
   }
 `;
 
 const Copyright = styled.p`
   color: #666;
   font-size: 0.9rem;
+
+  /* Mobile: Smaller copyright text */
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const BottomLinks = styled.div`
@@ -177,8 +208,8 @@ const BottomLinks = styled.div`
   gap: 2rem;
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 1rem;
+    flex-direction: row; /* Keep links side by side if possible */
+    gap: 1.5rem;
   }
 `;
 
@@ -189,6 +220,11 @@ const BottomLink = styled(Link)`
 
   &:hover {
     color: #ffffff;
+  }
+
+  /* Mobile: Smaller bottom links */
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
   }
 `;
 

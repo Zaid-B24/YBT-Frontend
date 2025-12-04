@@ -361,7 +361,7 @@ const AdminNav = () => {
   ];
 
   const rightNavItems = [
-    { path: "/admin/users", label: "Users", icon: Users },
+    // { path: "/admin/users", label: "Users", icon: Users },
     { path: "/admin/homepage", label: "HomePage", icon: Home },
     // { path: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   ];
