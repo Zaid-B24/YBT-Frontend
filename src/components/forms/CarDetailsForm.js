@@ -181,12 +181,15 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
       features: "",
       images: [],
       videos: [],
+      mobileImages: [],
+      mobileVideos: [],
     },
   });
 
   const images = watch("images");
   const videos = watch("videos");
-
+  const mobileImages = watch("mobileImages");
+  const mobileVideos = watch("mobileVideos");
   const collectionType = watch("collectionType");
 
   const onSubmit = async (data) => {
@@ -203,12 +206,21 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         Array.from(value).forEach((file) => {
           formDataApi.append("videos", file);
         });
+      } else if (key === "mobileImages" && value.length > 0) {
+        Array.from(value).forEach((file) => {
+          formDataApi.append("mobileImages", file);
+        });
+      }
+      // --- 4. MOBILE VIDEOS (NEW) ---
+      else if (key === "mobileVideos" && value.length > 0) {
+        Array.from(value).forEach((file) => {
+          formDataApi.append("mobileVideos", file);
+        });
       } else {
         formDataApi.append(key, value);
       }
     });
 
-    console.log("--- FormData to be sent to API ---");
     for (let [key, value] of formDataApi.entries()) {
       console.log(`${key}:`, value);
     }
@@ -621,7 +633,7 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
 
       {/* --- File Input Section --- */}
       <Section>
-        <SectionTitle>📸 Car Images</SectionTitle>
+        <SectionTitle>📸 Desktop Car Images (Landscape 16:9)</SectionTitle>
         <RequiredStar>*</RequiredStar>
         <FileInputContainer>
           <FileInputWrapper
@@ -642,9 +654,11 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
               <FileInputText>
                 {images?.length > 0
                   ? `${images.length} image(s) selected`
-                  : "Click or drag files to upload"}
+                  : "Upload Landscape Images"}
               </FileInputText>
-              <FileInputSubtext>PNG, JPG, WEBP up to 100MB</FileInputSubtext>
+              <FileInputSubtext>
+                First image will be the Desktop Cover.
+              </FileInputSubtext>
             </FileInputContent>
           </FileInputWrapper>
           {errors.images && (
@@ -653,8 +667,45 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
         </FileInputContainer>
       </Section>
 
+      {/* --- 2. MOBILE IMAGES SECTION (NEW) --- */}
       <Section>
-        <SectionTitle>🎥 Car Videos</SectionTitle>
+        <SectionTitle>📱 Mobile Car Images (Portrait 9:16)</SectionTitle>
+        <FileInputContainer>
+          <FileInputWrapper
+            htmlFor="mobileImages"
+            className={mobileImages?.length > 0 ? "has-file" : ""}
+          >
+            <HiddenFileInput
+              id="mobileImages"
+              type="file"
+              accept="image/*"
+              multiple
+              {...register("mobileImages")} // <--- Key Change
+            />
+            <FileInputContent>
+              <FileInputIcon>
+                <Upload size={24} />
+              </FileInputIcon>
+              <FileInputText>
+                {mobileImages?.length > 0
+                  ? `${mobileImages.length} image(s) selected`
+                  : "Upload Portrait Images"}
+              </FileInputText>
+              <FileInputSubtext>
+                First image will be the Mobile Cover.
+              </FileInputSubtext>
+            </FileInputContent>
+          </FileInputWrapper>
+          {/* Display error if you added validation for this field */}
+          {errors.mobileImages && (
+            <ErrorMessage>{errors.mobileImages.message}</ErrorMessage>
+          )}
+        </FileInputContainer>
+      </Section>
+
+      {/* --- 3. DESKTOP VIDEOS SECTION (Keep as is) --- */}
+      <Section>
+        <SectionTitle>🎥 Desktop Videos (Landscape)</SectionTitle>
         <FileInputContainer>
           <FileInputWrapper
             htmlFor="videos"
@@ -663,25 +714,58 @@ const CarDetailsForm = ({ onSuccess, onBack }) => {
             <HiddenFileInput
               id="videos"
               type="file"
-              accept="video/*" // Only accepts videos
+              accept="video/*"
               multiple
               {...register("videos")}
             />
             <FileInputContent>
               <FileInputIcon>
-                {/* You might want to import the Video icon from lucide-react */}
                 <Video size={24} />
               </FileInputIcon>
               <FileInputText>
                 {videos?.length > 0
                   ? `${videos.length} video(s) selected`
-                  : "Click or drag videos to upload"}
+                  : "Upload Landscape Videos"}
               </FileInputText>
-              <FileInputSubtext>MP4, MOV up to 50MB</FileInputSubtext>
+              <FileInputSubtext>MP4, MOV up to 100MB</FileInputSubtext>
             </FileInputContent>
           </FileInputWrapper>
           {errors.videos && (
             <ErrorMessage>{errors.videos.message}</ErrorMessage>
+          )}
+        </FileInputContainer>
+      </Section>
+
+      {/* --- 4. MOBILE VIDEOS SECTION (NEW) --- */}
+      <Section>
+        <SectionTitle>📱 Mobile Videos (Vertical/Shorts)</SectionTitle>
+        <FileInputContainer>
+          <FileInputWrapper
+            htmlFor="mobileVideos"
+            className={mobileVideos?.length > 0 ? "has-file" : ""}
+          >
+            <HiddenFileInput
+              id="mobileVideos"
+              type="file"
+              accept="video/*"
+              multiple
+              {...register("mobileVideos")} // <--- Key Change
+            />
+            <FileInputContent>
+              <FileInputIcon>
+                <Video size={24} />
+              </FileInputIcon>
+              <FileInputText>
+                {mobileVideos?.length > 0
+                  ? `${mobileVideos.length} video(s) selected`
+                  : "Upload Vertical Videos"}
+              </FileInputText>
+              <FileInputSubtext>MP4, MOV up to 100MB</FileInputSubtext>
+            </FileInputContent>
+          </FileInputWrapper>
+          {/* Display error if you added validation for this field */}
+          {errors.mobileVideos && (
+            <ErrorMessage>{errors.mobileVideos.message}</ErrorMessage>
           )}
         </FileInputContainer>
       </Section>

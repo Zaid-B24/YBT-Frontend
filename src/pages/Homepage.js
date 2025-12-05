@@ -1,45 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  return isMobile;
-};
-
-const getTransformedUrl = (url, assetType, isMobile) => {
-  if (!url || !url.includes("cloudinary.com")) {
-    return url;
-  }
-
-  // LOGIC: If mobile, request 9:16 (Portrait). If Desktop, request 16:9 (Landscape)
-  const width = isMobile ? 1080 : 1920;
-  const height = isMobile ? 1920 : 1080;
-  const transformations = `c_fill,w_${width},h_${height},q_auto`;
-
-  const parts = url.split("/upload/");
-  if (parts.length !== 2) {
-    return url;
-  }
-
-  if (assetType === "VIDEO") {
-    // f_auto ensures correct video codec for iOS/Android
-    const videoTransformations = `f_auto,${transformations}`;
-    return `${parts[0]}/upload/${videoTransformations}/${parts[1]}`;
-  }
-  return `${parts[0]}/upload/${transformations}/${parts[1]}`;
-};
 
 const fetchHeroSlides = async () => {
   const response = await fetch(
@@ -61,7 +24,6 @@ const fetchLatestAdditions = async () => {
 
 const Homepage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const isMobile = useIsMobile();
 
   const {
     data: heroSlides,
@@ -93,6 +55,8 @@ const Homepage = () => {
     return () => clearInterval(timer);
   }, [heroSlides]);
 
+  const currentAsset = heroSlides?.[currentSlide];
+
   return (
     <HomepageWrapper>
       <HeroSection>
@@ -113,11 +77,7 @@ const Homepage = () => {
           <>
             {heroSlides[currentSlide].assetType === "VIDEO" ? (
               <HeroVideo
-                src={getTransformedUrl(
-                  heroSlides[currentSlide].assetUrl,
-                  "VIDEO",
-                  isMobile // Pass isMobile status
-                )}
+                src={currentAsset.assetUrl}
                 autoPlay
                 loop
                 muted
@@ -125,13 +85,19 @@ const Homepage = () => {
                 key={currentSlide} // Force re-render on slide change
               />
             ) : (
-              <HeroBackground
-                image={getTransformedUrl(
-                  heroSlides[currentSlide].assetUrl,
-                  "IMAGE",
-                  isMobile
-                )}
-              />
+              <HeroImageBox>
+                <picture>
+                  <source
+                    media="(max-width: 768px)"
+                    srcSet={currentAsset.mobileAssetUrl}
+                  />
+                  <img
+                    src={currentAsset.assetUrl}
+                    alt={currentAsset.title}
+                    fetchPriority="high"
+                  />
+                </picture>
+              </HeroImageBox>
             )}
 
             <HeroOverlay />
@@ -180,17 +146,24 @@ const Homepage = () => {
           <CardsGrid>
             {latestAdditions.map((car) => (
               <CarCard key={car.id} to={`/cars/${car.id}`}>
-                {" "}
-                {/* Use car.slug */}
-                <CardImage image={car.thumbnail}>
-                  {" "}
-                  {/* Use car.thumbnail */}
+                <CardImageWrapper>
+                  <picture>
+                    {/* Try mobile thumbnail first (if available) */}
+                    {car.mobileThumbnail && (
+                      <source
+                        media="(max-width: 768px)"
+                        srcSet={car.mobileThumbnail}
+                      />
+                    )}
+                    <img src={car.thumbnail} alt={car.title} />
+                  </picture>
+
                   <CardBadges>
-                    {car.badges.map((badge, i) => (
+                    {car.badges?.map((badge, i) => (
                       <Badge key={i}>{badge}</Badge>
                     ))}
                   </CardBadges>
-                </CardImage>
+                </CardImageWrapper>
                 <CardContent>
                   <CardTitle>
                     {car.brand} {car.title}
@@ -238,6 +211,23 @@ const HomepageWrapper = styled.div`
   width: 100%;
 `;
 
+const HeroImageBox = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: opacity 0.5s ease-in-out;
+  }
+`;
+
 const HeroSection = styled.section`
   position: relative;
   height: 100vh;
@@ -259,22 +249,6 @@ const HeroSection = styled.section`
   @media (max-width: 768px) {
     padding-bottom: 12vh; /* More space on mobile for safe area */
   }
-`;
-
-const HeroBackground = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  background-color: #000;
-  background-image: ${(props) =>
-    props.image ? `url(${props.image})` : "none"};
-  background-position: center center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  transition: opacity 0.5s ease-in-out;
 `;
 
 const HeroVideo = styled.video`
@@ -388,6 +362,22 @@ const Dot = styled.button`
 
 /* --- LATEST SECTION --- */
 
+const CardImageWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  /* Hover Effect handled on parent */
+`;
 const LatestSection = styled.section`
   padding: 4rem 2rem;
   background: #0a0a0a;
@@ -435,21 +425,6 @@ const CarCard = styled(Link)`
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  }
-`;
-
-const CardImage = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: ${(props) => (props.image ? `url(${props.image})` : "#333")}
-    center center/cover no-repeat;
-  transition: transform 0.4s ease;
-
-  ${CarCard}:hover & {
-    transform: scale(1.05);
   }
 `;
 

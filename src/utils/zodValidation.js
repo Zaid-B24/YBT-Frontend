@@ -81,11 +81,22 @@ export const carValidationSchema = z
     images: z
       .any()
       .refine((files) => files?.length > 0, "At least one image is required."),
-
-    // 2. Added 'videos' so the form knows it's a valid field
     videos: z.any().optional(),
+    mobileImages: z
+      .any()
+      .optional()
+      .refine(
+        (files) => !files || files.length <= 10,
+        "Max 10 mobile images allowed."
+      ),
+    mobileVideos: z
+      .any()
+      .optional()
+      .refine(
+        (files) => !files || files.length <= 5,
+        "Max 5 mobile videos allowed."
+      ),
   })
-  // MODIFIED: Aligned the refine logic to be more robust, like the backend
   .refine(
     (data) => {
       if (data.collectionType === "DESIGNER") {

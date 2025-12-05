@@ -86,6 +86,8 @@ const CreateEventForm = ({ onSuccess, onBack }) => {
       endDate: "",
       images: [],
       videos: [],
+      mobileImages: [],
+      mobileVideos: [],
       ticketTypes: [
         {
           name: "Basic",
@@ -162,6 +164,16 @@ const CreateEventForm = ({ onSuccess, onBack }) => {
         // --- ADDED THIS BLOCK ---
         for (let i = 0; i < value.length; i++) {
           data.append("videos", value[i]); // Appends to 'videos' field
+        }
+      } else if (key === "mobileImages" && value) {
+        for (let i = 0; i < value.length; i++) {
+          data.append("mobileImages", value[i]);
+        }
+      }
+      // --- 4. MOBILE VIDEOS (NEW) ---
+      else if (key === "mobileVideos" && value) {
+        for (let i = 0; i < value.length; i++) {
+          data.append("mobileVideos", value[i]);
         }
       } else if (Array.isArray(value)) {
         data.append(key, JSON.stringify(value));
@@ -376,6 +388,114 @@ const CreateEventForm = ({ onSuccess, onBack }) => {
                       </SelectedFile>
                     )
                   )}
+                </ImagePreviewContainer>
+              )}
+            </>
+          )}
+        />
+      </FileInputContainer>
+
+      {/* --- MOBILE IMAGES SECTION (NEW) --- */}
+      <FileInputContainer>
+        <Label>
+          <Image size={16} />
+          <span>Mobile Event Images (Portrait)</span>
+        </Label>
+        <Controller
+          control={control}
+          name="mobileImages" // <--- Matches Schema
+          render={({ field: { onChange, value } }) => (
+            <>
+              <FileInputWrapper className={value?.length > 0 ? "has-file" : ""}>
+                <HiddenFileInput
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files);
+                    onChange([...(value || []), ...files]);
+                  }}
+                />
+                <FileInputContent>
+                  <Upload size={24} />
+                  <FileInputText>
+                    {value?.length > 0
+                      ? `${value.length} mobile image(s) selected`
+                      : "Upload Portrait Images"}
+                  </FileInputText>
+                </FileInputContent>
+              </FileInputWrapper>
+
+              {/* Preview Logic */}
+              {value?.length > 0 && (
+                <ImagePreviewContainer>
+                  {value.map((image, index) => (
+                    <SelectedFile key={index}>
+                      <span>{image.name}</span>
+                      <RemoveItemButton
+                        type="button"
+                        onClick={() =>
+                          onChange(value.filter((_, i) => i !== index))
+                        }
+                      >
+                        <X size={16} />
+                      </RemoveItemButton>
+                    </SelectedFile>
+                  ))}
+                </ImagePreviewContainer>
+              )}
+            </>
+          )}
+        />
+      </FileInputContainer>
+
+      {/* --- MOBILE VIDEOS SECTION (NEW) --- */}
+      <FileInputContainer>
+        <Label>
+          <Video size={16} />
+          <span>Mobile Event Videos (Vertical)</span>
+        </Label>
+        <Controller
+          control={control}
+          name="mobileVideos" // <--- Matches Schema
+          render={({ field: { onChange, value } }) => (
+            <>
+              <FileInputWrapper className={value?.length > 0 ? "has-file" : ""}>
+                <HiddenFileInput
+                  type="file"
+                  accept="video/*"
+                  multiple
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files);
+                    onChange([...(value || []), ...files]);
+                  }}
+                />
+                <FileInputContent>
+                  <Upload size={24} />
+                  <FileInputText>
+                    {value?.length > 0
+                      ? `${value.length} mobile video(s) selected`
+                      : "Upload Vertical Videos"}
+                  </FileInputText>
+                </FileInputContent>
+              </FileInputWrapper>
+
+              {/* Preview Logic */}
+              {value?.length > 0 && (
+                <ImagePreviewContainer>
+                  {value.map((video, index) => (
+                    <SelectedFile key={index}>
+                      <span>{video.name}</span>
+                      <RemoveItemButton
+                        type="button"
+                        onClick={() =>
+                          onChange(value.filter((_, i) => i !== index))
+                        }
+                      >
+                        <X size={16} />
+                      </RemoveItemButton>
+                    </SelectedFile>
+                  ))}
                 </ImagePreviewContainer>
               )}
             </>

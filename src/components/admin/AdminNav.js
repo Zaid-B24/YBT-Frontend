@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  BarChart3,
-  Car,
-  Users,
-  LogOut,
-  Menu,
-  X,
-  Bike,
-  Home,
-} from "lucide-react";
+import { BarChart3, Car, LogOut, Menu, X, Bike, Home } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { GrAnalytics } from "react-icons/gr";
 

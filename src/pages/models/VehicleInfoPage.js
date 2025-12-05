@@ -24,20 +24,19 @@ import LockedContent from "../../components/common/Locked";
 import { motion } from "framer-motion";
 import { BiRupee } from "react-icons/bi";
 
-// Components
-
 const getNestedValue = (obj, path) => {
   return path.split(".").reduce((current, key) => current?.[key], obj);
 };
 
-const getImageProp = (category) => {
+const getImageProp = (category, isMobile = false) => {
+  const suffix = isMobile ? "ImagesMobile" : "Images";
   switch (category) {
     case "cars":
-      return "carImages";
+      return `car${suffix}`;
     case "bikes":
-      return "bikeImages";
+      return `bike${suffix}`; // Assuming you might add this later
     case "motorhomes":
-      return "motorhomeImages";
+      return `motorhome${suffix}`;
     default:
       return "";
   }
@@ -112,21 +111,26 @@ const VehicleInfoPage = () => {
   const mediaGallery = useMemo(() => {
     if (!vehicle) return [];
 
-    // Get images based on category key
-    const rawImages = vehicle[getImageProp(category)] || [];
-    const rawVideos = vehicle.videoUrls || [];
+    const desktopImages = vehicle[getImageProp(category, false)] || [];
+    const desktopVideos = vehicle.videoUrls || [];
 
-    const imageMedia = rawImages.map((url) => ({
+    const mobileImages = vehicle[getImageProp(category, true)] || [];
+    const mobileVideos = vehicle.videoUrlsMobile || [];
+
+    const imageMedia = desktopImages.map((url, index) => ({
       type: "image",
+      id: `img-${index}`,
       url: url,
-      thumbnail: url, // Image is its own thumbnail
+      mobileUrl: mobileImages[index] || url,
+      thumbnail: url,
     }));
 
-    const videoMedia = rawVideos.map((url) => ({
+    const videoMedia = desktopVideos.map((url, index) => ({
       type: "video",
+      id: `vid-${index}`,
       url: url,
-      // Use the first image as the poster/thumbnail for the video, or a placeholder
-      thumbnail: rawImages[0] || "/placeholder.png",
+      mobileUrl: mobileVideos[index] || url,
+      thumbnail: desktopImages[0] || "/placeholder.png",
     }));
 
     return [...imageMedia, ...videoMedia];
@@ -166,20 +170,41 @@ const VehicleInfoPage = () => {
               {currentMedia && (
                 <MediaContainer>
                   {currentMedia.type === "image" ? (
-                    <DisplayedImage
-                      key={currentMedia.url} // Key forces re-render for animation
-                      src={resizeCloudinaryImage(currentMedia.url, {
-                        width: 1200, // Higher res for main view
-                        crop: "limit",
-                      })}
-                      alt="Vehicle"
+                    <PictureWrapper
+                      key={currentMedia.id} // Important for Framer Motion restart
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.5 }}
-                    />
+                    >
+                      <picture>
+                        {/* 1. Mobile Source */}
+                        <source
+                          media="(max-width: 768px)"
+                          srcSet={resizeCloudinaryImage(
+                            currentMedia.mobileUrl,
+                            {
+                              width: 800,
+                              height: 1200,
+                              crop: "fill",
+                              quality: "auto",
+                            }
+                          )}
+                        />
+
+                        {/* 2. Desktop Source */}
+                        <img
+                          src={resizeCloudinaryImage(currentMedia.url, {
+                            width: 1200,
+                            crop: "limit",
+                            quality: "auto",
+                          })}
+                          alt="Vehicle View"
+                        />
+                      </picture>
+                    </PictureWrapper>
                   ) : (
                     <DisplayedVideo
-                      key={currentMedia.url}
+                      key={currentMedia.id}
                       src={currentMedia.url}
                       poster={currentMedia.thumbnail}
                       autoPlay
@@ -311,6 +336,24 @@ const PageWrapper = styled.div`
   min-height: 100vh;
   background-color: #0d0d0d;
   color: #f2f2f2;
+`;
+
+const PictureWrapper = styled(motion.div)`
+  width: 100%;
+  height: 100%;
+
+  picture {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Key for fitting the container */
+    display: block;
+  }
 `;
 
 const FullWidthContainer = styled.div`
