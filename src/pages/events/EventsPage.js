@@ -93,17 +93,26 @@ const EventCard = styled(motion(Link))`
   }
 `;
 
-const EventImage = styled.div`
+const EventImageWrapper = styled.div`
   height: 250px;
-
-  background: ${(props) =>
-      props.image
-        ? `url(${props.image})`
-        : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
-    center center/cover no-repeat;
   position: relative;
-`;
+  overflow: hidden;
+  background-color: #1a1a1a; /* Placeholder color while loading */
 
+  /* This targets the image inside the picture tag */
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.5s ease;
+  }
+
+  /* Hover effect: Zoom in slightly */
+  ${EventCard}:hover & img {
+    transform: scale(1.05);
+  }
+`;
 const EventContent = styled.div`
   padding: 2rem;
 `;
@@ -396,12 +405,32 @@ const EventsPage = () => {
                       transition={{ duration: 0.6, delay: index * 0.1 }}
                       viewport={{ once: true }}
                     >
-                      <EventImage image={event.image}>
+                      <EventImageWrapper>
+                        <picture>
+                          {/* 1. Mobile Thumbnail (If exists, show on screens < 768px) */}
+                          {event.mobileThumbnail && (
+                            <source
+                              media="(max-width: 768px)"
+                              srcSet={event.mobileThumbnail}
+                            />
+                          )}
+
+                          {/* 2. Desktop Thumbnail (Or fallback) */}
+                          <img
+                            src={
+                              event.thumbnail || "/images/event-placeholder.jpg"
+                            }
+                            alt={event.title}
+                            loading="lazy"
+                          />
+                        </picture>
+
+                        {/* Badges sit on top via absolute positioning */}
                         <StatusBadge status={event.status}>
                           {event.status}
                         </StatusBadge>
                         <TypeBadge type={event.type}>{event.type}</TypeBadge>
-                      </EventImage>
+                      </EventImageWrapper>
                       <EventContent>
                         <EventTitle>{event.title}</EventTitle>
                         <EventDescription>{event.description}</EventDescription>
