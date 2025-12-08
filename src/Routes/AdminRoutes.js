@@ -3,6 +3,7 @@ import { Route } from "react-router-dom";
 
 // Layout
 import AdminLayout from "../components/layout/AdminLayout";
+import { DealerManagement } from "../pages/admin";
 
 // Admin Pages
 const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
@@ -25,6 +26,7 @@ const AdminRoutes = (
     <Route path="events" element={<EventManagement />} />
     <Route path="analytics" element={<AnalyticsPage />} />
     <Route path="homepage" element={<HomePageManagement />} />
+    <Route path="dealers" element={<DealerManagement />} />
   </Route>
 );
 

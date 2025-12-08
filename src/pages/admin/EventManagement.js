@@ -1,12 +1,4 @@
-import {
-  Calendar,
-  Edit,
-  Info,
-  MapPin,
-  Plus,
-  Search,
-  Trash2,
-} from "lucide-react";
+import { Calendar, Edit, Plus, Search, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import CreateEventForm from "../../components/forms/CreateEventForm";
