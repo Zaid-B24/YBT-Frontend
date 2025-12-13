@@ -23,7 +23,7 @@ const Nav = styled.nav`
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 1.25rem 3rem;
+  padding: 0.8rem 3rem;
   max-width: 1600px;
   margin: 0 auto;
   position: relative;
@@ -54,97 +54,52 @@ const LeftMenu = styled.ul`
     display: none;
   }
 `;
-//Default Logo
-// const Logo = styled(Link)`
-//   grid-column: 2;
-//   justify-self: center;
-//   font-family: "Playfair Display", serif;
-//   font-size: 1.5rem;
-//   font-weight: 400;
-//   letter-spacing: 2.5px;
-//   color: #ffffff;
-//   text-decoration: none;
-//   transition: all 0.3s ease;
-//   z-index: 10;
-//   white-space: nowrap;
 
-//   &:hover {
-//     opacity: 0.8;
-//     transform: translateY(-1px);
-//   }
-
-//   &::before {
-//     content: "≡";
-//     margin-right: 0.75rem;
-//     font-size: 0.9rem;
-//     font-weight: 300;
-//     opacity: 0.7;
-//   }
-
-//   &::after {
-//     content: "≡";
-//     margin-left: 0.75rem;
-//     font-size: 0.9rem;
-//     font-weight: 300;
-//     opacity: 0.7;
-//   }
-
-//   @media (max-width: 968px) {
-//     position: static;
-//     grid-column: unset;
-//     justify-self: unset;
-//     font-size: 1.3rem;
-//     letter-spacing: 2px;
-
-//     &::before,
-//     &::after {
-//       display: none;
-//     }
-//   }
-// `;
-
-// UnderLIne the logo
 const Logo = styled(Link)`
   grid-column: 2;
   justify-self: center;
-  font-family: "Playfair Display", serif;
-  font-size: 1.6rem;
-  font-weight: 300;
-  letter-spacing: 3px;
-  color: #ffffff;
-  text-decoration: none;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 10;
-  white-space: nowrap;
   position: relative;
+  text-decoration: none;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  height: 100%;
 
+  img {
+    height: clamp(40px, 5vw, 80px);
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    opacity: 0.95;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
   &::before {
     content: "";
     position: absolute;
-    bottom: -3px;
+    bottom: -6px;
     left: 50%;
     width: 0;
     height: 1px;
     background: linear-gradient(90deg, transparent, #ffffff, transparent);
-    transition: all 0.4s ease;
+    transition: width 0.4s ease;
     transform: translateX(-50%);
   }
 
-  &:hover {
+  &:hover img {
     transform: translateY(-2px);
-    text-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-
-    &::before {
-      width: 100%;
-    }
+    filter: drop-shadow(0 4px 14px rgba(255, 255, 255, 0.35));
+    opacity: 1;
   }
 
-  @media (max-width: 1024px) {
-    position: static;
-    grid-column: unset;
-    justify-self: unset;
-    font-size: 1.4rem;
-    letter-spacing: 2.5px;
+  &:hover::before {
+    width: 80%;
+  }
+  @media (hover: none) {
+    &:hover img {
+      transform: none;
+      filter: none;
+    }
   }
 `;
 
@@ -578,7 +533,9 @@ const Header = () => {
           ))}
         </LeftMenu>
 
-        <Logo to="/">YOUNG BOY TOYZ</Logo>
+        <Logo to="/">
+          <img src="/logo_1.svg" alt="YOUNG BOY TOYZ" />
+        </Logo>
 
         <RightMenuContainer>
           <RightMenu>

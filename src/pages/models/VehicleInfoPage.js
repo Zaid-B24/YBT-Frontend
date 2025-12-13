@@ -59,7 +59,7 @@ const ALL_SPECS_CONFIG = [
 
 const resizeCloudinaryImage = (
   url,
-  { width, height, crop = "scale", quality = "auto:best" }
+  { width, height, crop, quality = "auto:best" }
 ) => {
   if (!url || !url.includes("res.cloudinary.com")) {
     return url;
@@ -74,6 +74,7 @@ const resizeCloudinaryImage = (
   if (height) transformations.push(`h_${height}`);
   if (crop) transformations.push(`c_${crop}`);
   if (quality) transformations.push(`q_${quality}`);
+  if (transformations.length === 0) return url;
 
   return `${parts[0]}/upload/${transformations.join(",")}/${parts[1]}`;
 };
@@ -183,9 +184,6 @@ const VehicleInfoPage = () => {
                           srcSet={resizeCloudinaryImage(
                             currentMedia.mobileUrl,
                             {
-                              width: 800,
-                              height: 1200,
-                              crop: "fill",
                               quality: "auto",
                             }
                           )}
@@ -194,8 +192,6 @@ const VehicleInfoPage = () => {
                         {/* 2. Desktop Source */}
                         <img
                           src={resizeCloudinaryImage(currentMedia.url, {
-                            width: 1200,
-                            crop: "limit",
                             quality: "auto",
                           })}
                           alt="Vehicle View"
@@ -341,17 +337,23 @@ const PageWrapper = styled.div`
 const PictureWrapper = styled(motion.div)`
   width: 100%;
   height: 100%;
-
+  display: flex;
+  align-items: center;
+  justify-content: center;
   picture {
     width: 100%;
     height: 100%;
     display: block;
+    align-items: center;
+    justify-content: center;
   }
 
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Key for fitting the container */
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Key for fitting the container */
     display: block;
   }
 `;

@@ -183,7 +183,7 @@ const Homepage = () => {
           <br />
           <span>
             WE TRADE IN AUTHENTICITY. EACH VEHICLE IS HANDPICKED FOR CLIENTS WHO
-            VALUE EXCE
+            VALUE EXCELLENCE
           </span>
         </MissionTitle>
         <MissionButtons>

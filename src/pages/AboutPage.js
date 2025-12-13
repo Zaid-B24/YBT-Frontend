@@ -222,9 +222,9 @@ const AboutPage = () => {
           <StoryText>
             <h2>Our Story</h2>
             <p>
-              YOUNG BOY TOYZ (YBT) was founded by Mr. Hamdan Pathan — a serial
+              YOUNG BOY TOYZ (YBT) was founded by Mr. Hamdan Pathan, a serial
               entrepreneur, humanitarian, cyber-security investigator, and
-              fitness model — driven by a bold vision: to make
+              fitness model, driven by a bold vision to make
               aftermarket-upgraded and limited-edition vehicles accessible,
               trustworthy, and thrilling for true automotive enthusiasts.
             </p>
@@ -247,17 +247,16 @@ const AboutPage = () => {
             </ul>
             <p>
               Every machine is curated from top-tier automotive designers,
-              custom garages, and master workshops — representing the finest
+              custom garages, and master workshops, representing the finest
               craftsmanship of the aftermarket world.
             </p>
             <p>
-              YBT is also building a new cultural movement — IDM (Indian
-              Domestic Market Culture Association) — uniting enthusiasts
-              nationwide through events that celebrate the bond between humans
-              and machines.
+              YBT is also building a new cultural movement, IDM (Indian Domestic
+              Market Culture Association), uniting enthusiasts nationwide
+              through events that celebrate the bond between humans and
+              machines.
             </p>
           </StoryText>
-          {/* REMOVED: <StoryImage /> */}
         </StoryContent>
       </StorySection>
 

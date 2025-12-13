@@ -47,12 +47,19 @@
         align-items: center;
         z-index: 9999;
       }
-      
+
       .loading-text {
         color: #fff;
         font-size: 24px;
         font-weight: 300;
         letter-spacing: 3px;
+      }
+      .loading img {
+        width: 160px;
+        max-width: 60%;
+        height: auto;
+        opacity: 0.9;
+        animation: pulse 1.4s ease-in-out infinite;
       }
     </style>
   </head>
@@ -60,7 +67,8 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root">
       <div class="loading">
-        <div class="loading-text">YOUNG BOY TOYZ</div>
+        <!-- <div class="loading-text">YOUNG BOY TOYZ</div> -->
+        <img src="logo_1.svg" alt="YOUNG BOY TOYZ" />
       </div>
     </div>
   </body>
