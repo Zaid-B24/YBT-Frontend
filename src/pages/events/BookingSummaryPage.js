@@ -306,44 +306,44 @@ const PolicyListItem = styled.li`
   margin-bottom: 0.5rem;
 `;
 
-const indianStates = [
-  "Andhra Pradesh",
-  "Arunachal Pradesh",
-  "Assam",
-  "Bihar",
-  "Chhattisgarh",
-  "Goa",
-  "Gujarat",
-  "Haryana",
-  "Himachal Pradesh",
-  "Jharkhand",
-  "Karnataka",
-  "Kerala",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Manipur",
-  "Meghalaya",
-  "Mizoram",
-  "Nagaland",
-  "Odisha",
-  "Punjab",
-  "Rajasthan",
-  "Sikkim",
-  "Tamil Nadu",
-  "Telangana",
-  "Tripura",
-  "Uttar Pradesh",
-  "Uttarakhand",
-  "West Bengal",
-  "Delhi",
-  "Jammu and Kashmir",
-  "Ladakh",
-  "Puducherry",
-  "Chandigarh",
-  "Dadra and Nagar Haveli and Daman and Diu",
-  "Lakshadweep",
-  "Andaman and Nicobar Islands",
-];
+// const indianStates = [
+//   "Andhra Pradesh",
+//   "Arunachal Pradesh",
+//   "Assam",
+//   "Bihar",
+//   "Chhattisgarh",
+//   "Goa",
+//   "Gujarat",
+//   "Haryana",
+//   "Himachal Pradesh",
+//   "Jharkhand",
+//   "Karnataka",
+//   "Kerala",
+//   "Madhya Pradesh",
+//   "Maharashtra",
+//   "Manipur",
+//   "Meghalaya",
+//   "Mizoram",
+//   "Nagaland",
+//   "Odisha",
+//   "Punjab",
+//   "Rajasthan",
+//   "Sikkim",
+//   "Tamil Nadu",
+//   "Telangana",
+//   "Tripura",
+//   "Uttar Pradesh",
+//   "Uttarakhand",
+//   "West Bengal",
+//   "Delhi",
+//   "Jammu and Kashmir",
+//   "Ladakh",
+//   "Puducherry",
+//   "Chandigarh",
+//   "Dadra and Nagar Haveli and Daman and Diu",
+//   "Lakshadweep",
+//   "Andaman and Nicobar Islands",
+// ];
 
 // --- Utility Functions (if not already defined globally) ---
 
@@ -389,11 +389,10 @@ const BookingSummaryPage = () => {
     setIsProcessing(true);
     setError(null);
 
-    // Prepare the 'items' array for your backend
     const items = Object.values(selectedTickets)
       .filter((ticket) => ticket.quantity > 0)
       .map((ticket) => ({
-        ticketTypeId: ticket.id, // Use ticket.id instead of ticket.ticketTypeId
+        ticketTypeId: ticket.id,
         quantity: ticket.quantity,
       }));
 
@@ -406,8 +405,6 @@ const BookingSummaryPage = () => {
         console.error(" token not found. Please log in.");
         return;
       }
-
-      console.log("Data being sent to backend:", { eventId: event.id, items });
 
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/ticketbooking`,
@@ -429,24 +426,22 @@ const BookingSummaryPage = () => {
 
       const { razorpayOrder } = result.data;
 
-      // b. Configure and open the Razorpay Checkout modal
       const options = {
         key: "rzp_test_RPPDvF6yabnIXE", // Replace with your public Razorpay Test Key
         amount: razorpayOrder.amount,
         currency: "INR",
         name: "Young Boy Toyz",
         description: `Order for ${event.title}`,
-        order_id: razorpayOrder.id, // This is the ID from your backend
+        order_id: razorpayOrder.id,
 
-        // --- REPLACE your 'handler' with this ---
         handler: async function (response) {
-          setIsProcessing(true); // Show a loader
+          setIsProcessing(true);
           setError(null);
 
           try {
             const token = localStorage.getItem("userToken");
             const verifyResponse = await fetch(
-              `${process.env.REACT_APP_API_URL}/ticketbooking/verify`, // Your new verification endpoint
+              `${process.env.REACT_APP_API_URL}/ticketbooking/verify`,
               {
                 method: "POST",
                 headers: {
@@ -464,14 +459,11 @@ const BookingSummaryPage = () => {
             const result = await verifyResponse.json();
 
             if (result.success && result.data.bookingId) {
-              // SUCCESS! Backend confirmed and created the booking
               navigate(`/booking/success/${result.data.bookingId}`);
             } else {
-              // Verification FAILED
               throw new Error(result.message || "Payment verification failed.");
             }
           } catch (err) {
-            // Something went wrong with verification, send to failure page
             setError(err.message);
             navigate(
               `/booking/failure?order_id=${razorpayOrder.id}&reason=verification_failed`
@@ -484,12 +476,9 @@ const BookingSummaryPage = () => {
           name: "Test User",
           email: "test.user@example.com",
         },
-        // --- ADD THIS 'modal' BLOCK ---
         modal: {
           ondismiss: function () {
-            // User closed the payment modal without paying
             console.log("Payment modal dismissed");
-            // We use replace to prevent the user from clicking "back"
             navigate(
               `/booking/failure?order_id=${razorpayOrder.id}&reason=modal_dismissed`,
               { replace: true }
@@ -497,7 +486,6 @@ const BookingSummaryPage = () => {
           },
         },
       };
-
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {
@@ -616,17 +604,17 @@ const BookingSummaryPage = () => {
           </CalculationRow>
 
           {/* You can add a real booking fee later */}
-          <CalculationRow>
+          {/* <CalculationRow>
             <span>Order Fee</span>
             <span>₹123.63</span>
-          </CalculationRow>
+          </CalculationRow> */}
 
           <CalculationRow className="total">
             <span>Total Amount</span>
-            <span>₹{(orderSummary.totalAmount + 123.63).toLocaleString()}</span>
+            <span>₹{orderSummary.totalAmount.toLocaleString()}</span>
           </CalculationRow>
 
-          <div style={{ marginTop: "1.5rem" }}>
+          {/* <div style={{ marginTop: "1.5rem" }}>
             <SelectField>
               <option value="">Select State</option>
               {indianStates.map((state) => (
@@ -635,7 +623,7 @@ const BookingSummaryPage = () => {
                 </option>
               ))}
             </SelectField>
-          </div>
+          </div> */}
 
           <CheckboxContainer>
             <input

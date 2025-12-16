@@ -595,10 +595,9 @@ const EventDetailsPage = () => {
     }
   };
 
-  const handleGetDirections = () => {
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=18.922064,72.834641`;
-    if (mapsUrl) {
-      window.open(mapsUrl, "_blank", "noopener,noreferrer");
+  const handleGetDirections = (url) => {
+    if (url) {
+      window.open(url, "_blank", "noopener,noreferrer");
     } else {
       alert("Directions are not available for this venue.");
     }
@@ -773,7 +772,9 @@ const EventDetailsPage = () => {
               >
                 Location
               </SectionTitle>
-              <DirectionsButton onClick={handleGetDirections}>
+              <DirectionsButton
+                onClick={() => handleGetDirections(event?.location)}
+              >
                 <Send size={16} />
                 Get Directions
               </DirectionsButton>
