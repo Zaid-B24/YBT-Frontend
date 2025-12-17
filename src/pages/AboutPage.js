@@ -56,8 +56,6 @@ const StoryText = styled.div`
   }
 `;
 
-// REMOVED: StoryImage styled-component
-
 const ValuesSection = styled.div`
   padding: 3rem 1.5rem;
   background: rgba(255, 255, 255, 0.02);
@@ -144,7 +142,23 @@ const TeamMember = styled(motion.div)`
   }
 `;
 
-// REMOVED: MemberImage styled-component
+const MemberImage = styled.img`
+  width: 160px; /* Keeps it crisp (below 200px native res) */
+  height: 160px; /* Same as width for a perfect aspect ratio */
+  object-fit: cover; /* Ensures the image fills the shape */
+  border-radius: 50%; /* Makes it circular - looks premium */
+  margin: 2rem auto 0; /* Centers the image horizontally and adds top spacing */
+  display: block;
+  border: 3px solid rgba(255, 255, 255, 0.2); /* Adds a subtle border ring */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Adds depth */
+
+  /* Optional: Make it slightly smaller on mobile to save space */
+  @media (max-width: 768px) {
+    width: 140px;
+    height: 140px;
+    margin-top: 1.5rem;
+  }
+`;
 
 const MemberInfo = styled.div`
   padding: 1.5rem;
@@ -199,19 +213,10 @@ const AboutPage = () => {
   // MODIFIED: Removed 'image' property from objects
   const teamMembers = [
     {
-      name: "Marcus Johnson",
+      name: "Hamdan Pathan",
       role: "Founder & CEO",
-      bio: "With over 15 years in luxury automotive, Marcus founded YOUNG BOY TOYZ to redefine vehicle customization.",
-    },
-    {
-      name: "Elena Rodriguez",
-      role: "Head of Design",
-      bio: "Elena’s vision and technical expertise have shaped some of our most iconic transformations.",
-    },
-    {
-      name: "James Mitchell",
-      role: "Chief Engineer",
-      bio: "James ensures every modification meets the highest standards of performance and reliability.",
+      image: "hamdan.jpg",
+      //bio: "With over 15 years in luxury automotive, Hamdan founded YOUNG BOY TOYZ to redefine vehicle customization.",
     },
   ];
 
@@ -292,7 +297,7 @@ const AboutPage = () => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              {/* REMOVED: <MemberImage /> */}
+              <MemberImage src={`/${member.image}`} alt={member.name} />
               <MemberInfo>
                 <MemberName>{member.name}</MemberName>
                 <MemberRole>{member.role}</MemberRole>
