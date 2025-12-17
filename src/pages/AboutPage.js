@@ -185,41 +185,108 @@ const MemberBio = styled.p`
   font-size: 0.9rem;
 `;
 
+// const MemberPlaceholder = styled.div`
+//   width: 160px;
+//   height: 160px;
+//   border-radius: 50%;
+//   margin: 2rem auto 0;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+
+//   /* Glassmorphism gradient matching your theme */
+//   background: linear-gradient(
+//     135deg,
+//     rgba(255, 255, 255, 0.1) 0%,
+//     rgba(255, 255, 255, 0.05) 100%
+//   );
+//   border: 3px solid rgba(255, 255, 255, 0.2);
+//   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+//   /* Text Styling */
+//   color: rgba(255, 255, 255, 0.7);
+//   font-family: "Playfair Display", serif; /* Matches your headings */
+//   font-size: 2.5rem;
+//   font-weight: 500;
+//   letter-spacing: 2px;
+//   text-transform: uppercase;
+
+//   @media (max-width: 768px) {
+//     width: 140px;
+//     height: 140px;
+//     margin-top: 1.5rem;
+//     font-size: 2rem;
+//   }
+// `;
+
+/* Wrapper to perfectly center the Founder */
+const FounderWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem; /* Space between Founder and the rest of the team */
+  width: 100%;
+`;
+
+/* We can reuse the existing TeamMember styled component, 
+   but let's create a specific one for the text-only team to look tighter */
+const TextOnlyCard = styled(TeamMember)`
+  padding: 2rem 1.5rem; /* Balanced padding for text only */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 140px; /* Ensures all boxes are roughly same height */
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+`;
+
+const values = [
+  {
+    title: "Excellence",
+    description:
+      "We pursue perfection in every detail, ensuring each project exceeds expectations.",
+  },
+  {
+    title: "Collaboration",
+    description:
+      "We work closely with our clients to bring their automotive dreams to life.",
+  },
+  {
+    title: "Innovation",
+    description:
+      "We constantly push boundaries, merging cutting-edge tech with timeless design.",
+  },
+  {
+    title: "Passion",
+    description: "Our love for automotive excellence drives everything we do.",
+  },
+];
+
+// MODIFIED: Removed 'image' property from objects
+const teamMembers = [
+  {
+    name: "Hamdan Pathan",
+    role: "Founder & CEO",
+    image: "hamdan.jpg",
+    //bio: "With over 15 years in luxury automotive, Hamdan founded YOUNG BOY TOYZ to redefine vehicle customization.",
+  },
+  {
+    name: "Nidhi Singh",
+    role: " Investor Relations",
+  },
+  {
+    name: "Waseb Untwale",
+    role: "Team Lead",
+  },
+  {
+    name: "Zaid Baig",
+    role: "Full-Stack Developer",
+  },
+];
+
 const AboutPage = () => {
-  // MODIFIED: Removed 'icon' property from objects
-  const values = [
-    {
-      title: "Excellence",
-      description:
-        "We pursue perfection in every detail, ensuring each project exceeds expectations.",
-    },
-    {
-      title: "Collaboration",
-      description:
-        "We work closely with our clients to bring their automotive dreams to life.",
-    },
-    {
-      title: "Innovation",
-      description:
-        "We constantly push boundaries, merging cutting-edge tech with timeless design.",
-    },
-    {
-      title: "Passion",
-      description:
-        "Our love for automotive excellence drives everything we do.",
-    },
-  ];
-
-  // MODIFIED: Removed 'image' property from objects
-  const teamMembers = [
-    {
-      name: "Hamdan Pathan",
-      role: "Founder & CEO",
-      image: "hamdan.jpg",
-      //bio: "With over 15 years in luxury automotive, Hamdan founded YOUNG BOY TOYZ to redefine vehicle customization.",
-    },
-  ];
-
+  const [founder, ...restOfTeam] = teamMembers;
   return (
     <PageWrapper>
       <StorySection>
@@ -288,22 +355,45 @@ const AboutPage = () => {
 
       <TeamSection>
         <TeamTitle>Meet Our Team</TeamTitle>
+        <FounderWrapper>
+          <TeamMember
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            style={{ maxWidth: "400px", width: "100%" }} // Make his card slightly wider
+          >
+            {/* Only the Founder gets the image component */}
+            <MemberImage src={`/${founder.image}`} alt={founder.name} />
+
+            <MemberInfo>
+              <MemberName style={{ fontSize: "1.5rem", color: "#fff" }}>
+                {founder.name}
+              </MemberName>
+              <MemberRole style={{ color: "#d4af37" }}>
+                {" "}
+                {/* Gold color for CEO role */}
+                {founder.role}
+              </MemberRole>
+              <MemberBio>{founder.bio}</MemberBio>
+            </MemberInfo>
+          </TeamMember>
+        </FounderWrapper>
         <TeamGrid>
-          {teamMembers.map((member, index) => (
-            <TeamMember
+          {restOfTeam.map((member, index) => (
+            <TextOnlyCard
               key={index}
-              initial={{ opacity: 0, y: 25 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <MemberImage src={`/${member.image}`} alt={member.name} />
-              <MemberInfo>
+              <MemberInfo style={{ padding: 0 }}>
                 <MemberName>{member.name}</MemberName>
                 <MemberRole>{member.role}</MemberRole>
-                <MemberBio>{member.bio}</MemberBio>
+                {/* Bio is optional for team, usually cleaner without it for text-boxes */}
               </MemberInfo>
-            </TeamMember>
+            </TextOnlyCard>
           ))}
         </TeamGrid>
       </TeamSection>
