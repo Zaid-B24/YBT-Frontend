@@ -7,8 +7,7 @@ export const collections = [
     subtitle: "Signature Automotive Excellence",
     description:
       "Our flagship collection featuring exclusive cars and bikes with YOUNG BOY TOYZ signature modifications and luxury enhancements.",
-    image:
-      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    image: "/1.jpg",
     icon: <Star size={24} />,
     route: "/collections/ybt",
     features: [
@@ -43,8 +42,7 @@ export const collections = [
     subtitle: "Performance Engineering Excellence",
     description:
       "High-performance modifications focused on power, torque, and dynamic driving experience with cutting-edge technology.",
-    image:
-      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1983&q=80",
+    image: "/2.png",
     icon: <Zap size={24} />,
     route: "/collections/torque-tuner",
     features: [

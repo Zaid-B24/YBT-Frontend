@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
+import { FaEnvelope, FaInstagram } from "react-icons/fa";
 // Removed icon imports as they are no longer used
 
 const PageWrapper = styled.div`
@@ -179,11 +180,11 @@ const MemberRole = styled.p`
   letter-spacing: 1px;
 `;
 
-const MemberBio = styled.p`
-  color: #999;
-  line-height: 1.6;
-  font-size: 0.9rem;
-`;
+// const MemberBio = styled.p`
+//   color: #999;
+//   line-height: 1.6;
+//   font-size: 0.9rem;
+// `;
 
 // const MemberPlaceholder = styled.div`
 //   width: 160px;
@@ -241,6 +242,33 @@ const TextOnlyCard = styled(TeamMember)`
   }
 `;
 
+const SocialWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  align-items: center;
+`;
+
+const SocialLink = styled.a`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ccc;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #fff;
+  }
+
+  svg {
+    font-size: 1rem;
+    color: #d4af37; /* Gold accent for the icons */
+  }
+`;
+
 const values = [
   {
     title: "Excellence",
@@ -270,10 +298,14 @@ const teamMembers = [
     role: "Founder & CEO",
     image: "hamdan.jpg",
     //bio: "With over 15 years in luxury automotive, Hamdan founded YOUNG BOY TOYZ to redefine vehicle customization.",
+    insta: "ihamdanpathan",
+    contact: "Collab@youngboyztoyz.com",
   },
   {
     name: "Nidhi Singh",
     role: " Investor Relations",
+    insta: "menidhisingh",
+    contact: "nidhisingh@youngboyztoyz.com",
   },
   {
     name: "Waseb Untwale",
@@ -287,6 +319,27 @@ const teamMembers = [
 
 const AboutPage = () => {
   const [founder, ...restOfTeam] = teamMembers;
+  const renderSocials = (member) => {
+    if (!member.insta && !member.contact) return null;
+    return (
+      <SocialWrapper>
+        {member.insta && (
+          <SocialLink
+            href={`https://instagram.com/${member.insta}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaInstagram /> Instagram
+          </SocialLink>
+        )}
+        {member.contact && (
+          <SocialLink href={`mailto:${member.contact}`}>
+            <FaEnvelope /> {member.contact}
+          </SocialLink>
+        )}
+      </SocialWrapper>
+    );
+  };
   return (
     <PageWrapper>
       <StorySection>
@@ -371,11 +424,10 @@ const AboutPage = () => {
                 {founder.name}
               </MemberName>
               <MemberRole style={{ color: "#d4af37" }}>
-                {" "}
-                {/* Gold color for CEO role */}
                 {founder.role}
               </MemberRole>
-              <MemberBio>{founder.bio}</MemberBio>
+              {/* <MemberBio>{founder.bio}</MemberBio> */}
+              {renderSocials(founder)}
             </MemberInfo>
           </TeamMember>
         </FounderWrapper>
@@ -392,6 +444,7 @@ const AboutPage = () => {
                 <MemberName>{member.name}</MemberName>
                 <MemberRole>{member.role}</MemberRole>
                 {/* Bio is optional for team, usually cleaner without it for text-boxes */}
+                {renderSocials(member)}
               </MemberInfo>
             </TextOnlyCard>
           ))}

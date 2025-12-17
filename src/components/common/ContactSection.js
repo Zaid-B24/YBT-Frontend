@@ -185,10 +185,29 @@ const ContactTitle = styled.h4`
   margin-bottom: 0.5rem;
 `;
 
-const ContactDetail = styled.p`
+const ContactDetail = styled.a`
   color: #cccccc;
   line-height: 1.6;
+  text-decoration: none;
+  display: block;
+  transition: color 0.3s ease;
+  cursor: pointer;
+  &:hover {
+    color: #fff; /* or #d4af37 (Gold) for your brand color */
+  }
 `;
+// const ContactDetail = styled.a`
+//   color: #cccccc;
+//   line-height: 1.6;
+//    /* Removes the underline */
+//   transition: color 0.3s ease;
+//   display: block; /* Ensures it sits on its own line */
+//   cursor: pointer;
+
+//   &:hover {
+//     color: #fff; /* or #d4af37 (Gold) for your brand color */
+//   }
+// `;
 const AddressLink = styled.a`
   color: #cccccc;
   text-decoration: none;
@@ -387,7 +406,9 @@ const ContactSection = () => {
                 </ContactIcon>
                 <ContactText>
                   <ContactTitle>Email</ContactTitle>
-                  <ContactDetail>Nidhisingh@youngboyztoyz.com</ContactDetail>
+                  <ContactDetail href="mailto:Collab@youngboyztoyz.com">
+                    Collab@youngboyztoyz.com
+                  </ContactDetail>
                 </ContactText>
               </ContactItem>
 
@@ -397,7 +418,9 @@ const ContactSection = () => {
                 </ContactIcon>
                 <ContactText>
                   <ContactTitle>Phone</ContactTitle>
-                  <ContactDetail>+91 9619007705</ContactDetail>
+                  <ContactDetail href="tel:+919619007705">
+                    +91 9619007705
+                  </ContactDetail>
                 </ContactText>
               </ContactItem>
 

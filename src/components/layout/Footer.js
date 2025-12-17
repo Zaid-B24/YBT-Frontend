@@ -262,9 +262,9 @@ const Footer = () => {
             <Logo>YOUNG BOY TOYZ</Logo>
             <BrandDescription>
               From premium builds to community and culture, YBT is more than a
-              marketplace — it’s a lifestyle. More than a showroom — YBT is a
-              luxury lifestyle movement dedicated to bespoke performance
-              machines and the culture that surrounds them.
+              marketplace it’s a lifestyle. More than a showroom YBT is a luxury
+              lifestyle movement dedicated to bespoke performance machines and
+              the culture that surrounds them.
             </BrandDescription>
             <NewsletterForm>
               <NewsletterInput type="email" placeholder="Enter your email" />
