@@ -20,18 +20,18 @@ const Header = styled.div`
 
 const Title = styled.h2`
   font-family: "Playfair Display", serif;
-  font-size: 3rem;
+  font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
   color: #ffffff;
 
   @media (max-width: 768px) {
-    font-size: 2rem;
+    font-size: 1rem;
   }
 `;
 
 const Subtitle = styled.p`
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #cccccc;
   max-width: 600px;
   margin: 0 auto;
@@ -218,6 +218,14 @@ const AddressLink = styled.a`
     text-decoration: underline;
   }
 `;
+const InfoImage = styled.img`
+  height: 350px;
+  width: 100%;
+  @media (max-width: 768px) {
+    height: 200px;
+    width: 100%;
+  }
+`;
 
 const InfoTitle = styled.h3`
   font-family: "Playfair Display", serif;
@@ -285,7 +293,7 @@ const ContactSection = () => {
     <Section>
       <Container>
         <Header>
-          <Title>Join YOUNG BOY TOYZ</Title>
+          <Title>JOIN YOUNG BOY TOYS</Title>
           <Subtitle>
             Get in touch with us to discuss your luxury automotive project. Our
             team of experts is ready to transform your vision into reality.
@@ -388,6 +396,7 @@ const ContactSection = () => {
 
           <ContactInfo>
             <InfoTitle>Get in Touch</InfoTitle>
+            <InfoImage src="/r3.jpg" />
             <Description>
               Ready to transform your vehicle into a masterpiece? Contact our
               team of experts who will guide you through every step of your
@@ -432,7 +441,7 @@ const ContactSection = () => {
                   <ContactTitle>Address</ContactTitle>
                   <ContactDetail>
                     <AddressLink
-                      href="https://www.google.com/maps?q=Plot+no+C-433,+T.T.C,+M.I.D.C,+near+Indira+Nagar,+opp.+BASF,+Turbhe,+Navi+Mumbai,+Maharashtra+400705"
+                      href="https://www.google.com/maps/search/?api=1&query=Plot+no+C-433,+T.T.C,+M.I.D.C,+Turbhe,+Navi+Mumbai"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

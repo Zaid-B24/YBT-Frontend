@@ -1,5 +1,3 @@
-import { Star, Award, Zap, Wrench } from "lucide-react";
-
 export const collections = [
   {
     id: 1,
@@ -8,7 +6,7 @@ export const collections = [
     description:
       "Our flagship collection featuring exclusive cars and bikes with YOUNG BOY TOYZ signature modifications and luxury enhancements.",
     image: "/1.jpg",
-    icon: <Star size={24} />,
+
     route: "/collections/ybt",
     features: [
       "Signature YBT modifications",
@@ -26,7 +24,7 @@ export const collections = [
       "Exclusive designs by India's top automotive designers, featuring unique styling and bespoke modifications.",
     image:
       "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    icon: <Award size={24} />,
+
     route: "/collections/designer",
     features: [
       "Top Indian designers",
@@ -43,7 +41,7 @@ export const collections = [
     description:
       "High-performance modifications focused on power, torque, and dynamic driving experience with cutting-edge technology.",
     image: "/2.png",
-    icon: <Zap size={24} />,
+
     route: "/collections/torque-tuner",
     features: [
       "Performance tuning",

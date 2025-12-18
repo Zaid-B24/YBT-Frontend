@@ -87,13 +87,22 @@ const CollectionCard = styled(motion(Link))`
 `;
 
 const CollectionImage = styled.div`
-  height: 300px;
+  height: 350px;
+  width: 100%;
   background: ${(props) =>
-      props.image
-        ? `url(${props.image})`
-        : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"}
-    center center/cover no-repeat;
+    props.image
+      ? `url(${props.image})`
+      : "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"};
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
   position: relative;
+  @media (max-width: 768px) {
+    height: 200px;
+    width: 100%;
+  }
 `;
 
 const CollectionOverlay = styled.div`
@@ -109,16 +118,6 @@ const CollectionOverlay = styled.div`
   padding: 2rem;
 `;
 
-const CollectionIcon = styled.div`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 0.8rem;
-  border-radius: 50%;
-`;
-
 const CollectionContent = styled.div`
   padding: 2rem;
 `;
@@ -129,6 +128,10 @@ const CollectionTitle = styled.h3`
   font-weight: 400;
   margin-bottom: 0.5rem;
   color: #fff;
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem; /* Fits better on narrow screens */
+  }
 `;
 
 const CollectionSubtitle = styled.h4`
@@ -137,6 +140,11 @@ const CollectionSubtitle = styled.h4`
   margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 1px;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem; /* slightly smaller to distinguish from title */
+    margin-bottom: 0.8rem;
+  }
 `;
 
 const CollectionDescription = styled.p`
@@ -191,8 +199,11 @@ const StatNumber = styled.div`
   font-weight: 400;
   margin-bottom: 0.5rem;
   color: #fff;
-`;
 
+  @media (max-width: 768px) {
+    font-size: 2.2rem; /* Reduced from 3rem */
+  }
+`;
 const StatLabel = styled.div`
   font-size: 1rem;
   color: #ccc;
@@ -232,7 +243,6 @@ const CollectionsPage = () => {
               onMouseMove={(e) => handleMouseMove(e, e.currentTarget)}
             >
               <CollectionImage image={collection.image}>
-                <CollectionIcon>{collection.icon}</CollectionIcon>
                 <CollectionOverlay>
                   <div>
                     <CollectionTitle>{collection.title}</CollectionTitle>
