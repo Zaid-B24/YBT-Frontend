@@ -11,7 +11,7 @@ const PageWrapper = styled.div`
 `;
 
 const HeroSection = styled.section`
-  padding: 4rem 2rem;
+  padding: 2rem 2rem;
   text-align: center;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
 `;
@@ -134,6 +134,15 @@ const ContactLabel = styled.h3`
 const ContactInfo = styled.p`
   color: #ccc;
   font-size: 0.9rem;
+`;
+
+const InfoImage = styled.img`
+  height: 350px;
+  width: 100%;
+  @media (max-width: 768px) {
+    height: 200px;
+    width: 100%;
+  }
 `;
 
 const FAQPage = () => {
@@ -264,6 +273,7 @@ const FAQPage = () => {
                 </AnimatePresence>
               </FAQItem>
             ))}
+            <InfoImage src="/r3.jpg" />
           </CategorySection>
         ))}
       </FAQContainer>
@@ -284,7 +294,7 @@ const FAQPage = () => {
               <Phone size={32} />
             </ContactIcon>
             <ContactLabel>Phone</ContactLabel>
-            <ContactInfo>+1 (555) 123-4567</ContactInfo>
+            <ContactInfo>+91 9619007705</ContactInfo>
           </ContactMethod>
           <ContactMethod
             initial={{ opacity: 0, y: 20 }}
@@ -296,7 +306,7 @@ const FAQPage = () => {
               <Mail size={32} />
             </ContactIcon>
             <ContactLabel>Email</ContactLabel>
-            <ContactInfo>info@youngboytoyz.com</ContactInfo>
+            <ContactInfo>Collab@youngboyztoyz.com</ContactInfo>
           </ContactMethod>
         </ContactMethods>
       </ContactSection>

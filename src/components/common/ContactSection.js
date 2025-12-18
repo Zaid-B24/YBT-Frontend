@@ -218,14 +218,6 @@ const AddressLink = styled.a`
     text-decoration: underline;
   }
 `;
-const InfoImage = styled.img`
-  height: 350px;
-  width: 100%;
-  @media (max-width: 768px) {
-    height: 200px;
-    width: 100%;
-  }
-`;
 
 const InfoTitle = styled.h3`
   font-family: "Playfair Display", serif;
@@ -396,7 +388,6 @@ const ContactSection = () => {
 
           <ContactInfo>
             <InfoTitle>Get in Touch</InfoTitle>
-            <InfoImage src="/r3.jpg" />
             <Description>
               Ready to transform your vehicle into a masterpiece? Contact our
               team of experts who will guide you through every step of your
