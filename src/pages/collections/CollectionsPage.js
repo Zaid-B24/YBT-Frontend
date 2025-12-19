@@ -100,7 +100,7 @@ const CollectionImage = styled.div`
 
   position: relative;
   @media (max-width: 768px) {
-    height: 200px;
+    height: 150px;
     width: 100%;
   }
 `;

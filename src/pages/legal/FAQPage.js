@@ -11,7 +11,7 @@ const PageWrapper = styled.div`
 `;
 
 const HeroSection = styled.section`
-  padding: 2rem 2rem;
+  padding: 1rem 1rem;
   text-align: center;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
 `;
@@ -138,7 +138,7 @@ const ContactInfo = styled.p`
 
 const InfoImage = styled.img`
   height: 350px;
-  width: 100%;
+  width: 70%;
   @media (max-width: 768px) {
     height: 200px;
     width: 100%;
@@ -242,6 +242,7 @@ const FAQPage = () => {
           Find answers to common questions about our services, processes, and
           policies.
         </HeroSubtitle>
+        <InfoImage src="/r3.jpg" />
       </HeroSection>
       <FAQContainer>
         {filteredFAQs.map((category) => (
@@ -273,7 +274,6 @@ const FAQPage = () => {
                 </AnimatePresence>
               </FAQItem>
             ))}
-            <InfoImage src="/r3.jpg" />
           </CategorySection>
         ))}
       </FAQContainer>
