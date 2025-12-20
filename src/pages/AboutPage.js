@@ -303,7 +303,7 @@ const teamMembers = [
   },
   {
     name: "Nidhi Singh",
-    role: " Investor Relations",
+    role: "Director / Promotor",
     insta: "menidhisingh",
     contact: "nidhisingh@youngboyztoyz.com",
   },

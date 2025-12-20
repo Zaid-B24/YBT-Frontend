@@ -20,47 +20,97 @@ const HeroSection = styled.section`
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
 `;
 
-const HeroTitle = styled.h1`
+const textShine = keyframes`
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+`;
+
+// 2. Animate the Title
+const HeroTitle = styled(motion.h1)`
   font-family: "Playfair Display", serif;
-  font-size: 4rem;
+  font-size: 4.5rem; /* Made slightly larger */
   font-weight: 400;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+
+  /* The Luxury Gradient Effect */
+  background: linear-gradient(
+    to right,
+    #ffffff 20%,
+    #a1a1a1 40%,
+    #ffffff 60%,
+    #ffffff 80%
+  );
+  background-size: 200% auto;
+  color: #000;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  animation: ${textShine} 5s linear infinite; /* Subtle continuous movement */
 
   @media (max-width: 768px) {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
   }
 `;
 
-const HeroSubtitle = styled.p`
+// 3. Animate the Subtitle
+const HeroSubtitle = styled(motion.p)`
   font-size: 1.2rem;
-  color: #ccc;
+  color: #a0a0a0;
   max-width: 600px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
 `;
 
+// A. Update the Container to relative positioning
 const FilterTabs = styled.div`
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.5rem; /* Tighter gap for the sliding effect */
   margin: 2rem 0;
   flex-wrap: wrap;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.03); /* Subtle track background */
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
+// B. The Tab Button (Needs relative position)
 const FilterTab = styled.button`
+  position: relative;
   padding: 0.8rem 1.5rem;
-  background: ${(props) =>
-    props.active ? "rgba(255,255,255,0.1)" : "transparent"};
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
+  background: transparent;
+  border: none;
+  color: ${(props) =>
+    props.active ? "#000" : "#fff"}; /* Flip text color on active */
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
   font-size: 0.9rem;
+  font-weight: 600;
   letter-spacing: 1px;
+  text-transform: uppercase;
+  z-index: 1; /* Keep text above the sliding background */
+  transition: color 0.3s ease;
+  outline: none;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
+    color: ${(props) => (props.active ? "#000" : "#ccc")};
   }
+`;
+
+// C. The "Magic" Sliding Background
+const ActiveTabBackground = styled(motion.div)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff; /* High contrast white pill */
+  border-radius: 30px;
+  z-index: -1; /* Behind the text */
 `;
 
 const EventsGrid = styled.div`
@@ -280,6 +330,30 @@ const EventCardSkeleton = () => (
 const EventsPage = () => {
   const [activeFilter, setActiveFilter] = useState("upcoming");
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2, // Delay between Title -> Subtitle -> Filters
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 10,
+      },
+    },
+  };
+
   const { data: filterData } = useQuery({
     queryKey: ["eventFilters"],
     queryFn: fetchEventCategoriesAPI,
@@ -330,24 +404,37 @@ const EventsPage = () => {
 
   return (
     <PageWrapper>
-      <HeroSection>
-        <HeroTitle>Events</HeroTitle>
-        <HeroSubtitle>
+      <HeroSection
+        as={motion.section}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <HeroTitle variants={itemVariants}>Events</HeroTitle>
+
+        <HeroSubtitle variants={itemVariants}>
           Experience the world of YOUNG BOY TOYZ through exclusive events,
           shows, and unforgettable automotive experiences.
         </HeroSubtitle>
-
-        <FilterTabs>
-          {filters.map((filter) => (
-            <FilterTab
-              key={filter.key}
-              active={activeFilter === filter.key}
-              onClick={() => setActiveFilter(filter.key)}
-            >
-              {filter.label}
-            </FilterTab>
-          ))}
-        </FilterTabs>
+        <motion.div variants={itemVariants}>
+          <FilterTabs>
+            {filters.map((filter) => (
+              <FilterTab
+                key={filter.key}
+                active={activeFilter === filter.key}
+                onClick={() => setActiveFilter(filter.key)}
+              >
+                {activeFilter === filter.key && (
+                  <ActiveTabBackground
+                    layoutId="activeFilter"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                {filter.label}
+              </FilterTab>
+            ))}
+          </FilterTabs>
+        </motion.div>
       </HeroSection>
 
       <EventsGrid>
