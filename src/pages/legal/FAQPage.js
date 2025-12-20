@@ -187,7 +187,7 @@ const FAQPage = () => {
           id: 5,
           question: "How does selling work?",
           answer:
-            "Share your vehicle details → 9619007705 ( WhatsApp) \nOur team verifies →\nWe shortlist pricing →\nYour machine gets listed to the right audience.",
+            "Share your vehicle details → 9619007705 ( WhatsApp) \nOur team verifies →\nWe shortlist pricing →\nYour machine gets listed to the PAN INDIA JDM COMMUNITY",
         },
         {
           id: 6,
@@ -217,7 +217,7 @@ const FAQPage = () => {
           id: 10,
           question: "Which locations do you serve?",
           answer:
-            "Pan-India — We Introduced ourself as a [ Digital Showroom ]\n\nPlus cross-border trade via YBT Dubai, serving the UAE and expanding to Indonesia & USA.",
+            "Pan-India — We Introduced ourself as a [ Digital Showroom ].",
         },
         {
           id: 11,

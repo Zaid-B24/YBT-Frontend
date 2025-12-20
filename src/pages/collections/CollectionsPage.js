@@ -115,7 +115,15 @@ const CollectionOverlay = styled.div`
   );
   display: flex;
   align-items: flex-end;
-  padding: 2rem;
+
+  /* FIXED: Reduced bottom padding to push content down */
+  padding: 2rem 2rem 1rem 2rem;
+
+  @media (max-width: 768px) {
+    padding: 0.8rem; /* Very small padding for mobile */
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
 `;
 
 const CollectionContent = styled.div`
@@ -126,11 +134,14 @@ const CollectionTitle = styled.h3`
   font-family: "Playfair Display", serif;
   font-size: 1.8rem;
   font-weight: 400;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.2rem;
   color: #fff;
+  text-align: left;
 
   @media (max-width: 768px) {
-    font-size: 1.2rem; /* Fits better on narrow screens */
+    font-size: 1.25rem; /* Readable size */
+    margin-bottom: 0.1rem; /* Minimal gap between title and subtitle */
+    line-height: 1.1; /* Tighter spacing */
   }
 `;
 
@@ -140,10 +151,12 @@ const CollectionSubtitle = styled.h4`
   margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 1px;
+  text-align: left; /* Ensures text stays left */
 
   @media (max-width: 768px) {
-    font-size: 0.75rem; /* slightly smaller to distinguish from title */
-    margin-bottom: 0.8rem;
+    font-size: 0.7rem;
+    margin-bottom: 0;
+    line-height: 1;
   }
 `;
 
@@ -151,6 +164,10 @@ const CollectionDescription = styled.p`
   color: #ccc;
   line-height: 1.6;
   margin-bottom: 1.5rem;
+  font-size: 1rem;
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const CollectionFeatures = styled.ul`
@@ -171,6 +188,9 @@ const Feature = styled.li`
     position: absolute;
     left: 0;
     color: #666;
+  }
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
   }
 `;
 
