@@ -269,6 +269,18 @@ const SocialLink = styled.a`
   }
 `;
 
+const MemberGroupSeparator = styled.div`
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+`;
+
 const values = [
   {
     title: "Excellence",
@@ -318,7 +330,9 @@ const teamMembers = [
 ];
 
 const AboutPage = () => {
-  const [founder, ...restOfTeam] = teamMembers;
+  const founder = teamMembers[0];
+  const director = teamMembers[1];
+  const techTeam = [teamMembers[2], teamMembers[3]];
   const renderSocials = (member) => {
     if (!member.insta && !member.contact) return null;
     return (
@@ -408,15 +422,16 @@ const AboutPage = () => {
 
       <TeamSection>
         <TeamTitle>Meet Our Team</TeamTitle>
+
+        {/* 1. Founder Card */}
         <FounderWrapper>
           <TeamMember
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            style={{ maxWidth: "400px", width: "100%" }} // Make his card slightly wider
+            style={{ maxWidth: "400px", width: "100%" }}
           >
-            {/* Only the Founder gets the image component */}
             <MemberImage src={`/${founder.image}`} alt={founder.name} />
 
             <MemberInfo>
@@ -426,28 +441,42 @@ const AboutPage = () => {
               <MemberRole style={{ color: "#d4af37" }}>
                 {founder.role}
               </MemberRole>
-              {/* <MemberBio>{founder.bio}</MemberBio> */}
               {renderSocials(founder)}
             </MemberInfo>
           </TeamMember>
         </FounderWrapper>
+
         <TeamGrid>
-          {restOfTeam.map((member, index) => (
-            <TextOnlyCard
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <MemberInfo style={{ padding: 0 }}>
-                <MemberName>{member.name}</MemberName>
-                <MemberRole>{member.role}</MemberRole>
-                {/* Bio is optional for team, usually cleaner without it for text-boxes */}
-                {renderSocials(member)}
-              </MemberInfo>
-            </TextOnlyCard>
-          ))}
+          {/* 2. Director Card (Nidhi) */}
+          <TextOnlyCard
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <MemberInfo style={{ padding: 0 }}>
+              <MemberName>{director.name}</MemberName>
+              <MemberRole>{director.role}</MemberRole>
+              {renderSocials(director)}
+            </MemberInfo>
+          </TextOnlyCard>
+
+          {/* 3. Combined Tech Team Card (Waseb & Zaid) */}
+          <TextOnlyCard
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            viewport={{ once: true }}
+          >
+            <MemberInfo style={{ padding: 0 }}>
+              {techTeam.map((member, i) => (
+                <MemberGroupSeparator key={i}>
+                  <MemberName>{member.name}</MemberName>
+                  <MemberRole>{member.role}</MemberRole>
+                </MemberGroupSeparator>
+              ))}
+            </MemberInfo>
+          </TextOnlyCard>
         </TeamGrid>
       </TeamSection>
     </PageWrapper>

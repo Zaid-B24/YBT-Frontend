@@ -48,7 +48,14 @@ const Content = styled.div`
   }
 `;
 
-const FormSection = styled.div``;
+const FormSection = styled.div`
+  padding: 6rem 2rem;
+  background: linear-gradient(135deg, #050505 0%, #0f0f0f 100%);
+
+  @media (max-width: 768px) {
+    padding: 4rem 1rem; /* Reduced horizontal padding */
+  }
+`;
 
 const ContactInfo = styled.div``;
 
@@ -58,41 +65,58 @@ const Form = styled.form`
   gap: 1.5rem;
 `;
 
+const FormGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 1.5rem;
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr; /* Force single column on mobile */
+  }
+`;
+
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  margin-bottom: 1.5rem;
 `;
 
 const Label = styled.label`
   font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #ccc;
   font-weight: 500;
-  color: #cccccc;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 `;
 
-const Input = styled.input`
-  padding: 1rem;
+const FormInput = styled.input`
+  width: 100%; /* forces input to fit container */
+  box-sizing: border-box; /* ensures padding doesn't add to width */
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  color: #ffffff;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
 
   &::placeholder {
-    color: #666;
+    color: rgba(255, 255, 255, 0.5);
   }
 
   &:focus {
     outline: none;
-    border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;
 
 const TextArea = styled.textarea`
+  width: 100%; /* forces textarea to fit container */
+  box-sizing: border-box; /* ensures padding doesn't add to width */
   padding: 1rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -114,7 +138,6 @@ const TextArea = styled.textarea`
     background: rgba(255, 255, 255, 0.08);
   }
 `;
-
 const SubmitButton = styled(motion.button)`
   display: inline-flex;
   align-items: center;
@@ -304,70 +327,71 @@ const ContactSection = () => {
               </SuccessMessage>
             )}
 
-            <Form onSubmit={handleSubmit}>
-              <FormGroup>
-                <Label htmlFor="name">Full Name *</Label>
-                <Input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter your full name"
-                  required
-                />
-              </FormGroup>
+            <form onSubmit={handleSubmit}>
+              <FormGrid>
+                <FormGroup>
+                  <Label htmlFor="name">Full Name *</Label>
+                  <FormInput
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </FormGroup>
 
-              <FormGroup>
-                <Label htmlFor="email">Email Address *</Label>
-                <Input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email address"
-                  required
-                />
-              </FormGroup>
+                <FormGroup>
+                  <Label htmlFor="email">Email Address *</Label>
+                  <FormInput
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Enter your email address"
+                    required
+                  />
+                </FormGroup>
 
-              <FormGroup>
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="Enter your phone number"
-                />
-              </FormGroup>
+                <FormGroup>
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <FormInput
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Enter your phone number"
+                  />
+                </FormGroup>
 
-              <FormGroup>
-                <Label htmlFor="subject">Subject *</Label>
-                <Input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  placeholder="What can we help you with?"
-                  required
-                />
-              </FormGroup>
+                <FormGroup>
+                  <Label htmlFor="subject">Subject *</Label>
+                  <FormInput
+                    type="text"
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    placeholder="What can we help you with?"
+                    required
+                  />
+                </FormGroup>
 
-              <FormGroup>
-                <Label htmlFor="message">Message *</Label>
-                <TextArea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="Tell us about your project..."
-                  required
-                />
-              </FormGroup>
-
+                <FormGroup>
+                  <Label htmlFor="message">Message *</Label>
+                  <TextArea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Tell us about your project..."
+                    required
+                  />
+                </FormGroup>
+              </FormGrid>
               <SubmitButton
                 type="submit"
                 disabled={isSubmitting}
@@ -383,7 +407,7 @@ const ContactSection = () => {
                   </>
                 )}
               </SubmitButton>
-            </Form>
+            </form>
           </FormSection>
 
           <ContactInfo>
