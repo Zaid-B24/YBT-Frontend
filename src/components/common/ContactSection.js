@@ -4,8 +4,11 @@ import { motion } from "framer-motion";
 import { Send, Mail, Phone, MapPin } from "lucide-react";
 
 const Section = styled.section`
-  padding: 6rem 2rem;
-  background: linear-gradient(135deg, #050505 0%, #0f0f0f 100%);
+  padding: 6rem 0;
+
+  @media (max-width: 768px) {
+    padding: 4rem 0;
+  }
 `;
 
 const Container = styled.div`
@@ -16,6 +19,11 @@ const Container = styled.div`
 const Header = styled.div`
   text-align: center;
   margin-bottom: 4rem;
+  padding: 0 2rem;
+
+  @media (max-width: 480px) {
+    padding: 2.5rem 1rem 0;
+  }
 `;
 
 const Title = styled.h2`
@@ -38,6 +46,7 @@ const Subtitle = styled.p`
 `;
 
 const Content = styled.div`
+  padding: 0 2rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
@@ -46,6 +55,10 @@ const Content = styled.div`
     grid-template-columns: 1fr;
     gap: 3rem;
   }
+
+  @media (max-width: 480px) {
+    padding: 0 1rem;
+  }
 `;
 
 const FormSection = styled.div`
@@ -53,7 +66,7 @@ const FormSection = styled.div`
   background: linear-gradient(135deg, #050505 0%, #0f0f0f 100%);
 
   @media (max-width: 768px) {
-    padding: 4rem 1rem; /* Reduced horizontal padding */
+    /* Reduced horizontal padding */
   }
 `;
 
@@ -280,8 +293,8 @@ const InstaVideo = styled.div`
   height: 400px;
 
   /* Mobile: Reduce height to save screen space */
-  @media (max-width: 768px) {
-    height: 280px;
+  @media (max-width: 480px) {
+    height: 220px;
   }
 
   video {
