@@ -266,6 +266,31 @@ const SuccessMessage = styled(motion.div)`
   margin-bottom: 1rem;
 `;
 
+const InstaVideo = styled.div`
+  width: 100%;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #000; /* Better fallback than transparent */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Adds depth */
+  position: relative;
+
+  /* PC/Desktop: Restrict height so it doesn't dominate the column */
+  height: 400px;
+
+  /* Mobile: Reduce height to save screen space */
+  @media (max-width: 768px) {
+    height: 280px;
+  }
+
+  video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover; /* This crops the video to fill the box cleanly */
+  }
+`;
 const ContactSection = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -412,6 +437,11 @@ const ContactSection = () => {
 
           <ContactInfo>
             <InfoTitle>Get in Touch</InfoTitle>
+            <InstaVideo>
+              <video autoPlay loop muted playsInline>
+                <source src="/Insta.mp4" type="video/mp4" />
+              </video>
+            </InstaVideo>
             <Description>
               Ready to transform your vehicle into a masterpiece? Contact our
               team of experts who will guide you through every step of your
