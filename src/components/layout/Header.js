@@ -21,7 +21,7 @@ const HeaderWrapper = styled.header`
 const Nav = styled.nav`
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  align-items: center;
+  align-items: center
   padding: 0.8rem 3rem;
   max-width: 1600px;
   margin: 0 auto;
@@ -356,7 +356,9 @@ const MobileMenu = styled.div`
 
   transform: scaleY(${(props) => (props.isOpen ? 1 : 0)});
   transform-origin: top;
-  transition: transform 0.25s ease, opacity 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
   opacity: ${(props) => (props.isOpen ? 1 : 0)};
 
   @media (min-width: 1025px) {

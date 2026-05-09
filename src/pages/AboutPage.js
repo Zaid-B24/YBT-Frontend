@@ -135,7 +135,9 @@ const TeamMember = styled(motion.div)`
   border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
   border-radius: 10px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 
   &:hover {
     transform: translateY(-6px);
@@ -316,7 +318,6 @@ const teamMembers = [
   {
     name: "Nidhi Singh",
     role: "Director / Promotor",
-    insta: "menidhisingh",
     contact: "nidhisingh@youngboyztoyz.com",
   },
   {
