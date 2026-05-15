@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 
 import AppProviders from "./contexts/AppProviders";
 import GlobalStyle from "./styles/GlobalStyle";
+import ErrorBoundary from "./components/common/ErrorBoundary";
 
 import MainRoutes from "./Routes/MainRoutes";
 import AdminRoutes from "./Routes/AdminRoutes";
@@ -13,13 +14,15 @@ function App() {
   return (
     <AppProviders>
       <GlobalStyle />
-      <Suspense fallback={<div>Loading...</div>}>
-        <Routes>
-          {MainRoutes}
-          {AdminRoutes}
-          <Route path="/admin/login" element={<AdminLoginPage />} />
-        </Routes>
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            {MainRoutes}
+            {AdminRoutes}
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
     </AppProviders>
   );
 }

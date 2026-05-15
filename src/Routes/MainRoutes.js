@@ -7,6 +7,7 @@ import * as Pages from "../pages";
 import ContactSection from "../components/common/ContactSection";
 import BookingConfirmationPage from "../pages/events/BookingConfirmationPage";
 import BookingsPage from "../pages/user/MyBookingsPage";
+import NotFoundPage from "../pages/NotFoundPage";
 
 const Homepage = lazy(() => import("../pages/Homepage"));
 const AboutPage = lazy(() => import("../pages/AboutPage"));
@@ -98,6 +99,9 @@ const MainRoutes = (
     <Route path="/book/:slug" element={<Pages.TicketSelectionPage />} />
     <Route path="/book/:slug/summary" element={<Pages.BookingSummaryPage />} />
     <Route path="/booking-confirmation" element={<BookingConfirmationPage />} />
+
+    {/* Catch-all route for 404 - must be last */}
+    <Route path="*" element={<NotFoundPage />} />
   </>
 );
 
