@@ -1,6 +1,6 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { fetchEventsAPI } from "../services/eventService";
+//import { fetchEventsAPI } from "../services/eventService";
 import { getPublicEvents } from "../api/Events/Event.api";
 
 const transformEvent = (event) => {
