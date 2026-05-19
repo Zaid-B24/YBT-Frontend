@@ -25,6 +25,7 @@ import {
 import { useAuth } from "../../contexts/AuthContext";
 import LockedLocation from "../../components/common/LockedEvents";
 import { useEffect, useMemo, useState } from "react";
+import { getEventBySlug } from "../../api/Events/Event.api";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -518,12 +519,12 @@ const formatDateRange = (startDateStr, endDateStr) => {
   const endDate = new Date(endDateStr);
 
   const formattedStart = new Intl.DateTimeFormat("en-US", options).format(
-    startDate
+    startDate,
   );
 
   if (endDateStr && startDate.toDateString() !== endDate.toDateString()) {
     const formattedEnd = new Intl.DateTimeFormat("en-US", options).format(
-      endDate
+      endDate,
     );
     return `${formattedStart} - ${formattedEnd}`;
   }
@@ -536,18 +537,6 @@ const EventDetailsPage = () => {
   const { isLoggedIn } = useAuth();
   const [currentMedia, setCurrentMedia] = useState(null);
 
-  const fetchEventDetails = async () => {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_URL}/events/${slug}`
-    );
-    if (!response.ok) {
-      throw new Error("Event not found or failed to fetch.");
-    }
-    const responseData = await response.json();
-    console.log("responseData :", responseData);
-    return responseData.data;
-  };
-
   const {
     data: event,
     isLoading,
@@ -555,7 +544,7 @@ const EventDetailsPage = () => {
     error,
   } = useQuery({
     queryKey: ["event", slug],
-    queryFn: fetchEventDetails,
+    queryFn: () => getEventBySlug(slug),
     enabled: !!slug,
   });
 

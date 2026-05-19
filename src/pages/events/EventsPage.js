@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar } from "lucide-react";
 import { useEvents } from "../../hooks/useEvent";
-import { fetchEventCategoriesAPI } from "../../services/eventService";
+import { getEventFilter } from "../../api/Events/Event.api";
 
-const PageWrapper = styled.div`
+export const PageWrapper = styled.div`
   padding-top: 100px;
   min-height: 100vh;
   background: #000;
@@ -171,7 +171,7 @@ const EventTitle = styled.h3`
   font-family: "Playfair Display", serif;
   font-size: 1.5rem;
   font-weight: 400;
-  margin-bottom: ;
+  margin-bottom:;
 `;
 
 const EventDescription = styled.p`
@@ -313,7 +313,6 @@ const SkeletonDate = styled(SkeletonElement)`
   margin-top: 1rem;
 `;
 
-// 4. Assemble the final Skeleton Card Component
 const EventCardSkeleton = () => (
   <SkeletonCardWrapper>
     <SkeletonImage />
@@ -335,7 +334,7 @@ const EventsPage = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2, // Delay between Title -> Subtitle -> Filters
+        staggerChildren: 0.2,
         delayChildren: 0.1,
       },
     },
@@ -356,8 +355,8 @@ const EventsPage = () => {
 
   const { data: filterData } = useQuery({
     queryKey: ["eventFilters"],
-    queryFn: fetchEventCategoriesAPI,
-    staleTime: 1000 * 60 * 60, // Cache for 1 hour
+    queryFn: getEventFilter,
+    staleTime: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
   });
 
@@ -369,36 +368,40 @@ const EventsPage = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useEvents(activeFilter, { useInfinite: true });
+  } = useEvents(activeFilter);
+  console.log("THese are the returned eveent: ", events);
 
   const filters = useMemo(() => {
     const staticFilters = [
       { key: "upcoming", label: "Upcoming" },
       { key: "past", label: "Past Events" },
     ];
-    const dynamicFilters =
-      filterData?.data?.categories?.map((cat) => ({
-        key: cat.slug,
-        label: cat.name,
-      })) || [];
+    const categoriesArray =
+      filterData?.data?.categories || filterData?.categories || [];
+
+    const dynamicFilters = categoriesArray.map((cat) => ({
+      key: cat.slug,
+      label: cat.name,
+    }));
     return [...staticFilters, ...dynamicFilters];
   }, [filterData]);
 
-  // 4. Infinite Scroll Observer
   const loadMoreRef = useRef(null);
+
   useEffect(() => {
+    const currentRef = loadMoreRef.current;
+    if (!currentRef) return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
           fetchNextPage();
         }
       },
-      { threshold: 1.0 }
+      { threshold: 0.5 },
     );
-    const currentRef = loadMoreRef.current;
-    if (currentRef) observer.observe(currentRef);
+    observer.observe(currentRef);
     return () => {
-      if (currentRef) observer.unobserve(currentRef);
+      observer.disconnect();
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
