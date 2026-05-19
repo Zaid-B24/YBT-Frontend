@@ -1,7 +1,7 @@
 {
   "name": "young-boy-toyz-website",
   "version": "1.0.0",
-  "description": "YOUNG BOY TOYZ luxury automotive customization website replica",
+  "description": "YOUNG BOY TOYZ luxury automotive customization website ",
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
