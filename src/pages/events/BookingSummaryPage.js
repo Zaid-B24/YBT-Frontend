@@ -355,6 +355,7 @@ const BookingSummaryPage = () => {
 
   // --- 1. ADD STATE MANAGEMENT ---
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToEventTerms, setAgreedToEventTerms] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
 
@@ -496,6 +497,44 @@ const BookingSummaryPage = () => {
   };
 
   if (!event) return null;
+
+  const eventTermsContent = (
+    <>
+      <p style={{ fontWeight: "600", marginBottom: "0.5rem" }}>
+        Tokyo Drift Festival — Terms & Conditions
+      </p>
+      <ul style={{ paddingLeft: "1.2rem", margin: 0, lineHeight: "1.5" }}>
+        <li>Please carry a valid ID proof along with you.</li>
+        <li>
+          No refunds on purchased ticket are possible, even in case of any
+          rescheduling.
+        </li>
+        <li>
+          Security procedures, including frisking remain the right of the
+          management.
+        </li>
+        <li>
+          No dangerous or potentially hazardous objects including but not
+          limited to weapons, knives, guns, fireworks, helmets, laser devices,
+          bottles, musical instruments will be allowed in the venue and may be
+          ejected with or without the owner from the venue.
+        </li>
+        <li>
+          The sponsors/performers/organizers are not responsible for any injury
+          or damage occurring due to the event. Any claims regarding the same
+          would be settled in courts in Mumbai.
+        </li>
+        <li>
+          People in an inebriated state may not be allowed entry.
+        </li>
+        <li>
+          Organizers hold the right to deny late entry to the event.
+        </li>
+        <li>Venue rules apply.</li>
+      </ul>
+    </>
+  );
+
   return (
     <PageWrapper>
       <Header onClick={() => navigate(`/book/${event.slug}`)}>
@@ -625,6 +664,33 @@ const BookingSummaryPage = () => {
             </SelectField>
           </div> */}
 
+          {/* Event-Specific Terms & Conditions */}
+          <div
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "8px",
+              padding: "1rem",
+              maxHeight: "200px",
+              overflowY: "auto",
+              fontSize: "0.85rem",
+              color: "#ccc",
+              marginTop: "1.5rem",
+            }}
+          >
+            {eventTermsContent}
+          </div>
+
+          <CheckboxContainer>
+            <input
+              type="checkbox"
+              checked={agreedToEventTerms}
+              onChange={(e) => setAgreedToEventTerms(e.target.checked)}
+            />
+            I have read and agree to the event-specific Terms & Conditions for
+            the Tokyo Drift Festival.
+          </CheckboxContainer>
+
           <CheckboxContainer>
             <input
               type="checkbox"
@@ -643,7 +709,7 @@ const BookingSummaryPage = () => {
           )}
 
           <ProceedToPayButton
-            disabled={!agreedToTerms || isProcessing}
+            disabled={!agreedToTerms || !agreedToEventTerms || isProcessing}
             onClick={handleProceedToPay}
           >
             {isProcessing ? "Processing..." : "Proceed to Pay"}
