@@ -501,7 +501,7 @@ const BookingSummaryPage = () => {
   const eventTermsContent = (
     <>
       <p style={{ fontWeight: "600", marginBottom: "0.5rem" }}>
-        Tokyo Drift Festival — Terms & Conditions
+        {event.title} — Terms & Conditions
       </p>
       <ul style={{ paddingLeft: "1.2rem", margin: 0, lineHeight: "1.5" }}>
         <li>Please carry a valid ID proof along with you.</li>
@@ -688,7 +688,7 @@ const BookingSummaryPage = () => {
               onChange={(e) => setAgreedToEventTerms(e.target.checked)}
             />
             I have read and agree to the event-specific Terms & Conditions for
-            the Tokyo Drift Festival.
+            the {event.title}.
           </CheckboxContainer>
 
           <CheckboxContainer>
