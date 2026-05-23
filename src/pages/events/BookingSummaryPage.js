@@ -353,6 +353,11 @@ const BookingSummaryPage = () => {
   const navigate = useNavigate();
   const { event, selectedTickets } = location.state || {};
 
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponError, setCouponError] = useState("");
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+
   // --- 1. ADD STATE MANAGEMENT ---
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -385,6 +390,45 @@ const BookingSummaryPage = () => {
     return <div>Loading summary...</div>;
   }
 
+  const handleApplyCoupon = async () => {
+    if (!couponInput.trim()) return;
+    setIsApplyingCoupon(true);
+    setCouponError("");
+
+    try {
+      const token = localStorage.getItem("userToken");
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/ticketbooking/validate-coupon`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            eventId: event.id,
+            couponCode: couponInput.trim(),
+            baseAmount: orderSummary.totalAmount,
+          }),
+        },
+      );
+
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message);
+
+      setAppliedCoupon({
+        code: couponInput.trim().toUpperCase(),
+        discountAmount: result.data.discountAmount,
+        finalAmount: result.data.finalAmount,
+      });
+    } catch (err) {
+      setCouponError(err.message);
+      setAppliedCoupon(null);
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
   const handleProceedToPay = async () => {
     setIsProcessing(true);
     setError(null);
@@ -415,8 +459,12 @@ const BookingSummaryPage = () => {
             Authorization: `Bearer ${token}`,
             "Idempotency-Key": idempotencyKey,
           },
-          body: JSON.stringify({ eventId: event.id, items }),
-        }
+          body: JSON.stringify({
+            eventId: event.id,
+            items,
+            ...(appliedCoupon ? { couponCode: appliedCoupon.code } : {}),
+          }),
+        },
       );
 
       const result = await response.json();
@@ -426,12 +474,14 @@ const BookingSummaryPage = () => {
 
       const { razorpayOrder } = result.data;
 
+      const safeTitle = event.title.replace(/[^\w\s-]/gi, "");
+
       const options = {
         key: "rzp_test_RPPDvF6yabnIXE", // Replace with your public Razorpay Test Key
         amount: razorpayOrder.amount,
         currency: "INR",
         name: "Young Boy Toyz",
-        description: `Order for ${event.title}`,
+        description: safeTitle,
         order_id: razorpayOrder.id,
 
         handler: async function (response) {
@@ -453,7 +503,7 @@ const BookingSummaryPage = () => {
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_signature: response.razorpay_signature,
                 }),
-              }
+              },
             );
 
             const result = await verifyResponse.json();
@@ -466,7 +516,7 @@ const BookingSummaryPage = () => {
           } catch (err) {
             setError(err.message);
             navigate(
-              `/booking/failure?order_id=${razorpayOrder.id}&reason=verification_failed`
+              `/booking/failure?order_id=${razorpayOrder.id}&reason=verification_failed`,
             );
           } finally {
             setIsProcessing(false);
@@ -481,7 +531,7 @@ const BookingSummaryPage = () => {
             console.log("Payment modal dismissed");
             navigate(
               `/booking/failure?order_id=${razorpayOrder.id}&reason=modal_dismissed`,
-              { replace: true }
+              { replace: true },
             );
           },
         },
@@ -598,11 +648,69 @@ const BookingSummaryPage = () => {
             </TicketTypeDisplay>
           ))}
 
-          <CalculationRow>
-            <span>Sub-Total</span>
-            <span>₹{orderSummary.totalAmount.toLocaleString()}</span>
-          </CalculationRow>
+          <div
+            style={{
+              margin: "1.5rem 0",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.5rem",
+            }}
+          >
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <input
+                type="text"
+                placeholder="Promo Code"
+                value={couponInput}
+                onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                disabled={!!appliedCoupon}
+                style={{
+                  flex: 1,
+                  padding: "0.5rem",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                }}
+              />
+              {!appliedCoupon ? (
+                <button
+                  onClick={handleApplyCoupon}
+                  disabled={isApplyingCoupon || !couponInput}
+                  style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
+                >
+                  {isApplyingCoupon ? "..." : "Apply"}
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setAppliedCoupon(null);
+                    setCouponInput("");
+                  }}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    cursor: "pointer",
+                    color: "red",
+                  }}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+            {couponError && (
+              <span style={{ color: "red", fontSize: "0.85rem" }}>
+                {couponError}
+              </span>
+            )}
+          </div>
 
+          <CalculationRow className="total">
+            <span>Total Amount</span>
+            <span>
+              ₹
+              {(appliedCoupon
+                ? appliedCoupon.finalAmount
+                : orderSummary.totalAmount
+              ).toLocaleString()}
+            </span>
+          </CalculationRow>
           {/* You can add a real booking fee later */}
           {/* <CalculationRow>
             <span>Order Fee</span>

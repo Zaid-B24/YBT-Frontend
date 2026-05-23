@@ -160,7 +160,7 @@ const ProceedButton = styled.button`
 
 const fetchEventForBooking = async (slug) => {
   const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/events/${slug}`
+    `${process.env.REACT_APP_API_URL}/events/${slug}`,
   );
   if (!response.ok) throw new Error("Could not fetch event details.");
   const responseData = await response.json();
@@ -206,15 +206,13 @@ const TicketSelectionPage = () => {
 
   const totalTicketsSelected = Object.values(selectedTickets).reduce(
     (sum, ticket) => sum + ticket.quantity,
-    0
+    0,
   );
 
   const handleProceed = () => {
     navigate(`/book/${event.slug}/summary`, {
       state: { event, selectedTickets },
     });
-    console.log("Selected Tickets:", selectedTickets);
-    console.log("Total Amount:", totalAmount);
     // navigate('/book/summary', { state: { event, selectedTickets } });
   };
 
