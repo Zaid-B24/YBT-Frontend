@@ -6,24 +6,34 @@ import { useQuery } from "@tanstack/react-query";
 
 const fetchHeroSlides = async () => {
   const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/homepage/hero-slides`
+    `${process.env.REACT_APP_API_URL}/homepage/hero-slides`,
   );
   if (!response.ok) throw new Error("Network response was not ok");
   const result = await response.json();
+  console.log(response, "this is response");
   return result.data;
 };
 
-const fetchLatestAdditions = async () => {
-  const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/cars/latest-additions`
-  );
-  if (!response.ok) throw new Error("Network response was not ok");
-  const result = await response.json();
-  return result.data;
-};
+// const fetchLatestAdditions = async () => {
+//   const response = await fetch(
+//     `${process.env.REACT_APP_API_URL}/cars/latest-additions`,
+//   );
+//   if (!response.ok) throw new Error("Network response was not ok");
+//   const result = await response.json();
+//   return result.data;
+// };
 
 const Homepage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  // const [enableLatestFetch, setEnableLatestFetch] = useState(false);
+
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setEnableLatestFetch(true);
+  //   }, 2000);
+
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   const {
     data: heroSlides,
@@ -35,15 +45,15 @@ const Homepage = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  const {
-    data: latestAdditions,
-    isLoading: isLatestLoading,
-    isError: isLatestError,
-  } = useQuery({
-    queryKey: ["latestAdditions"],
-    queryFn: fetchLatestAdditions,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-  });
+  // const {
+  //   data: latestAdditions,
+  //   isLoading: isLatestLoading,
+  //   isError: isLatestError,
+  // } = useQuery({
+  //   queryKey: ["latestAdditions"],
+  //   queryFn: enableLatestFetch,
+  //   staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+  // });
 
   useEffect(() => {
     if (!heroSlides || heroSlides.length === 0) return;
@@ -125,54 +135,12 @@ const Homepage = () => {
 
       <LatestSection>
         <SectionTitle>LATEST ADDITIONS</SectionTitle>
-        {isLatestLoading && (
-          <StatusWrapper>
-            {" "}
-            {/* You can reuse the hero loading component */}
-            <LoadingSpinner size={32} />
-            <p>Loading Latest Cars...</p>
-          </StatusWrapper>
-        )}
 
-        {/* --- Handle Error State --- */}
-        {isLatestError && (
-          <StatusWrapper>
-            <AlertCircle size={32} />
-            <p>Error loading cars.</p>
-          </StatusWrapper>
-        )}
-
-        {latestAdditions && latestAdditions.length > 0 && (
-          <CardsGrid>
-            {latestAdditions.map((car) => (
-              <CarCard key={car.id} to={`/cars/${car.id}`}>
-                <CardImageWrapper>
-                  <picture>
-                    {/* Try mobile thumbnail first (if available) */}
-                    {car.mobileThumbnail && (
-                      <source
-                        media="(max-width: 768px)"
-                        srcSet={car.mobileThumbnail}
-                      />
-                    )}
-                    <img src={car.thumbnail} alt={car.title} />
-                  </picture>
-
-                  <CardBadges>
-                    {car.badges?.map((badge, i) => (
-                      <Badge key={i}>{badge}</Badge>
-                    ))}
-                  </CardBadges>
-                </CardImageWrapper>
-                <CardContent>
-                  <CardTitle>
-                    {car.brand} {car.title}
-                  </CardTitle>
-                </CardContent>
-              </CarCard>
-            ))}
-          </CardsGrid>
-        )}
+        <div style={{ textAlign: "center", margin: "3rem 0" }}>
+          <p style={{ fontSize: "1.5rem", color: "#666" }}>
+            Oops we are cooking something! We'll get back soon 😉
+          </p>
+        </div>
       </LatestSection>
 
       <MissionSection>
@@ -362,22 +330,22 @@ const Dot = styled.button`
 
 /* --- LATEST SECTION --- */
 
-const CardImageWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+// const CardImageWrapper = styled.div`
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-  }
+//   img {
+//     width: 100%;
+//     height: 100%;
+//     object-fit: cover;
+//     transition: transform 0.4s ease;
+//   }
 
-  /* Hover Effect handled on parent */
-`;
+//   /* Hover Effect handled on parent */
+// `;
 const LatestSection = styled.section`
   padding: 4rem 2rem;
   background: #0a0a0a;
@@ -402,70 +370,70 @@ const SectionTitle = styled.h2`
   }
 `;
 
-const CardsGrid = styled.div`
-  display: grid;
-  /* FIX: Adjusted minmax for small screens so cards don't overflow */
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  max-width: 1400px;
-  margin: 0 auto;
-`;
+// const CardsGrid = styled.div`
+//   display: grid;
+//   /* FIX: Adjusted minmax for small screens so cards don't overflow */
+//   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+//   gap: 1.5rem;
+//   max-width: 1400px;
+//   margin: 0 auto;
+// `;
 
-const CarCard = styled(Link)`
-  position: relative;
-  display: block;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-  border-radius: 8px;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.3s ease;
-  background: #111; /* Fallback color */
+// const CarCard = styled(Link)`
+//   position: relative;
+//   display: block;
+//   aspect-ratio: 4 / 3;
+//   overflow: hidden;
+//   border-radius: 8px;
+//   text-decoration: none;
+//   color: inherit;
+//   transition: all 0.3s ease;
+//   background: #111; /* Fallback color */
 
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  }
-`;
+//   &:hover {
+//     transform: translateY(-5px);
+//     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+//   }
+// `;
 
-const CardBadges = styled.div`
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  z-index: 3;
-`;
+// const CardBadges = styled.div`
+//   position: absolute;
+//   top: 1rem;
+//   left: 1rem;
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 0.5rem;
+//   z-index: 3;
+// `;
 
-const Badge = styled.span`
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-`;
+// const Badge = styled.span`
+//   background: rgba(0, 0, 0, 0.8);
+//   color: #fff;
+//   padding: 0.3rem 0.8rem;
+//   font-size: 0.7rem;
+//   font-weight: 500;
+//   letter-spacing: 0.5px;
+//   text-transform: uppercase;
+// `;
 
-const CardContent = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  padding: 1.5rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-`;
+// const CardContent = styled.div`
+//   position: absolute;
+//   bottom: 0;
+//   left: 0;
+//   right: 0;
+//   z-index: 2;
+//   padding: 1.5rem;
+//   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+// `;
 
-const CardTitle = styled.h3`
-  font-family: "Playfair Display", serif;
-  font-size: 1.3rem;
-  font-weight: 400;
-  margin-bottom: 0.5rem;
-  color: #fff;
-  text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.9);
-`;
+// const CardTitle = styled.h3`
+//   font-family: "Playfair Display", serif;
+//   font-size: 1.3rem;
+//   font-weight: 400;
+//   margin-bottom: 0.5rem;
+//   color: #fff;
+//   text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.9);
+// `;
 
 /* --- MISSION SECTION --- */
 
@@ -611,18 +579,18 @@ const HeroLoadingWrapper = styled.div`
   }
 `;
 
-const StatusWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  padding: 4rem 0;
+// const StatusWrapper = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+//   color: #fff;
+//   padding: 4rem 0;
 
-  svg {
-    margin-bottom: 1rem;
-  }
-`;
+//   svg {
+//     margin-bottom: 1rem;
+//   }
+// `;
 
 const LoadingSpinner = styled(Loader2)`
   animation: ${spin} 1s linear infinite;
@@ -719,3 +687,60 @@ const LoadingSpinner = styled(Loader2)`
 //           <SearchButton to="/models">SEARCH</SearchButton>
 //         </SearchForm>
 //       </FindModelSection> */}
+
+// {isLatestLoading && (
+//           <StatusWrapper>
+//             {" "}
+//             {/* You can reuse the hero loading component */}
+//             <LoadingSpinner size={32} />
+//             <p>Loading Latest Cars...</p>
+//           </StatusWrapper>
+//         )}
+
+//         {/* --- Handle Error State --- */}
+//         {isLatestError && (
+//           <StatusWrapper>
+//             <AlertCircle size={32} />
+//             <p>Error loading cars.</p>
+//           </StatusWrapper>
+//         )}
+
+//         {latestAdditions && latestAdditions.length === 0 && (
+//           <div style={{ textAlign: "center", margin: "3rem 0" }}>
+//             <p style={{ fontSize: "1.5rem", color: "#666" }}>
+//               Oops we are cooking something! We'll get back soon 😉
+//             </p>
+//           </div>
+//         )}
+
+//         {latestAdditions && latestAdditions.length >= 1 && (
+//           <CardsGrid>
+//             {latestAdditions.map((car) => (
+//               <CarCard key={car.id} to={`/cars/${car.id}`}>
+//                 <CardImageWrapper>
+//                   <picture>
+//                     {/* Try mobile thumbnail first (if available) */}
+//                     {car.mobileThumbnail && (
+//                       <source
+//                         media="(max-width: 768px)"
+//                         srcSet={car.mobileThumbnail}
+//                       />
+//                     )}
+//                     <img src={car.thumbnail} alt={car.title} />
+//                   </picture>
+
+//                   <CardBadges>
+//                     {car.badges?.map((badge, i) => (
+//                       <Badge key={i}>{badge}</Badge>
+//                     ))}
+//                   </CardBadges>
+//                 </CardImageWrapper>
+//                 <CardContent>
+//                   <CardTitle>
+//                     {car.brand} {car.title}
+//                   </CardTitle>
+//                 </CardContent>
+//               </CarCard>
+//             ))}
+//           </CardsGrid>
+//         )}

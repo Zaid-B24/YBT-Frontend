@@ -7,7 +7,7 @@ export const EventMediaGallery = ({ event }) => {
 
   const mediaGallery = useMemo(() => {
     const images = event?.imageUrls?.map((url) => ({ type: "image", url, thumbnail: url })) || [];
-    const videos = event?.videoUrls?.map((url) => ({ type: "video", url, thumbnail: event.primaryImage })) || [];
+    const videos = event?.videoUrls?.map((url) => ({ type: "video", url, thumbnail: event?.thumbnail })) || [];
     return [...images, ...videos];
   }, [event]);
 
@@ -16,6 +16,8 @@ export const EventMediaGallery = ({ event }) => {
   }, [mediaGallery]);
 
   if (!currentMedia) return null;
+
+  console.log(currentMedia.thumbnail, "this is thumbnail")
 
   return (
     <>
@@ -38,7 +40,7 @@ export const EventMediaGallery = ({ event }) => {
         )}
       </MediaContainer>
 
-      {mediaGallery.length > 1 && (
+      {mediaGallery.length > 0 && (
         <ThumbnailContainer>
           {mediaGallery.map((mediaItem, index) => (
             <Thumbnail
