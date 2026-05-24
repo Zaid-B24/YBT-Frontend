@@ -60,6 +60,7 @@ export const EventMediaGallery = ({ event }) => {
             key={currentMedia.url}
             src={currentMedia.url}
             poster={currentMedia.thumbnail}
+            controls          
             autoPlay loop muted playsInline
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
           />
