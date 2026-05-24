@@ -5,11 +5,37 @@ import styled from "styled-components";
 export const EventMediaGallery = ({ event }) => {
   const [currentMedia, setCurrentMedia] = useState(null);
 
+  const [isMobile, setIsMobile] = useState(() => 
+    typeof window !== "undefined" ? window.innerWidth <= 768 : false
+  );
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const mediaGallery = useMemo(() => {
-    const images = event?.imageUrls?.map((url) => ({ type: "image", url, thumbnail: url })) || [];
-    const videos = event?.videoUrls?.map((url) => ({ type: "video", url, thumbnail: event?.thumbnail })) || [];
+
+    const activeImages = isMobile && event?.imageUrlsMobile?.length > 0 
+      ? event.imageUrlsMobile 
+      : event?.imageUrls || [];
+
+    // Same for videos
+    const activeVideos = isMobile && event?.videoUrlsMobile?.length > 0 
+      ? event.videoUrlsMobile 
+      : event?.videoUrls || [];
+
+    // Same for video thumbnail
+    const videoPoster = isMobile && event?.mobileThumbnail 
+      ? event.mobileThumbnail 
+      : event?.thumbnail;
+
+
+    const images = activeImages.map((url) => ({ type: "image", url, thumbnail: url }));
+    const videos = activeVideos.map((url) => ({ type: "video", url, thumbnail: videoPoster }));
     return [...images, ...videos];
-  }, [event]);
+  }, [event, isMobile]);
 
   useEffect(() => {
     if (mediaGallery.length > 0) setCurrentMedia(mediaGallery[0]);
@@ -74,7 +100,7 @@ const MediaContainer = styled.div`
 
   @media (max-width: 768px) {
     border-radius: 12px;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 9 / 16;
   }
 `;
 
@@ -83,6 +109,10 @@ const DisplayedImage = styled(motion.img)`
   height: 100%;
   object-fit: cover;
   display: block;
+
+  @media (max-width: 768px) {
+    object-fit: contain;  // prevents cropping on portrait images
+  }
 `;
 
 const DisplayedVideo = styled(motion.video)`
@@ -90,6 +120,8 @@ const DisplayedVideo = styled(motion.video)`
   height: 100%;
   object-fit: cover;
   display: block;
+  
+  
 `;
 
 export const ThumbnailContainer = styled.div`

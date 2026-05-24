@@ -70,7 +70,7 @@ export const LeftColumn = styled.div`
   
   /* Ensure images/videos inside don't overflow the grid */
   width: 100%;
-  overflow: hidden; 
+  
 `;
 
 export const RightColumn = styled(motion.div)`
